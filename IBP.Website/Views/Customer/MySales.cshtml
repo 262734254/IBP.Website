@@ -1,0 +1,114 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+        
+    List<CustomerBasicInfoModel> BasicList=ViewBag.CustomerBasicList as List<CustomerBasicInfoModel>;
+    
+    }
+
+<form id="pagerForm" method="post" action="demo_page1.html">
+	<input type="hidden" name="status" value="${param.status}">
+	<input type="hidden" name="keywords" value="${param.keywords}" />
+	<input type="hidden" name="pageNum" value="1" />
+	<input type="hidden" name="numPerPage" value="${model.numPerPage}" />
+	<input type="hidden" name="orderField" value="${param.orderField}" />
+</form>
+
+
+<div class="pageHeader">
+	<form onsubmit="return navTabSearch(this);" action="/CustomerBasicInfo/MySales" method="post">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>
+                <td style="width:110px;">
+                <select class="combox" name="keytype">
+						<option value="全部">所有客户来源</option>
+						<option value="折页">折页</option>
+                        <option value="短信">短信</option>
+                        <option value="营业厅">营业厅</option>
+                        <option value="电商">电商</option>
+                        <option value="其他">其他</option>
+					</select>
+                </td>
+                <td>
+                    客户姓名：<input type="text" alt="" class="textInput" maxlength="20" size="25" name="name" />
+                </td>                
+				<td>
+					电话号码：<input type="text" alt="" class="phone textInput" size="25" name="phone" id="phone_76"/>
+				</td>				
+			</tr>
+		</table>
+    	<div class="subBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></li>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="button">提取</button></div></div></li>
+				<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+				<li><a class="button" href="/CallCenter/CallBackList" target="dialog" maxable="false" rel="dlg_page10" mask="true"width="915"height="275" title="新增客户资料"><span>新增客户资料</span></a></li>
+			</ul>
+		</div>
+	</div>
+	</form>
+</div>
+
+<div style="border:1px #B8D0D6 solid" class="pageContent j-resizeGrid">
+	<table class="table" layouth="110">
+		<thead>
+			<tr>
+                <th width="80">操作</th>
+				<th width="100" orderField="workId" class="asc">客户编号</th>
+				<th width="80" orderField="enName">客户姓名</th>
+				<th width="50" orderField="cnName">性别</th>
+				<th width="90" orderField="postName">来源</th>
+				<th width="100" orderField="teamName">手机号码</th>
+				<th width="120" orderField="departmentName">住宅电话</th>
+				<th width="120" orderField="userStatus">办公电话</th>
+				<th width="120" orderField="entryDate">其他号码</th>
+				<th width="220" orderField="positiveDate">最近联系</th>
+				<th width="130" orderField="leaveDate">48H倒计时</th>
+			</tr>
+		</thead>
+		<tbody>
+           @*     @{
+                if(cardList != null)
+                {
+                    foreach (CustomerBasicInfoModel item in BasicList)
+                    {
+                        
+                <tr target="sid_user" rel="1">
+				<td>
+					<a class="button" href="/CallCenter/NewCustomer" title="客户【周强】" target="navTab" rel="callcenter_newcustomer"><span>打开</span></a>
+				</td>
+				<td>@item.CustomerCode</td>
+				<td>@item.CustomerName</td>
+				<td>@item.Sex</td>
+				<td>@item.SalesFrom</td>
+				<td>@item.MobilePhone</td>
+				<td>@item.HomePhone</td>
+				<td>@item.OtherPhone</td>
+                <td></td>
+                <td>111</td>
+                <td>23时 45分 56秒</td>
+			</tr>                   
+                    }
+                }
+            }*@
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20">20</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+			</select>
+			<span>条，共  @ViewBag.CustomerBasicTotal 条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="200" numPerPage="20" pageNumShown="10" currentPage="1"></div>
+
+	</div>
+</div>

@@ -1,0 +1,191 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    CustomerDomainModel Customer = null;
+    UserDomainModel User = null;
+    List<string> SalesorderIdList = ViewBag.SalesorderIdList as List<string>;
+    SalesOrderDomainModel SalesorderDomainModel = null;
+    CustomDataDomainModel IdTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("证件类型", false);
+    CustomDataDomainModel BankTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel CompanyTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("配送公司", false);
+    CustomDataDomainModel Paycardbank = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    Dictionary<string, QueryItemDomainModel> QueryCollection = ViewBag.QueryCollection as Dictionary<string, QueryItemDomainModel>;
+    CustomDataDomainModel CustomerComeFrom = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("订单来源", false);
+
+}
+
+
+<form id="pagerForm" method="post" action="/OrderCenter/DelayCheckOrder">
+<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+<input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+
+<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/OrderCenter/DelayCheckOrder" method="post">
+<div id="waitchargeorderBox" class="pageHeader">
+    <div class="searchBar">
+     <div class="searbg">
+            <dl><dd>订单编号：</dd><dt><input type="text" name="orderCode" value="@(QueryCollection.ContainsKey("salesorder_code") ? QueryCollection["salesorder_code"].SearchValue : "")"/></dt></dl>
+                <dl><dd>客户姓名：</dd><dt><input type="text" name="customerName" value="@(QueryCollection.ContainsKey("customer_basic_info.customer_name") ? QueryCollection["customer_basic_info.customer_name"].SearchValue : "")"/></dt></dl> 
+                <dl><dd>创建人：</dd><dt><input type="text" name="createdUserName"value="@(QueryCollection.ContainsKey("created_user_info.work_id") ? QueryCollection["created_user_info.work_id"].SearchValue.Replace("WORKID_", "") : "")" /></dt></dl>            
+                <dl><dd>来电号码：</dd><dt><input type="text" name="incomePhoneNumber"value="@(QueryCollection.ContainsKey("salesorder_communiationpackage_info.bind_subsidiary_phonenumber") ? QueryCollection["salesorder_communiationpackage_info.bind_subsidiary_phonenumber"].SearchValue : "")" /></dt></dl>               
+                <dl><dd>主合约号：</dd><dt><input type="text" name="selectPhoneNumber" value="@(QueryCollection.ContainsKey("salesorder_communiationpackage_info.bind_main_phonenumber") ? QueryCollection["salesorder_communiationpackage_info.bind_main_phonenumber"].SearchValue : "")"/></dt></dl>
+                <dl><dd>银卡号码：</dd><dt><input type="text" name="pay_card_number" value="@(QueryCollection.ContainsKey("pay_card_number") ? QueryCollection["pay_card_number"].SearchValue : "")"/></dt></dl>
+                  <dl><dd>支付方式：</dd><dt>
+                    <select name="payType">
+                       <option value="">请选择</option>
+                        <option value="0" @CommonUtil.SetComboxSelected("0", ViewBag.Paytype)>分期</option>
+                        <option value="1" @CommonUtil.SetComboxSelected("1", ViewBag.Paytype)>全额</option>
+                        <option value="2" @CommonUtil.SetComboxSelected("2", ViewBag.Paytype)>到付</option>
+                        <option value="3" @CommonUtil.SetComboxSelected("3", ViewBag.Paytype)>在线支付</option>
+                    </select>
+                </dt></dl>
+             <div class="time"><span>创建时间：</span><p><input type="text"  class="date" readonly="true" name="createdBeginTime" value="@ViewBag.createdBeginTime"/>-<input type="text"  class="date" readonly="true" name="createdEndTime" value="@ViewBag.createdEndTime" /></p>
+            </div>
+                 <div class="time"><span>预约时间：</span><p><input type="text"  class="date" readonly="true" name="followBeginTime" value="@ViewBag.followBeginTime"/>-<input type="text"  class="date" readonly="true" name="followEndTime" value="@ViewBag.followEndTime" /></p>
+            </div>
+              <div class="searbgcha"> <div class="buttonActive"><div class="buttonContent"><button name="querysubmit" type="submit">查询</button></div></div></div>
+          
+
+        </div>
+    
+
+    </div>
+</div>
+</form>
+<div class="pageContent">
+    <div class="panelBar">
+        <ul class="toolBar">
+            <li class="line">line</li>
+           	<li><a class="icon" href="/OrderCenter/ExportOrderManager" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+        </ul>
+    </div>
+    <table class="table" layouth="145" width="2000">
+       <thead>
+            <tr>
+            
+                <th width="100" @CommonUtil.SetSortOrder("salesorder_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    订单编号
+                </th>
+                 <th width="80" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    创建时间
+                </th>
+                     <th width="100" @CommonUtil.SetSortOrder("approval_time", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    审批时间
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("order_source", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    订单来源
+                </th>
+                 <th width="80" @CommonUtil.SetSortOrder("customer_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    客户姓名
+                </th>
+                   <th width="100" @CommonUtil.SetSortOrder("created_by", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   3G顾问
+                </th>
+                
+                  <th width="100" >
+                   订单产品列表
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("bind_main_phonenumber", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   绑定主号码
+                </th>
+                  <th width="100" @CommonUtil.SetSortOrder("bind_subsidiary_phonenumber", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   绑定副号码
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("charge_time", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   扣款时间
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("charge_user_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   扣款人
+                </th>
+                  <th width="100" @CommonUtil.SetSortOrder("remark", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    订单备注
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("delivery_time", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   发货时间
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("sign_time", ViewBag.OrderField, ViewBag.OrderDirection)>
+                  签收时间
+                </th>
+               <th width="100" >
+                  客户建档
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("now_order_status_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   订单状态
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                UserDomainModel userDomainModel = null;
+                if (SalesorderIdList != null)
+                {
+                    foreach (string salesOrderId in SalesorderIdList)
+                    {
+                        SalesorderDomainModel = SalesOrderInfoService.Instance.GetSalesorderDomainModelById(salesOrderId, false);
+                        Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(SalesorderDomainModel.BasicInfo.CustomerId, false);
+                        User = (SalesorderDomainModel.BasicInfo.CreatedBy == null) ? null : UserInfoService.Instance.GetUserDomainModelById(SalesorderDomainModel.BasicInfo.CreatedBy, false);
+                        userDomainModel = (SalesorderDomainModel.BasicInfo.ChargeUserId == null) ? null : UserInfoService.Instance.GetUserDomainModelById(SalesorderDomainModel.BasicInfo.ChargeUserId, false);
+                        //SalesPackageBasicInfo=SalesPackageInfoService.Instance.GetSalePackageDomainModelById("",false);
+                         @:<tr target="sid_user" rel="@salesOrderId">
+                         @:<td><a href="/OrderCenter/SalesOrderDetail?sid=@salesOrderId" target="navTab" rel="@salesOrderId" title="【@Customer.BasicInfo.CustomerName】销售订单信息" fresh="false">@SalesorderDomainModel.SalesorderCode</a></td>
+                         @:<td>@SalesorderDomainModel.BasicInfo.CreatedOn</td>
+                         @:<td>@SalesorderDomainModel.BasicInfo.ApprovalTime</td>
+                         @:<td>@(CustomerComeFrom.GetCustomDataValueByValueId(SalesorderDomainModel.BasicInfo.OrderSource))</td>
+                         @:<td>@((Customer.BasicInfo.CustomerName == null) ? "" : Customer.BasicInfo.CustomerName)</td>
+                           @:<td>@((User == null) ? "" : User.BasicInfo.CnName)</td>
+
+                          @:<td>@SalesOrderInfoService.Instance.GetSalesorderProductNameList(SalesorderDomainModel)</td>
+
+                         @:<td>
+                                 if (SalesorderDomainModel.CommuniationPackageList != null)
+                                 {
+                                     foreach (SalesorderCommuniationpackageInfoModel Communiationpackage in SalesorderDomainModel.CommuniationPackageList.Values)
+                                     {
+                                         @(Communiationpackage.BindMainPhonenumber + "  ")
+                                     }
+                                 }
+                          @: </td>
+                          @:<td>
+                                 if (SalesorderDomainModel.CommuniationPackageList != null)
+                                 {
+                                     foreach (SalesorderCommuniationpackageInfoModel Communiationpackage in SalesorderDomainModel.CommuniationPackageList.Values)
+                                     {
+                                         @(Communiationpackage.BindSubsidiaryPhonenumber + "  ")
+                                     }
+                                 }
+                          @: </td>
+                           @:<td>@SalesorderDomainModel.BasicInfo.ChargeTime</td>
+                         @:<td>@((userDomainModel == null) ? "" : userDomainModel.BasicInfo.CnName)</td>
+                         @:<td>@SalesorderDomainModel.BasicInfo.Remark</td>
+                         @:<td>@SalesorderDomainModel.BasicInfo.DeliveryTime</td>
+                         @:<td>@SalesorderDomainModel.BasicInfo.SignTime</td>
+                         @:<td>@(Customer.BasicInfo.CreatedOn)</td>
+                
+                      @:<td>@SalesorderDomainModel.OrderStatusName</td>
+                
+                
+                        @:</tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+    <div class="panelBar">
+        <div class="pages">
+            <span>显示</span>
+            <select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+                <option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+                <option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+                <option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+                <option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+            </select>
+            <span>条，共 @ViewBag.SalesorderTotal 条</span>
+        </div>
+        <div class="pagination" targetType="navTab" totalCount="@ViewBag.SalesorderTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex">
+        </div>
+    </div>
+</div>

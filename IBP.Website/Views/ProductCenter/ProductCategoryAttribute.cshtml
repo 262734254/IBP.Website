@@ -1,0 +1,79 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    List<ProductCategoryInfoModel> ProductCategoryList = ViewBag.ProductCategoryList as List<ProductCategoryInfoModel>;
+    Dictionary<string, ProductCategoryGroupInfoModel> categoryGroupList = ProductCategoryGroupInfoService.Instance.GetProductCategoryGroupList(false);
+}
+
+<form id="pagerForm" method="post" action="/ProductCenter/ProductCategoryAttribute">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+
+
+<div class="pageContent">
+    <div id="proAttributeBox" class="unitBox" style="float: left; display: block; overflow: auto;
+        width: 280px;">
+        <form name="productAttributeForm" rel="pagerForm" onsubmit="return navTabSearch(this);" action="/ProductCenter/ProductCategoryAttribute" method="post">
+        <div class="pageHeader" style="border-right: 1px #B8D0D6 solid">            
+            <div class="searchBar">
+                <div class="searbg">
+                  <dl style="width:220px;"><dd style="width:100px;">产品类型分组：</dd>
+                      <dt><select name="categoryGroupName" id="ddlChangeProductGroup" custjs="productmgr" formname="productAttributeForm">
+                                @{
+                                    if(categoryGroupList != null)
+                                    {
+                                        <option value="">所有</option>
+                                        foreach(ProductCategoryGroupInfoModel item in categoryGroupList.Values)
+                                        {
+                                            <option value="@item.ProductCategoryGroupId" @CommonUtil.SetComboxSelected(item.ProductCategoryGroupId, ViewBag.ProductGroupName) >@item.GroupName</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            </dt>
+                      </dl>
+                </div>
+            </div>
+        </div>
+        </form>
+        <div class="pageContent" style=" border-right: 1px #B8D0D6 solid">
+            	<table class="table" width="99%" layoutH="89">
+		            <thead>
+			            <tr>
+                            <th width="60">序号</th>
+				            <th>产品类型名称</th>
+			            </tr>
+		            </thead>
+		            <tbody>
+                         @{
+                             if (ProductCategoryList != null)
+                             {
+                                 foreach (ProductCategoryInfoModel item in ProductCategoryList)
+                                 {
+                                      @:<tr target="catid" rel="@item.ProductCategoryId">
+                                         @:<td>@item.SortOrder</td>
+                                         @:<td>
+                                                @:<a href="/ProductCenter/ProductCategoryAttributeList?catid=@item.ProductCategoryId" target="ajax" rel="proAttributeListBox">@item.CategoryName</a>
+                                         @:</td>
+                                      @:</tr>
+                                 }
+                             }
+                         }
+		            </tbody>
+	            </table>
+
+            <div class="panelBar">
+		        <div class="pagination" targetType="navTab" totalCount="@ViewBag.ProductCategoryTotal" numPerPage="@ViewBag.PageSize" pageNumShown="3" currentPage="@ViewBag.PageIndex"></div>
+            </div>
+        </div>
+    </div>
+    <div id="proAttributeListBox" class="unitBox" style="margin-left: 288px;">
+        @Html.Partial("ProductCategoryAttributeList")
+    </div>
+</div>

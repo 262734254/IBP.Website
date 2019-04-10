@@ -1,0 +1,190 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    string taskId = Request.QueryString["aid"];
+    if (string.IsNullOrEmpty(taskId))
+    {
+        throw new Exception("编辑自动外呼任务信息异常，未得到页面传递参数");
+    }
+    AutoDialerTaskInfoModel taskInfo = AutoDialerTaskInfoService.Instance.Retrieve(taskId);
+    Dictionary<string,string> numberList = AutoDialerTaskInfoService.Instance.GetIVRAutoDialerTaskNumberListByProjectId(Convert.ToInt32(taskInfo.IvrDialerProjectId));
+
+    if (taskInfo == null)
+    {
+        throw new Exception("编辑自动外呼任务信息异常，未得到自动外呼任务信息");
+    }
+}
+<div class="pageHeader">
+    <div class="searchBar">
+        <table class="searchContent">
+            <tr>
+                <td>
+                    任务编号：<span style="color:Blue; font-weight:bolder"> @taskInfo.AutoDialerTaskCode</span>
+                </td>
+                <td>
+                    任务创建时间：<span style="color:Blue; font-weight:bolder">@taskInfo.CreatedOn </span>
+                </td>
+                <td>
+                    剩余外呼条数：<span id="ivrNumberCount" style="color:Blue; font-weight:bolder">@((numberList != null) ? numberList.Count.ToString() : "0")</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="pageContent">
+	<form method="post" action="/CallCenter/DoUpdateAutoDialerTask" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+    <input type="hidden" id="txtTaskId" name="taskId" value="@taskInfo.AutoDialerTaskId" />
+    <input type="hidden" name="ivrProjectId" value="@taskInfo.IvrDialerProjectId" />
+    <table style="margin:5px 0px 5px 5px; width:680px; height:390px;" cellspacing="2" cellpadding="2">
+        <tr>
+            <td style="padding:10px; background-color:#efefef;border:1px #B8D0D6 solid; width:200px;">
+            <h2>基本信息</h2>
+            </td>
+            <td style="width:10px;"></td>
+            <td style="padding:10px; background-color:#efefef;border:1px #B8D0D6 solid;">
+            <h2>外呼号码列表</h2></td>
+        </tr>
+        <tr>
+            <td style="padding:10px; background-color:#efefef;border:1px #B8D0D6 solid; vertical-align:top;">
+        <table style="width:220px;">
+            <tr style="height:22px;">
+                <td style=" background-color:efefef;">
+                    外呼任务名称：<input type="text" name="taskName" size="20" minlength="3" maxlength="20" class="required"
+                        value="@taskInfo.AutoDialerTaskName" />
+                </td>
+            </tr>
+            <tr style="height:22px;">
+                <td>
+                    外呼时间
+                </td>
+            </tr>
+            <tr style="height:22px;">
+                <td style="padding:0px 0px 0px 20px;">
+                   <input type="text" name="beginTime" size="12" class="date required" format="yyyy-MM-dd" value='@Convert.ToDateTime(taskInfo.BeginTime).ToString("yyyy-MM-dd")'
+                        readonly="true" /><span style="margin:0px 2px 0px 5px;">-</span>
+                    <input type="text" name="endTime" size="12"  class="date required" format="yyyy-MM-dd" value='@Convert.ToDateTime(taskInfo.EndTime).ToString("yyyy-MM-dd")'
+                        readonly="true" />
+                </td>
+            </tr>
+            <tr style="height:22px;">
+                <td>
+                    外呼时段
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:0px 0px 0px 20px;">
+                    <table>
+                    <tr>
+                        <td><input value="@taskInfo.StartTime1" type="text" size="12" name="startTime1" readonly="readonly" class="date required" format="HH:mm"/></td>
+                        <td style="padding:0px 5px 0px 5px;"><span class="limit">-</span></td>
+                        <td><input value="@taskInfo.StopTime1" type="text" size="12" name="stopTime1" readonly="readonly" class="date required" format="HH:mm"/></td>
+                    </tr>
+                    <tr>
+                        <td><input value="@((taskInfo.StartTime2 == "NONE") ? "" : taskInfo.StartTime2)" type="text" size="12" name="startTime2" readonly="readonly" class="date" format="HH:mm"/></td>
+                        <td style="padding:0px 5px 0px 5px;"><span class="limit">-</span></td>
+                        <td><input value="@((taskInfo.StopTime2 == "NONE") ? "" : taskInfo.StopTime2)" type="text" size="12" name="stopTime2" readonly="readonly" class="date" format="HH:mm"/></td>
+                    </tr>
+                    <tr>
+                        <td><input value="@((taskInfo.StartTime3 == "NONE") ? "" : taskInfo.StartTime3)" type="text" size="12" name="startTime3" readonly="readonly" class="date" format="HH:mm"/></td>
+                        <td style="padding:0px 5px 0px 5px;"><span class="limit">-</span></td>
+                        <td><input value="@((taskInfo.StopTime3 == "NONE") ? "" : taskInfo.StopTime3)" type="text" size="12" name="stopTime3" readonly="readonly" class="date" format="HH:mm"/></td>
+                    </tr>
+                    <tr>
+                        <td><input value="@((taskInfo.StartTime4 == "NONE") ? "" : taskInfo.StartTime4)" type="text" size="12" name="startTime4" readonly="readonly" class="date" format="HH:mm"/></td>
+                        <td style="padding:0px 5px 0px 5px;"><span class="limit">-</span></td>
+                        <td><input value="@((taskInfo.StopTime4 == "NONE") ? "" : taskInfo.StopTime4)" type="text" size="12" name="stopTime4" readonly="readonly" class="date" format="HH:mm"/></td>
+                    </tr>
+                </table>	
+                </td>
+            </tr>
+            <tr style="height:22px;">
+                <td>
+                    外呼间隔时间：<input type="text" name="Interval" size="6" class="digits required" value="@taskInfo.Interval" />&nbsp;&nbsp;分钟
+                </td>
+            </tr>
+            <tr style="height:22px;">
+                <td>
+                    失败重呼次数：<input type="text" name="tryCount" size="6" class="digits required" value="@taskInfo.RetryCount" />
+                </td>
+            </tr>
+            <tr style="height:22px;">
+                <td>
+                <table><tr><td>优先级别：
+                </td>
+                <td><select class="combox" name="priority">
+                        <option value="1" @((taskInfo.Priority == 1) ? "selected" : "") >低</option>
+                        <option value="2" @((taskInfo.Priority == 2) ? "selected" : "") >中</option>
+                        <option value="3" @((taskInfo.Priority == 3) ? "selected" : "") >高</option>
+                        <option value="4" @((taskInfo.Priority == 4) ? "selected" : "") >紧急</option>
+                    </select>
+                </td></tr></table>                    
+                </td>
+            </tr>
+            <tr style="height:22px;">
+                <td>
+                    任务描述
+                </td>
+            </tr>
+            <tr style="height:22px;">
+                <td style="padding:0px 0px 0px 20px;">
+                    <textarea name="taskDesc" cols="26" rows="1">@taskInfo.Description</textarea>
+                </td>
+            </tr>
+        </table>
+            
+            </td>
+            <td></td>
+            <td  style="padding:10px; background-color:#efefef;border:1px #B8D0D6 solid;">
+            <table style="width:500px;">
+                <tr>
+                    <td><textarea name="inputBox" id="txtInputBox" style="height:320px; width:220px;" value=""></textarea></td>
+                    <td style="padding:0px 10px 0px 10px; width:100px; text-align:center;">
+                    @{
+                        if (taskInfo.Status == 0)
+                        {
+                             <a custjs="autodialertask" id="btnAddNumber" class="button"><span>添加</span></a>
+                            <br /><br /><br /><br />
+                            <a custjs="autodialertask" id="btnDelNumber" class="button"><span>删除</span></a>
+                        }
+                     }
+                     </td>
+                    <td>
+                    <select id="ddlExists" multiple="multiple" style="height:330px; width:200px;">
+                        @{
+                            if (numberList != null && numberList.Count > 0)
+                            {
+                                foreach (KeyValuePair<string,string> item in numberList)
+                                {
+                                    @:<option value="@item.Key">@item.Value</option>
+                                }
+                            }
+                        }
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            
+            </td>
+        </tr>
+    </table>
+   
+    <div class="formBar">
+        <ul>
+            @{
+                if (taskInfo.Status == 0)
+                {
+                    <li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+                    <li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+                }
+                else
+                {
+                    <li><div class="button"><div class="buttonContent"><button type="button" class="close">关闭</button></div></div></li>
+                }
+            }            
+        </ul>
+    </div>
+
+    </form>
+</div>

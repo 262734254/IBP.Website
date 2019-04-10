@@ -1,0 +1,89 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    ProductCategoryInfoModel catInfo =(Request.QueryString["catid"] == null) ? null : ProductCategoryInfoService.Instance.GetProductCategoryInfoById(Request.QueryString["catid"]);
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/ProductCenter/DoAddProductCategoryAttribute" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+            <input type="hidden" value="@catInfo.ProductCategoryId" name="categoryId" />
+            <div class="unit">
+				<label>产品类型名称：</label>
+				<label>@catInfo.CategoryName</label>
+			</div>
+			<div class="unit">
+				<label>产品类型属性名称：</label>
+				<input name="attributeName" class="required" type="text" size="30" value="" />
+			</div>
+            <div class="unit">
+				<label>属性所属分组名称：</label>
+				<input name="groupName" type="text" size="30" value="" />
+			</div>
+            <div class="divider"></div>
+            <div class="unit">
+				<label>字段类型：</label>
+                <select id="ddlFieldType" custjs="procatattribute" class="combox" name="fieldType">
+                    <option value="string">字符串</option>
+                    <option value="text">长文本</option>
+                    <option value="decimal">数值</option>
+                    <option value="datetime">日期时间</option>
+                    <option value="custom">自定义枚举</option>
+                </select>
+                    <div id="divFieldBox1">
+                        <table width="200">
+                        <tr>
+                            <td width="120" style="padding-left:20px;">最小长度：</td><td><input type="text" name="minLength" size="10" class="digits" /></td>
+                        </tr>
+                        <tr>
+                            <td style="padding-left:20px;">最大长度：</td><td><input type="text" name="maxLength" size="10" class="digits" /></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px 0px 0px 20px;">默认值：</td><td style="padding:10px 0px 0px 0px;"><input type="text" name="defaultValue1" size="10" class="text" /></td>
+                        </tr>
+                    </table>
+                    </div> 
+                    <div id="divFieldBox2" style="display:none;">
+                        <table width="220">
+                        <tr>
+                            <td style="padding-left:20px; width:120px;" valign="top">列表值：</td>
+                            <td><textarea name="customValue" cols="20" rows="4" ></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px 0px 0px 20px;">默认值：</td><td style="padding:10px 0px 0px 0px;"><input type="text" name="defaultValue2" size="10" class="text" /></td>
+                        </tr>
+                    </table>
+                    </div>                   
+			</div>
+            <div class="divider"></div>
+            <div class="unit">
+				<label>是否必填项：</label>
+				<input type="radio" value="0" name="isRequest"/>是
+                <input type="radio" value="1" name="isRequest" checked />否
+			</div>             
+            <div class="unit">
+				<label>状态：</label>
+				<input type="radio" value="0" name="Status" checked />启用
+                <input type="radio" value="1" name="Status" />禁用
+			</div>
+            <div class="divider"></div>
+			<div class="unit">
+				<label>产品类型属性描述：</label>
+				<textarea name="attDesc" cols="40" rows="2" ></textarea>
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+

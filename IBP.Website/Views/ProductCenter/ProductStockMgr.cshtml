@@ -1,0 +1,148 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+    Dictionary<string, ProductCategoryInfoModel> proCatList = ProductCategoryInfoService.Instance.GetProductCategoryList(false);
+    Dictionary<string, ProductCategoryAttributesModel> catAttList = ViewBag.ProductAttributeList as Dictionary<string, ProductCategoryAttributesModel>;
+    List<string> proIdList = ViewBag.ProductIdList as List<string>;
+    Dictionary<string, ProductCategorySalesStatusModel> statusList = ViewBag.SaleStatusList as Dictionary<string, ProductCategorySalesStatusModel>;
+    Dictionary<string, ProductCategoryGroupInfoModel> categoryGroupList = ProductCategoryGroupInfoService.Instance.GetProductCategoryGroupList(false);
+}
+
+<form id="pagerForm" method="post" action="/ProductCenter/ProductStockMgr">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+
+
+<div id="proStockBox" class="pageHeader">
+	<form id="searchForm" rel="pagerForm" onsubmit="return navTabSearch(this);" action="/ProductCenter/ProductStockMgr" method="post">
+	<div class="searchBar">
+		<div  class="searbg">
+          <dl>
+          <dd>类型分组：</dd>
+          <dt><select name="categoryGroupName" id="ddlProCatGroupName">
+                        @{
+                            if(categoryGroupList != null)
+                            {
+                                <option value="">所有</option>
+                                foreach(ProductCategoryGroupInfoModel item in categoryGroupList.Values)
+                                {
+                                    <option value="@item.ProductCategoryGroupId" @CommonUtil.SetComboxSelected(item.ProductCategoryGroupId, ViewBag.ProductGroupName) >@item.GroupName</option>
+                                }
+                            }
+                        }
+                    </select></dt>
+             </dl>
+			<dl style="width:240px;">
+            <dd>产品类型：</dd>
+            <dt><select id="ddlProCat2" custjs="productmgr" name="productCategory" style="width:170px;">
+                    @{
+                        foreach(ProductCategoryInfoModel cat in proCatList.Values)
+                        {
+                            <option value="@cat.ProductCategoryId" @CommonUtil.SetComboxSelected(cat.ProductCategoryId, ViewBag.ProductCategoryId) >@cat.CategoryName</option>
+                        }
+                     }
+                    </select></dt>
+                    
+             </dl>
+             <dl>
+              <dd>销售城市：</dd>
+                  <dt>  <select name="saleCity">
+                    @{
+                        <option value="">所有</option>
+                        if (SaleCity != null)
+                        {
+                            foreach(CustomDataValueDomainModel item in SaleCity.ValueList.Values)
+                            {
+                                <option value="@item.ValueId"  @CommonUtil.SetComboxSelected(item.ValueId, ViewBag.SaleCity) >@item.DataValue</option>
+                            }
+                        }
+                    }
+                </select>
+                </dt>
+             </dl>
+                <div class="searbgcha"><div class="buttonDisabled"><div class="buttonContent"><button type="submit">保存</button></div></div></div>
+                <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></div>
+		</div>
+    </div>
+	</form>
+</div>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+			<li><a class="add" href="/ProductCenter/AddProductInfo" target="dialog" maxable="false"  rel="proStockBox" title="新建入库产品信息" mask="true" width="820" height="480"><span>新建入库</span></a></li>
+			<li><a class="edit" href="/ProductCenter/EditBankCardInfo?cid={card_id}" target="dialog" maxable="false"  rel="proStockBox" title="编辑银行卡类型信息" mask="true" width="520" height="360"><span>编辑</span></a></li>
+			<li><a title="确实要删除这些记录吗?" target="selectedTodo" rel="ids" href="/ProductCenter/DoBatchDeleteBankCardInfo" class="delete"><span>删除</span></a></li>
+			<li class="line">line</li>
+			<li><a class="icon" href="/ProductCenter/ExportBankCardInfo" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+		</ul>
+	</div>
+	<table class="table" layoutH="115">
+		<thead>
+			<tr>
+				<th width="22"><input type="checkbox" group="ids" class="checkboxCtrl"></th>
+                @{
+                    foreach(ProductCategoryAttributesModel item in catAttList.Values)
+                    {
+                        @:<th width="100" @CommonUtil.SetSortOrder(item.AttributeName, ViewBag.OrderField, ViewBag.OrderDirection)>@item.AttributeName</th>
+                    }
+                }
+                <th width="130"  @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection) >建档时间</th>
+			</tr>
+		</thead>
+		<tbody>
+           @{
+               ProductInfoDomainModel proInfo = null;
+               foreach(string productId in proIdList)
+               {
+                   proInfo = ProductInfoService.Instance.GetProductDomainInfoByProductId(productId, false);
+                   if(proInfo != null)
+                   {
+                       @:<tr target="proid" rel="@proInfo.BasicInfo.ProductId">
+                            @:<td><input name="ids" value="@proInfo.BasicInfo.ProductId" type="checkbox"></td>
+                        foreach (ProductCategoryAttributesModel item in catAttList.Values)
+                        {
+                            if(!proInfo.AttributeList.ContainsKey(item.AttributeName))
+                            {
+                                @:<td></td>
+                            }
+                            else
+                            {
+                                if (item.AttributeName == "销售状态")
+                                {
+                                    @:<td>@statusList[proInfo.BasicInfo.SalesStatus].SalestatusName</td>
+                                }
+                                else
+                                {
+                                    @:<td>@proInfo.AttributeList[item.AttributeName]</td>
+                                }
+                            }
+                        }
+                            @:<td>@proInfo.BasicInfo.CreatedOn</td>
+                       @:</tr>
+                   }
+               }
+               }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				<option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				<option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.ProductTotal 条</span>
+		</div>		
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.ProductTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+	</div>
+</div>

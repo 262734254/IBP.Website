@@ -1,0 +1,55 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    string inComeNumber = Request.QueryString["icnum"];
+    string customerId = Request.QueryString["cid"];
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+    ViewBag.Customer = Customer;
+    ViewBag.LocationBoxName = Guid.NewGuid().ToString();
+  
+    CustomDataDomainModel CustomerComeFrom = ViewBag.CustomerComeFrom as CustomDataDomainModel;
+    CustomDataDomainModel CustomerLevel = ViewBag.CustomerLevel as CustomDataDomainModel;
+    CustomDataDomainModel Carriers = ViewBag.Carriers as CustomDataDomainModel;
+    CustomDataDomainModel PhoneBrand = ViewBag.PhoneBrand as CustomDataDomainModel;
+    CustomDataDomainModel Consumer = ViewBag.Consumer as CustomDataDomainModel;
+    CustomDataDomainModel MobilePhonePrice = ViewBag.MobilePhonePrice as CustomDataDomainModel;
+
+    ViewBag.Readonly = false;
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/CallCenter/DoUpdateFirstInComeInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, AjaxDoneOpenUrl);">
+		<div class="pageFormContent" layoutH="56">
+            <div class="information02">
+                <input type="hidden" name="customerId" value="@customerId" />
+                
+                <div name="locationDiv" locname="@ViewBag.LocationBoxName" levelRegion="city" class="location">
+                    <input type="hidden" name="chinaId" class="chinaIdBox" value="@Customer.BasicInfo.ChinaId" />
+                    @Html.Partial("_LocationPanel")
+                </div>
+                <h2>当前来电【@inComeNumber】已建档案，请及时填写客户基本信息</h2>
+                @Html.Partial("_CustomerBasicInfo")
+                <dl>
+                    <dd>客户备注：</dd>
+                    <dt style="width:500px; height:100px;"><textarea name="inCallDesc" cols="88" rows="5">@DateTime.Now 首次来电业务咨询。</textarea></dt>
+                </dl>
+              </div>
+		</div>
+		<div class="formBar">
+			<ul>
+                <li><input type="checkbox" name="callStatus" value="0" />保存为CallBack</li>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+
+
+

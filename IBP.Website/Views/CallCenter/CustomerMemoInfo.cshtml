@@ -1,0 +1,39 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;    
+}
+
+
+<table class="table" layoutH="295" width="100%">
+	<thead>
+		<tr>
+			<th width="120">创建时间</th>
+			<th width="90">创建人</th>
+            <th width="90">工号</th>
+			<th width="500">备注信息</th>
+		</tr>
+	</thead>
+	<tbody>
+        @{
+            if(Customer.MemoList != null)
+            {
+                UserDomainModel user = null;
+                foreach(CustomerMemoInfoModel item in Customer.MemoList.Values)
+                {
+                    user = UserInfoService.Instance.GetUserDomainModelById(item.CreatedBy, false);
+                    <tr>
+                        <td>@item.CreatedOn</td>
+			            <td>@((user == null) ? "" : user.BasicInfo.CnName)</td>
+                        <td>@((user == null) ? "" : user.WorkId)</td>
+			            <td title="@item.Memo">@item.Memo</td> 
+		            </tr>
+                }
+            }
+        }
+        </tbody>
+</table>
+

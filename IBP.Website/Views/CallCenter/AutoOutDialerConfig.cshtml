@@ -1,0 +1,76 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    DialerInfoCampaignModel campaign = AutoDialerTaskInfoService.Instance.GetIVRServerDialerCampaignInfo();
+}
+<h2 class="contentTitle">自动外呼策略配置</h2>
+
+
+<div class="pageContent" id="autoDialerCampaignBox">
+	
+	<form method="post" action="/CallCenter/DoUpdateAutoDialerCampaign" class="pageForm required-validate" onsubmit="return validateCallback(this)">
+		<div class="pageFormContent nowrap" layoutH="97">
+
+			<dl>
+				<dt>策略名称：</dt>
+				<dd>
+					自动外呼默认策略
+				</dd>
+			</dl>
+			<dl>
+				<dt>策略描述：</dt>
+				<dd>
+					自动外呼策略描述。
+				</dd>
+			</dl>
+			<dl>
+				<dt>外拨失败重试次数：</dt>
+				<dd>
+					<input type="text" name="timers" size="30" value="@campaign.Times" class="digits required" />
+                    <span class="info">自动外呼失败后尝试重拔的次数。</span>
+				</dd>
+			</dl>
+            <dl>
+				<dt>失败重试时间间隔：</dt>
+				<dd>
+					<input type="text" name="interval" size="30" value="@campaign.Interval"  class="digits required" />
+                    <span class="info">自动外呼失败后重拔的间隔时间，单位为分钟。</span>
+				</dd>
+			</dl>
+            <dl>
+				<dt>最大并发端口数：</dt>
+				<dd>
+					<input type="text" name="maxports" size="30" value="@campaign.Maxports"  class="digits required" />
+                    <span class="info">自动外呼使用的通道数。</span>
+				</dd>
+			</dl>
+@*            <dl>
+				<dt>最大振铃次数：</dt>
+				<dd>
+					<input type="text" name="digits" size="30" value="@campaign.Acdtype"  class="digits required" />
+                    <span class="info">无需修改。</span>
+				</dd>
+			</dl>
+
+            <dl>
+				<dt>最大超时时间：</dt>
+				<dd>
+					<input type="text" name="digits" size="30" value="@campaign.Maxtimeout"  class="digits required" />
+                    <span class="info">无需修改。</span>
+				</dd>
+			</dl>*@
+			<div class="divider"></div>
+			 
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>
+

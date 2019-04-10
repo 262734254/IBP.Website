@@ -1,0 +1,40 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string dataId = (Request.QueryString["cid"] == null) ? "" : Request.QueryString["cid"].ToString();
+    CustomDataDomainModel dataInfo = CustomDataInfoService.Instance.GetCustomDataDomainModelById(dataId, false);
+}
+
+<div class="pageContent">
+	
+	<form method="post" action="/System/DoNewCustomValue" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+            <input type="hidden" name="dataId" value="@dataId" />
+            <div class="unit">
+				<label>枚举名称：</label>
+				@dataInfo.DataName
+			</div>
+			<div class="unit">
+				<label>枚举值：</label>
+				<input type="text" name="dataValue" size="30" minlength="3" maxlength="10" class="required" />
+			</div>
+			<div class="unit">
+				<label>值编码：</label>
+                <input type="text" name="valueCode" size="30" minlength="3" maxlength="10" class="required" />
+			</div>
+            <div class="unit">
+				<label>值状态：</label>
+				<input type="radio" value="0" checked name="valueStatus" />启用
+                <input type="radio" value="1" name="valueStatus" />禁用
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

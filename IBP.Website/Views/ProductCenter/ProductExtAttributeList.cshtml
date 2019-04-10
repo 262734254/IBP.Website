@@ -1,0 +1,133 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string productCategoryId = ((Request.QueryString["pcid"] == null) ? ProductCategoryInfoService.Instance.GetProductCategoryInfoBySortOrder(1).ProductCategoryId : Request.QueryString["pcid"].ToString());
+    Dictionary<string, ProductCategorySalesStatusModel> proStatusList = ProductCategorySalesStatusService.Instance.GetProductCategorySalesStatusList(productCategoryId, false);
+    Dictionary<string, ProductCategoryAttributesModel> proAttList = ProductCategoryAttributesService.Instance.GetProductCategoryAttributeList(productCategoryId, false);
+    List<string> groupList = ProductCategoryAttributesService.Instance.GetProductCategoryAttributeGroupList(productCategoryId, false);
+
+}
+<div class="searbg" style="width:778px; overflow:hidden;">
+    <fieldset>
+		<legend>产品扩展信息</legend>         
+        @{
+            if (groupList.Count == 0)
+            {
+                foreach (ProductCategoryAttributesModel att in proAttList.Values)
+                {
+                    if (att.AttributeName == "产品代码" || att.AttributeName == "产品名称" || att.AttributeName == "销售状态")
+                    {
+                        continue;
+                    }
+                                                            
+                    switch (att.FieldType)
+                    {
+                        case "string":
+                            @:<dl>
+			                @:    <dd>@att.AttributeName：</dd>
+                            @:    <dt><input value="@(string.IsNullOrEmpty(att.DefaultValue) ? "" : att.DefaultValue)" class="@((att.IsRequest == 0) ? "required" : "") text" name="@att.AttributeName" minlength="@att.FieldMinLength" maxlength="@att.FieldMaxLength" type="text" /></dt>
+                            @:</dl>
+                            break;
+
+                        case "text":
+                            @:<dl>
+			                @:    <dd>@att.AttributeName：</dd>
+                            @:<dt><textarea class="@((att.IsRequest == 0) ? "required" : "")" name="@att.AttributeName">@(string.IsNullOrEmpty(att.DefaultValue) ? "" : att.DefaultValue)</textarea></dt>
+                            @:</dl>
+                            break;
+
+                        case "datetime":
+                            @:<dl>
+			                @:    <dd>@att.AttributeName：</dd>
+                            @:<dt><input format="yyyy-MM-dd HH:mm:ss" value="@(string.IsNullOrEmpty(att.DefaultValue) ? "" : att.DefaultValue)"  type="text" name="@att.AttributeName" class="@((att.IsRequest == 0) ? "required" : "") date"  readonly="true" /></dt>
+                            @:</dl>
+                            break;
+
+                        case "decimal":
+                            @:<dl>
+			                @:    <dd>@att.AttributeName：</dd>
+                            @:<dt><input value="@(string.IsNullOrEmpty(att.DefaultValue) ? "" : att.DefaultValue)"  type="text"  name="@att.AttributeName" class="@((att.IsRequest == 0) ? "required" : "") number" /></dt>
+                            @:</dl>
+                            break;
+
+                        case "custom":
+                            @:<dl>
+			                @:    <dd>@att.AttributeName：</dd>
+                            @:<dt><select name="@att.AttributeName" class="@((att.IsRequest == 0) ? "required" : "")">
+                                List<string> valueList = (string.IsNullOrEmpty(att.CustomValue)) ? new List<string>() : att.CustomValue.Split('\n').ToList();
+                                foreach (string vitem in valueList)
+                                {
+                                    @:<option value="@vitem" @((att.DefaultValue == vitem) ? "selected" : "") >@vitem</option>
+                                }
+                            @:</select></dt>
+                            @:</dl>
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                foreach (string groupName in groupList)
+                {
+                    @:<fieldset>
+		            @:    <legend>@groupName</legend>
+                    foreach (ProductCategoryAttributesModel att in proAttList.Values)
+                    {
+                        if (att.GroupName == groupName)
+                        {                            
+                            switch (att.FieldType)
+                            {
+                                case "string":
+                                    @:<dl style="width:190px;">
+			                        @:    <dd>@att.AttributeName：</dd>
+                                    @:    <dt><input value="@(string.IsNullOrEmpty(att.DefaultValue) ? "" : att.DefaultValue)" class="@((att.IsRequest == 0) ? "required" : "") alphanumeric" name="@att.AttributeName" minlength="@att.FieldMinLength" maxlength="@att.FieldMaxLength" type="text" /></dt>
+                                    @:</dl>
+                                    break;
+
+                                case "text":
+                                    @:<dl style="width:350px;">
+			                        @:    <dd>@att.AttributeName：</dd>
+                                    @:<dt><textarea style="height:18px;width:275px;" class="@((att.IsRequest == 0) ? "required" : "")" name="@att.AttributeName">@(string.IsNullOrEmpty(att.DefaultValue) ? "" : att.DefaultValue)</textarea></dt>
+                                    @:</dl>
+                                    break;
+
+                                case "datetime":
+                                    @:<dl style="width:190px;">
+			                        @:    <dd>@att.AttributeName：</dd>
+                                    @:<dt><input format="yyyy-MM-dd HH:mm:ss"  value="@(string.IsNullOrEmpty(att.DefaultValue) ? "" : att.DefaultValue)"  type="text" name="@att.AttributeName" class="@((att.IsRequest == 0) ? "required" : "") date"  readonly="true" /></dt>
+                                    @:</dl>
+                                    break;
+
+                                case "decimal":
+                                    @:<dl style="width:190px;">
+			                        @:    <dd>@att.AttributeName：</dd>
+                                    @:<dt><input value="@(string.IsNullOrEmpty(att.DefaultValue) ? "" : att.DefaultValue)"  type="text"  name="@att.AttributeName" class="@((att.IsRequest == 0) ? "required" : "") number" /></dt>
+                                    @:</dl>
+                                    break;
+
+                                case "custom":
+                                    @:<dl style="width:600px;">
+			                        @:<dd style="width:280px;">@att.AttributeName：</dd>
+                                    @:<dt style="width:300px;"><select style="width:290px;" name="@att.AttributeName" class="@((att.IsRequest == 0) ? "required" : "")">
+                                        List<string> valueList = (string.IsNullOrEmpty(att.CustomValue)) ? new List<string>() : att.CustomValue.Split(' ').ToList();
+                                        foreach (string vitem in valueList)
+                                        {
+                                            @:<option value="@vitem" @((att.DefaultValue == vitem) ? "selected" : "") >@vitem</option>
+                                        }
+                                    @:</select></dt>
+                                    @:</dl>
+                                    break;
+                            }
+
+                        }
+                    }
+                    @:</fieldset>
+                }
+            }
+        }
+    </fieldset>
+</div>
+
+

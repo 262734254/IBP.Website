@@ -1,0 +1,104 @@
+﻿@{
+    Layout = "";
+}
+
+<div style="border:1px #B8D0D6 solid" class="pageContent j-resizeGrid">
+	<table class="table" layouth="170">
+		<thead>
+			<tr>
+                <th width="80">操作</th>
+				<th width="150" orderField="workId">订单编号</th>
+				<th width="100" orderField="teamName">订单状态</th>
+				<th width="130" orderField="teamName">项目名称</th>
+				<th width="110" orderField="teamName">套餐类型</th>
+				<th width="100" orderField="teamName">套餐号码</th>
+				<th width="80" orderField="enName">客户姓名</th>
+				<th width="100" orderField="cnName">手机号码</th>
+				<th width="150" orderField="departmentName">下订时间</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a class="button" href="/CallCenter/NewCustomer" target="navTab" rel="callcenter_newcustomer"><span>打开</span></a>
+				</td>
+				<td>ORDER20111129001</td>
+				<td>待扣款</td>
+				<td>亮剑（广）A</td>
+				<td>63元套餐</td>
+				<td>13926515895</td>
+				<td>周强</td>
+                <td>13926515895</td>
+                <td>2011-11-29 12:23:34</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a class="button" href="/CallCenter/NewCustomer" target="navTab" rel="callcenter_newcustomer"><span>打开</span></a>
+				</td>
+				<td>ORDER20111129001</td>
+				<td>待扣款</td>
+				<td>亮剑（广）A</td>
+				<td>63元套餐</td>
+				<td>13926515895</td>
+				<td>周强</td>
+                <td>13926515895</td>
+                <td>2011-11-29 12:23:34</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a class="button" href="/CallCenter/NewCustomer" target="navTab" rel="callcenter_newcustomer"><span>打开</span></a>
+				</td>
+				<td>ORDER20111129001</td>
+				<td>待扣款</td>
+				<td>亮剑（广）A</td>
+				<td>63元套餐</td>
+				<td>13926515895</td>
+				<td>周强</td>
+                <td>13926515895</td>
+                <td>2011-11-29 12:23:34</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a class="button" href="/CallCenter/NewCustomer" target="navTab" rel="callcenter_newcustomer"><span>打开</span></a>
+				</td>
+				<td>ORDER20111129001</td>
+				<td>待扣款</td>
+				<td>亮剑（广）A</td>
+				<td>63元套餐</td>
+				<td>13926515895</td>
+				<td>周强</td>
+                <td>13926515895</td>
+                <td>2011-11-29 12:23:34</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a class="button" href="/CallCenter/NewCustomer" target="navTab" rel="callcenter_newcustomer"><span>打开</span></a>
+				</td>
+				<td>ORDER20111129001</td>
+				<td>待扣款</td>
+				<td>亮剑（广）A</td>
+				<td>63元套餐</td>
+				<td>13926515895</td>
+				<td>周强</td>
+                <td>13926515895</td>
+                <td>2011-11-29 12:23:34</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20">20</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+			</select>
+			<span>条，共${totalCount}条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="200" numPerPage="20" pageNumShown="10" currentPage="1"></div>
+
+	</div>
+</div>
+

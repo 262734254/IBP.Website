@@ -1,0 +1,134 @@
+﻿@using IBP.Common;
+@using IBP.Services;
+@using IBP.Models;
+@{
+    Layout = "";
+    string catId = (Request.Form["productCategory"] == null) ? "" : Request.Form["productCategory"];
+    string attId = (Request.Form["searchField"] == null) ? null : Request.Form["searchField"];
+
+    Dictionary<string, ProductCategoryAttributesModel> proAttList = ProductCategoryAttributesService.Instance.GetProductCategoryAttributeList(catId, false);
+}
+
+<table class="searchContent" style="width:100%;">
+    @{
+        if (proAttList != null)
+        {
+            foreach (ProductCategoryAttributesModel item in proAttList.Values)
+            {
+                if (Request.Form[item.CategoryAttributeId] == null || item.CategoryAttributeId == attId || Request.Form["chk_" + item.CategoryAttributeId]  == null || Request.Form["chk_" + item.CategoryAttributeId] == "1")
+                {
+                    continue;
+                }                
+                @:<tr>
+                    @:<td style="width:30px;"><input custjs="productmgr" type="checkbox" checked="checked" value="0" name="@("chk_" + item.CategoryAttributeId)"/></td>
+                    @:<td style="width:80px;">@item.AttributeName:</td>
+                    if (item.FieldType == "string" || item.FieldType == "text")
+                    {
+                        @:<td style="width:50px;"><select name="@("opddl_" + item.CategoryAttributeId)">
+                            @:<option value="equal" @CommonUtil.SetComboxSelected("equal", Request.Form["opddl_" + item.CategoryAttributeId]) >等于</option>
+                            @:<option value="notequal" @CommonUtil.SetComboxSelected("notequal", Request.Form["opddl_" + item.CategoryAttributeId]) >不等于</option>
+                            @:<option value="contain" @CommonUtil.SetComboxSelected("contain", Request.Form["opddl_" + item.CategoryAttributeId]) >包含</option>
+                        @:</select></td>    
+                        @:<td><input type="text" class="text required" value="@CommonUtil.SetValue(Request.Form[item.CategoryAttributeId])" name="@item.CategoryAttributeId"/></td>
+                    }
+                    else if (item.FieldType == "decimal")
+                    {
+                        @:<td style="width:50px;"><select name="@("opddl_" + item.CategoryAttributeId)">
+                            @:<option value="equal" @CommonUtil.SetComboxSelected("equal", Request.Form["opddl_" + item.CategoryAttributeId]) >等于</option>
+                            @:<option value="notequal" @CommonUtil.SetComboxSelected("equal", Request.Form["opddl_" + item.CategoryAttributeId]) >不等于</option>
+                            @:<option value="greater" @CommonUtil.SetComboxSelected("greater", Request.Form["opddl_" + item.CategoryAttributeId]) >大于</option>
+                            @:<option value="greaterequal" @CommonUtil.SetComboxSelected("greaterequal", Request.Form["opddl_" + item.CategoryAttributeId]) >大于等于</option>
+                            @:<option value="less" @CommonUtil.SetComboxSelected("less", Request.Form["opddl_" + item.CategoryAttributeId]) >小于</option>
+                            @:<option value="lessequal" @CommonUtil.SetComboxSelected("lessequal", Request.Form["opddl_" + item.CategoryAttributeId]) >小于等于</option>
+                        @:</select></td>    
+                        @:<td><input type="text"  class="number required" value="@CommonUtil.SetValue(Request.Form[item.CategoryAttributeId])"  name="@item.CategoryAttributeId"/></td>                        
+                    }
+                    else if (item.FieldType == "datetime")
+                    {
+                        @:<td style="width:50px;"><select custjs="productmgr" ftype="datetime" name="@("opddl_" + item.CategoryAttributeId)">                        
+                            @:<option value="between" @CommonUtil.SetComboxSelected("between", Request.Form["opddl_" + item.CategoryAttributeId]) >介于</option>
+                            @:<option value="today" @CommonUtil.SetComboxSelected("today", Request.Form["opddl_" + item.CategoryAttributeId]) >本日</option>
+                            @:<option value="week" @CommonUtil.SetComboxSelected("week", Request.Form["opddl_" + item.CategoryAttributeId]) >本周</option>
+                            @:<option value="month" @CommonUtil.SetComboxSelected("month", Request.Form["opddl_" + item.CategoryAttributeId]) >本月</option>
+                            @:<option value="quarter" @CommonUtil.SetComboxSelected("quarter", Request.Form["opddl_" + item.CategoryAttributeId]) >本季度</option>
+                            @:<option value="year" @CommonUtil.SetComboxSelected("year", Request.Form["opddl_" + item.CategoryAttributeId]) >本年度</option>
+                        @:</select></td>    
+                        @:<td><input type="text"  format="yyyy-MM-dd HH:mm:ss"  class="date required" name="@item.CategoryAttributeId"/> - <input type="text"  format="yyyy-MM-dd HH:mm:ss"  class="date required" name="@("date_end_" + item.CategoryAttributeId)"/></td>                        
+                    }
+                    else if (item.FieldType == "custom")
+                    {
+                        @:<td style="width:50px;"><select name="@("opddl_" + item.CategoryAttributeId)">
+                            @:<option value="equal" @CommonUtil.SetComboxSelected("equal", Request.Form["opddl_" + item.CategoryAttributeId]) >等于</option>
+                            @:<option value="notequal" @CommonUtil.SetComboxSelected("notequal", Request.Form["opddl_" + item.CategoryAttributeId]) >不等于</option>
+                        @:</select></td>    
+                        @:<td>
+                        @:<select name="@item.CategoryAttributeId">
+                            List<string> valueList = item.CustomValue.Split('\n').ToList();
+                            foreach (string vitem in valueList)
+                            {
+                                @:<option value="@vitem" @CommonUtil.SetComboxSelected(vitem, Request.Form[item.CategoryAttributeId]) >@vitem</option>
+                            }
+                        @:</select>
+                        @:</td>                        
+                    }
+                @:</tr>
+            }
+            if (!string.IsNullOrEmpty(attId))
+            {
+                @:<tr>
+                    @:<td style="width:30px;"><input custjs="productmgr" type="checkbox" checked="checked" value="0" name="@("chk_" + attId)"/></td>
+                    @:<td style="width:80px;">@proAttList[attId].AttributeName:</td>
+                    if (proAttList[attId].FieldType == "string" || proAttList[attId].FieldType == "text")
+                    {
+                        @:<td style="width:50px;"><select name="@("opddl_" + attId)">
+                            @:<option value="equal">等于</option>
+                            @:<option value="notequal">不等于</option>
+                            @:<option value="contain">包含</option>
+                        @:</select></td>    
+                        @:<td><input type="text" class="text required" value="" name="@attId"/></td>
+                    }
+                    else if (proAttList[attId].FieldType == "decimal")
+                    {
+                        @:<td style="width:50px;"><select name="@("opddl_" + attId)">
+                            @:<option value="equal">等于</option>
+                            @:<option value="notequal">不等于</option>
+                            @:<option value="greater">大于</option>
+                            @:<option value="greaterequal">大于等于</option>
+                            @:<option value="less">小于</option>
+                            @:<option value="lessequal">小于等于</option>
+                        @:</select></td>    
+                        @:<td><input type="text"  class="number required"  name="@attId"/></td>                        
+                    }
+                    else if (proAttList[attId].FieldType == "datetime")
+                    {
+                        @:<td style="width:50px;"><select custjs="productmgr" ftype="datetime" name="@("opddl_" + attId)">                        
+                            @:<option value="between">介于</option>
+                            @:<option value="today">本日</option>
+                            @:<option value="week">本周</option>
+                            @:<option value="month">本月</option>
+                            @:<option value="quarter">本季度</option>
+                            @:<option value="year">本年度</option>
+                        @:</select></td>    
+                        @:<td><input type="text"  format="yyyy-MM-dd HH:mm:ss"  class="date required" name="@attId"/> - <input type="text"  format="yyyy-MM-dd HH:mm:ss"  class="date required" name="@("date_end_" + attId)"/></td>                        
+                    }
+                    else if (proAttList[attId].FieldType == "custom")
+                    {
+                        @:<td style="width:50px;"><select name="@("opddl_" + attId)">
+                            @:<option value="equal">等于</option>
+                            @:<option value="notequal">不等于</option>
+                        @:</select></td>    
+                        @:<td>
+                        @:<select name="@attId">
+                            List<string> valueList = proAttList[attId].CustomValue.Split('\n').ToList();
+                            foreach (string vitem in valueList)
+                            {
+                                @:<option value="@vitem" @((proAttList[attId].DefaultValue == vitem) ? "selected" : "") >@vitem</option>
+                            }
+                        @:</select>
+                        @:</td>                        
+                    }
+                @:</tr>
+            }
+        }
+    }
+</table>

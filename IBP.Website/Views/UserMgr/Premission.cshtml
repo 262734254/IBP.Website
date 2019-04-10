@@ -1,0 +1,72 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    Dictionary<string,RoleDomainModel> roleDict = RoleInfoService.Instance.GetRoleDomainList(false);
+}
+
+<div class="pageContent">
+    <div id="premissionbox" class="unitBox" style="float: left; display: block; overflow: auto;
+        width: 284px;">
+        <div class="pageHeader" style="border-right: 1px #B8D0D6 solid">            
+            <div class="searchBar">
+                <table class="searchContent">
+                    <tr>
+                        <td>
+                            角色列表
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="pageContent" style=" border-right: 1px #B8D0D6 solid">
+            <div class="panelBar">
+                <ul class="toolBar">
+                    <li>
+                        <a  target="dialog" maxable="false" mask="true" id="addRole" width="900" height="580" title="新建角色" rel="usermgr_premission" class="add" href="/UserMgr/NewRole" mask="true">
+                            <span>新建</span>
+                        </a>
+                    </li>
+                    <li class="line">line</li>
+                    <li><a id="editRole" class="edit"  width="900" height="580" target="dialog" maxable="false" href="/UserMgr/EditRole?rid={role_id}" mask="true"><span>编辑</span></a></li>
+                    <li class="line">line</li>
+                    <li><a id="delRole" class="delete" target="ajaxTodo" href="/UserMgr/DoDeleteRole?rid={role_id}" title="确定要删除选中角色吗?"><span>删除</span></a></li>     
+                    <li class="line">line</li>               
+                </ul>
+            </div>
+            	<table class="table" width="99%" layoutH="110">
+		            <thead>
+			            <tr>
+				            <th width="80">角色名称</th>
+			            </tr>
+		            </thead>
+		            <tbody>
+                         @{
+                             if(roleDict != null)
+                             {
+                                 foreach(RoleDomainModel role in roleDict.Values)
+                                 {
+                                      @:<tr target="role_id" rel="@role.RoleId">
+                                         @:<td style="padding-left:20px;">
+                                                @:<a href="/UserMgr/RoleUserList?rid=@role.RoleId" target="ajax" rel="roleUserBox">@role.CnName</a>
+                                         @:</td>
+                                      @:</tr>
+                                 }
+                             }
+                         }
+		            </tbody>
+	            </table>
+
+            <div class="panelBar">
+                <div class="pages">
+                     
+                </div>
+                 
+            </div>
+        </div>
+    </div>
+    <div id="roleUserBox" class="unitBox" style="margin-left: 288px;">
+        @Html.Partial("RoleUserList")
+    </div>
+</div>

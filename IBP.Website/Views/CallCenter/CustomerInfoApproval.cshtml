@@ -1,0 +1,81 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@using Framework.Utilities;
+@{
+    Layout = "";
+    string approvalId = Request.QueryString["aid"];
+    CustomerInfoApprovalModel ApprovalModel = CustomerInfoApprovalService.Instance.GetCustomerInfoApprovalModelById(approvalId, false);
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(ApprovalModel.CustomerId, false);
+
+    UserDomainModel user = UserInfoService.Instance.GetUserDomainModelById(ApprovalModel.CreatedBy, false);
+}
+<div class="pageContent">
+    <form method="post" action="/CallCenter/DoChangeCustomerApproval" class="pageForm required-validate"
+    onsubmit="return validateCallback(this, dialogAjaxDone);">
+    <div class="pageFormContent" layouth="56">
+        <input type="hidden" value="@approvalId" name="ids" />
+        <div class="information02">
+            <h2>客户信息修改审核</h2>
+            <div class="New_box02">
+                <dl>
+                    <table style="margin:10px 0px 10px 20px;"><tr>
+                        <td style="padding:5px 25px 0px 0px;">客户名称：@(string.IsNullOrEmpty(Customer.BasicInfo.CustomerName) ? "未知" : Customer.BasicInfo.CustomerName)</td>
+                        <td style="padding:5px 25px 0px 0px;">修改字段：@ApprovalModel.UpdateFieldName</td>
+                        <td style="padding:5px 25px 0px 0px;">原值：@ApprovalModel.OldData</td>
+                        <td style="padding:5px 25px 0px 0px;">新值：@ApprovalModel.NewData</td>
+                    </tr></table>         
+                </dl>
+                <dl>
+                    <table style="margin:10px 0px 10px 20px;"><tr>
+                       <td  style="padding:5px 25px 0px 0px;">提交时间：@ApprovalModel.CreatedOn</td>
+                        <td  style="padding:5px 25px 0px 0px;">提交人：【@user.WorkId】@user.BasicInfo.CnName</td>
+                    </tr></table>                    
+                </dl>
+                <dl>
+                    <span style="width: 700px;">
+                        <dd>审核结果：</dd>
+                        <dt style="width: 550px;">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <input style="width: 20px;" type="radio" value="accept" checked name="approvalAction" />通过
+                                    </td>
+                                    <td>
+                                        <input style="width: 20px;margin-left:20px;" type="radio" value="refuse" name="approvalAction" />拒绝
+                                    </td>
+                                </tr>
+                            </table>
+                        </dt>
+                    </span>
+                </dl>
+                <dl>
+                    <span style="width: 700px; height: 70px;">
+                        <dd>审核意见：</dd>
+                        <dt style="width: 500px; height: 70px;">
+                            <textarea name="approvalDesc" cols="55" rows="3"></textarea></dt>
+                    </span>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="formBar">
+        <ul>
+            <li>
+                <div class="buttonActive">
+                    <div class="buttonContent">
+                        <button type="submit">
+                            保存</button></div>
+                </div>
+            </li>
+            <li>
+                <div class="button">
+                    <div class="buttonContent">
+                        <button type="button" class="close">
+                            取消</button></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    </form>
+</div>

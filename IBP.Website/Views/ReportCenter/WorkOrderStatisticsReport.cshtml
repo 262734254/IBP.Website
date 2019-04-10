@@ -1,0 +1,74 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Models.DomainModels;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    WorkOrderReportDomainModel Report = IBP.Services.WorkorderInfoService.Instance.GetWorkOrderReportDomainModel(false);
+}
+
+<div class="pageContent">
+    <div class="panelBar">
+	    <ul class="toolBar">
+		    <li style=" float:right;"><a id="btnUpdateCustomerBasic" class="icon" href="#" custjs="customermgr" title="确认导出当前统计报表吗?"><span>导出报表</span></a></li>
+		    <li class="line" style=" float:right;">line</li>
+            <li><a class="add" href="/CallCenter/NewWorkOrder?cid=" target="dialog" maxable="false" rel="callcenter_customerinfo" mask="true" width="800" height="510"><span>刷新统计报表信息</span></a></li>
+	    </ul>
+    </div>
+
+    <div class="baobiao"layoutH="27">
+        <div class="statements">
+            <h2>工单统计报表（共计 @Report.Total ）</h2>
+            <dl>
+                <dd>按工单级别统计信息</dd>
+                <dt>
+                    @{
+                        foreach (WorkOrderLevelReport Level in Report.LevelReport.Values)
+                        {
+                            @:<span>@Level.LevelName：@Level.Total</span>
+                        }
+                    }
+                </dt>
+                <dd>按工单处理状态统计信息</dd>
+                <dt>
+                    @{
+                        foreach (WorkOrderProcessStatusReport ProcessStatus in Report.ProcessStatusReport.Values)
+                        {
+                            @:<span>@ProcessStatus.ProcessStatusName：@ProcessStatus.Total</span>
+                        }
+                    }
+                </dt>
+                <dd>按工单类型统计信息</dd>
+            </dl>
+        </div>
+        <div class="statements02">
+            <dl>
+             @{
+                foreach (WorkOrderTypeReport TypeReport in Report.TypeReport.Values)
+                {
+                    @:<dd>@TypeReport.TypeName （@TypeReport.Total）</dd>
+                    @:<div class="dldiv01">
+                        @:<dt>本类型工单流转状态统计信息</dt>
+                        @:<div class="dldiv02">
+                            foreach (WorkOrderTypeStatusReport TypeStatus in TypeReport.StatusReport.Values)
+                            {
+                                @:<span>@TypeStatus.StatusName：@TypeStatus.Total</span>
+                            }
+                        @:</div>
+                   
+                        @:<dt>本类型工单处理结果统计信息</dt>
+                        @:<div class="dldiv02">
+                            foreach (WorkOrderTypeResultReport TypeResult in TypeReport.ResultReport.Values)
+                            {
+                                @:<span>@TypeResult.ResultName：@TypeResult.Total</span>
+                            }
+                        @:</div>
+                    @:</div>
+                }
+            }
+            </dl>
+        </div>
+    </div>
+
+</div>

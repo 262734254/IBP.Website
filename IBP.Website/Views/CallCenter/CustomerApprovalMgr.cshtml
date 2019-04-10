@@ -1,0 +1,103 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomDataDomainModel CustomerLevel = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("客户等级", false);
+    List<CustomerInfoApprovalModel> ApprovalList = ViewBag.ApprovalList as List<CustomerInfoApprovalModel>;
+    CustomerDomainModel Customer = null;
+
+}
+
+<form id="pagerForm" method="post" action="/CallCenter/CustomerApprovalMgr">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+	
+    
+<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/CallCenter/CustomerApprovalMgr" method="post">
+<div id="customerApprovalMgrBox" class="pageHeader">
+	<div class="searchBar">
+        <div class="searbg">
+                <dl><dd>审批状态：</dd>
+                <dt><select name="approvalStatus">
+                    <option value="0" @CommonUtil.SetComboxSelected("0",ViewBag.ApprovalStatus)>待审批</option>
+                    <option value="1" @CommonUtil.SetComboxSelected("1",ViewBag.ApprovalStatus)>已拒绝</option>
+                    <option value="2" @CommonUtil.SetComboxSelected("2",ViewBag.ApprovalStatus)>已通过</option>                   
+               </select>
+               </dt></dl> 
+                <div class="time"><span>创建时间：</span><p><input type="text"  class="date" readonly="true" name="createdBeginTime" value="@ViewBag.createdBeginTime"/>-<input type="text"  class="date" readonly="true" name="createdEndTime" value="@ViewBag.createdEndTime" /></p>
+            </div>
+          <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button name="querysubmit" type="submit">查询</button></div></div></div>
+        </div>
+        
+	</div>	
+</div>
+</form>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+			<li><a title="确定要通过选中记录吗?" target="selectedTodo" rel="ids" href="/CallCenter/DoAcceptCustomerApproval" class="add"><span>通过</span></a></li>
+			<li><a title="确定要拒绝选中记录吗?" target="selectedTodo" rel="ids" href="/CallCenter/DoRefuseCustomerApproval" class="edit"><span>拒绝</span></a></li>
+			<li><a title="确定要删除这些记录吗?" target="selectedTodo" rel="ids" href="/CallCenter/DoDeleteCustomerApproval" class="delete"><span>删除</span></a></li>
+			<li class="line">line</li>
+			<li><a class="icon" href="/System/ExportBankCardInfo" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+		</ul>
+	</div>
+	<table class="table" layoutH="115">
+		<thead>
+			<tr>
+				<th width="22"><input type="checkbox" group="ids" class="checkboxCtrl"></th>
+                <th width="120" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection) class="desc">提交时间</th>
+				<th width="120">客户姓名</th>
+				<th width="100">原值</th>
+				<th width="100">新值</th>
+				<th width="80">状态</th>
+				<th width="120" @CommonUtil.SetSortOrder("created_by", ViewBag.OrderField, ViewBag.OrderDirection)>提交人</th>		
+                <th width="200">审批意见</th>		
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (ApprovalList != null)
+                {
+                    UserDomainModel user = null;
+                    foreach (CustomerInfoApprovalModel item in ApprovalList)
+                    {
+                        user = UserInfoService.Instance.GetUserDomainModelById(item.CreatedBy, false);
+                        Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(item.CustomerId, false);
+                        <tr target="sid_user" rel="@item.ApprovalId">
+                            <td><input name="ids" value="@item.ApprovalId" type="checkbox"></td>
+                            <td><a href="/CallCenter/CustomerInfoApproval?aid=@item.ApprovalId" target="dialog" maxable="false"rel="CallCenter_CustomerApprovalMgr" title="【@Customer.BasicInfo.CustomerName】客户信息审核" mask="true" fresh="true" width="580" height="400">@item.CreatedOn</a></td>
+                            <td><a href="/CallCenter/CustomerInfo?cid=@item.CustomerId" target="navTab" rel="@item.CustomerId" title="【@Customer.BasicInfo.CustomerName】客户信息" fresh="false">@(string.IsNullOrEmpty(Customer.BasicInfo.CustomerName) ? "未知" : Customer.BasicInfo.CustomerName)</a></td>
+                            <td>@CustomerLevel.ValueList[item.OldDataId].DataValue</td>
+                            <td>@CustomerLevel.ValueList[item.NewDataId].DataValue</td>
+                            <td>@((item.Status == 0) ? "待审批" : (((item.Status == 1)) ? "已拒绝" : "已通过"))</td>
+                            <td>@((user == null) ? "" :user.BasicInfo.CnName)</td>     
+                            <td title="@item.Description">@item.Description</td>                       
+                        </tr>
+                    }
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				<option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				<option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.ApprovalTotal 条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.ApprovalTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+
+	</div>
+</div>

@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CacheKeys>
+  <!--用户信息缓存-->
+  <!--用户信息领域模型-->
+  <CacheKey name="ibp_userdomain_info" value="ibp_userdomain_{0}_w_86400"></CacheKey>
+  <CacheKey name="ibp_user_login_name_key" value="ibp_user_loginname_key_{0}_w_86400"></CacheKey>
+  <CacheKey name="ibp_user_login_workid_key" value="ibp_user_loginworkid_key_{0}_w_86400"></CacheKey>
+
+  <!-- 用户角色权限DataTable -->
+  <CacheKey name="ibp_role_permissions" value="ibp_role_permissions_w_86400"></CacheKey>
+  
+  <!-- 用户组权限DataTable -->
+  <CacheKey name="ibp_usergroup_permissions" value="ibp_usergroup_permissions_w_86400"></CacheKey>
+  
+  <!-- 用户组信息字典 -->
+  <CacheKey name="ibp_usergroup_dict" value="ibp_usergroup_dict_w_86400"></CacheKey>
+
+  <!-- 用户组领域模型 -->
+  <CacheKey name="ibp_usergroup_domainmodel" value="ibp_usergroup_domainmodel_{0}_w_86400"></CacheKey>
+
+  <!-- 工单状态信息字典 -->
+  <CacheKey name="ibp_workorder_statusname_dict" value="ibp_workorder_statusname_dict_w_86400"></CacheKey>
+
+  <!-- 工单类型结构树 -->
+  <CacheKey name="ibp_workorder_type_tree" value="ibp_workorder_type_tree_w_86400"></CacheKey>
+  <CacheKey name="ibp_GroupInfo_dict" value="ibp_GroupInfo_dict_w_86400"></CacheKey>
+  
+
+  <!-- 工单结果信息字典 -->
+  <CacheKey name="ibp_workorder_resultname_dict" value="ibp_workorder_resultname_dict_w_86400"></CacheKey>
+
+  
+  <!-- 部门结构树 -->
+  <CacheKey name="ibp_chinainfo_model" value="ibp_chinainfo_model_{0}_w_864000"></CacheKey>
+
+  <!-- 部门结构树 -->
+  <CacheKey name="ibp_department_tree" value="ibp_department_tree_w_86400"></CacheKey>
+
+  <!-- 角色字典信息 -->
+  <CacheKey name="ibp_role_dict" value="ibp_role_dict_w_86400"></CacheKey>
+
+  <!-- 操作菜单结构树 -->
+  <CacheKey name="ibp_action_tree" value="ibp_action_tree_w_86400"></CacheKey>
+
+  <!-- 自定义枚举字典 -->
+  <CacheKey name="ibp_customdata_dict" value="ibp_customdata_dict_w_86400"></CacheKey>
+
+  <!-- 自定义枚举值字典 -->
+  <CacheKey name="ibp_customdata_info_byid" value="ibp_customdata_info_{0}_w_86400"></CacheKey>
+
+  <!-- 工单类型信息字典 -->
+  <CacheKey name="ibp_workorder_type_dict" value="ibp_workorder_type_dict_w_86400"></CacheKey>
+
+  <!-- 工单类型信息字典 -->
+  <CacheKey name="ibp_workorder_type_domainmodel" value="ibp_workorder_type_domainmodel_{0}_w_86400"></CacheKey>
+
+  <!-- 工单信息领域模型 -->
+  <CacheKey name="ibp_workorder_domainmodel" value="ibp_workorder_domainmodel_{0}_w_86400"></CacheKey>
+
+  <!-- 工单报表领域模型 -->
+  <CacheKey name="ibp_workorder_report_domainmodel" value="ibp_workorder_report_domainmodel_w_100"></CacheKey>
+
+  <!-- 产品类别信息字典 -->
+  <CacheKey name="ibp_product_category_dict" value="ibp_product_category_dict_w_86400"></CacheKey>
+
+  <!-- 产品类别销售状态字典 -->
+  <CacheKey name="ibp_product_category_salestatus_dict" value="ibp_product_category_salestatus_dict_{0}_w_86400"></CacheKey>
+
+  <!-- 产品类别属性字典 -->
+  <CacheKey name="ibp_product_category_attribute_dict" value="ibp_product_category_attribute_dict_{0}_w_86400"></CacheKey>
+
+  <!-- 产品信息领域模型 -->
+  <CacheKey name="ibp_product_domainmodel" value="ibp_product_domainmodel_{0}_w_86400"></CacheKey>
+
+   <!-- 产品信息领域模型 -->
+  <CacheKey name="ibp_salepackage_domainmodel" value="ibp_salepackage_domainmodel_{0}_w_86400"></CacheKey>
+
+  <!-- 产品信息领域模型 -->
+  <CacheKey name="ibp_customer_domainmodel" value="ibp_customer_domainmodel_{0}_w_86400"></CacheKey>
+
+  <!-- 产品品类分组字典 -->
+  <CacheKey name="ibp_product_categorygroup_dict" value="ibp_product_categorygroup_dict_w_86400"></CacheKey>
+
+  <!-- 客户信息属性字典 -->
+  <CacheKey name="ibp_customer_attribute_dict" value="ibp_customer_attribute_dict_{0}_w_86400"></CacheKey>
+  <CacheKey name="ibp_customer_GroupInfo_dict" value="ibp_customer_GroupInfo_dict_{0}_w_86400"></CacheKey>
+  
+
+  <!-- 归属地信息模型 -->
+  <CacheKey name="ibp_location_model" value="ibp_location_model_{0}_w_86400"></CacheKey>
+
+  <!-- 订单信息领域模型 -->
+  <CacheKey name="ibp_salesorder_domainmodel" value="ibp_salesorder_domainmodel_{0}_w_86400"></CacheKey>
+  <!-- 订单数量 -->
+  <CacheKey name="ibp_salesorder_total" value="ibp_salesorder_total_w_86400"></CacheKey>
+  <!-- 扣款POS机数据模型 -->
+  <CacheKey name="ibp_posmachine_info" value="ibp_posmachine_info_{0}_w_86400"></CacheKey>
+
+  <!-- 扣款POS机字典 -->
+  <CacheKey name="ibp_posmachine_dict" value="ibp_posmachine_dict_w_86400"></CacheKey>
+
+
+
+  <!--用户信息缓存-->
+    <CacheKey name="trw_user_info" value="trw_user_info_w_86400"></CacheKey>
+    <!--角色信息缓存-->
+    <CacheKey name="trw_role_info" value="trw_role_info_w_86400"></CacheKey>
+
+
+    <!--RoleAction信息表-->
+    <CacheKey name="trw_role_action_info" value="trw_role_action_info_w_86400"></CacheKey>
+    <!--省份信息-->
+    <CacheKey name="trw_china_province_info" value="trw_china_province_info_w_86400"></CacheKey>
+    <!--模块信息-->
+    <CacheKey name="trw_module_info_info" value="trw_module_info_info_w_86400"></CacheKey>
+    <!--产品型号信息-->
+    <CacheKey name="trw_product_type_info" value="trw_product_type_info_w_86400"></CacheKey>
+
+  <!--订单类型信息-->
+  <CacheKey name="ibp_salesorder_type_info" value="ibp_salesorder_type_info_w_86400"></CacheKey>
+
+  <!--订单状态类型信息-->
+  <CacheKey name="ibp_salesorder_type_status_info" value="ibp_salesorder_type_status_info_w_86400"></CacheKey>
+  
+</CacheKeys>

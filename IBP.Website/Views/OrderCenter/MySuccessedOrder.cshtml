@@ -1,0 +1,134 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    CustomerDomainModel Customer = null;
+    UserDomainModel User = null;
+    List<string> SalesorderIdList = ViewBag.SalesorderIdList as List<string>;
+    SalesOrderDomainModel SalesorderDomainModel = null;
+    Dictionary<string, QueryItemDomainModel> QueryCollection = ViewBag.QueryCollection as Dictionary<string, QueryItemDomainModel>;
+    CustomDataDomainModel CustomerComeFrom = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("订单来源", false);
+    Dictionary<string, ProductCategoryGroupInfoModel> categoryGroupList = ProductCategoryGroupInfoService.Instance.GetProductCategoryGroupList(false);
+}
+
+
+<form id="pagerForm" method="post" action="/OrderCenter/MySuccessedOrder">
+<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+<input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+
+<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/OrderCenter/MySuccessedOrder" method="post">
+<div id="waitchargeorderBox" class="pageHeader">
+    <div class="searchBar">
+  <div class="searbg">
+            <dl>
+            <dd>订单来源：</dd>
+            <dt><select name="salesFrom">
+                    <option value="All">所有来源</option>
+                    @{
+                        if (CustomerComeFrom != null && CustomerComeFrom.ValueList != null)
+                        {
+                            foreach (CustomDataValueDomainModel item in CustomerComeFrom.ValueList.Values)
+                            {
+                                if(item.Status == 1)
+                                {
+                                    continue;
+                                }
+                                @:<option value="@item.ValueId" @CommonUtil.SetComboxSelected(item.ValueId, (QueryCollection.ContainsKey("order_source")) ? QueryCollection["order_source"].SearchValue : "")) >@item.DataValue</option>
+                            }
+                        }
+                    }
+               </select>
+               </dt>
+               </dl>
+                <dl><dd>客户姓名：</dd><dt><input type="text" name="customerName" value="@(QueryCollection.ContainsKey("customer_basic_info.customer_name") ? QueryCollection["customer_basic_info.customer_name"].SearchValue : "")"/></dt></dl> 
+                <dl><dd>创建人：</dd><dt><input type="text" name="createdUserName" value="@(QueryCollection.ContainsKey("created_user_info.work_id") ? QueryCollection["created_user_info.work_id"].SearchValue.Replace("WORKID_", "") : "")" /></dt></dl>            
+                <dl><dd>来电号码：</dd><dt><input type="text" name="incomePhoneNumber"value="@(QueryCollection.ContainsKey("salesorder_communiationpackage_info.bind_subsidiary_phonenumber") ? QueryCollection["salesorder_communiationpackage_info.bind_subsidiary_phonenumber"].SearchValue : "")" /></dt></dl>               
+                <dl><dd>产品名称：</dd><dt><input type="text" name="product_name"value="@(QueryCollection.ContainsKey("product_name") ? QueryCollection["product_name"].SearchValue : "")" /></dt></dl>
+              
+             <div class="searbgcha"> <div class="buttonActive"><div class="buttonContent"><button name="querysubmit" type="submit">查询</button></div></div></div>
+            </div>
+        </div>
+    </div>
+
+</form>
+<div class="pageContent">
+    <div class="panelBar">
+        <ul class="toolBar">
+            <li class="line">line</li>
+           	<li><a class="icon" href="/System/ExportBankCardInfo" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+        </ul>
+    </div>
+    <table class="table"  layouth="115" width="100%">
+        <thead>
+            <tr>
+            
+                <th width="100" @CommonUtil.SetSortOrder("salesorder_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    订单编号
+                </th>
+                <th >
+                    订单来源
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("customer_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    客户姓名
+                </th>
+                
+                 <th  >
+                   项目名称
+                </th>
+                 <th width="100" >
+                   订单备注
+                </th>
+                <th width="80" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    创建时间
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("created_by", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    创建人
+                </th>         
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                UserDomainModel userDomainModel = null;
+                if (SalesorderIdList != null)
+                {
+                    foreach (string salesOrderId in SalesorderIdList)
+                    {
+                        SalesorderDomainModel = SalesOrderInfoService.Instance.GetSalesorderDomainModelById(salesOrderId, false);
+                        Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(SalesorderDomainModel.BasicInfo.CustomerId, false);
+                        User = (SalesorderDomainModel.BasicInfo.CreatedBy == null) ? null : UserInfoService.Instance.GetUserDomainModelById(SalesorderDomainModel.BasicInfo.CreatedBy, false);
+                         @:<tr target="sid_user" rel="@salesOrderId">
+
+                         @:<td><a href="/OrderCenter/SalesOrderDetail?sid=@salesOrderId" target="navTab" rel="@salesOrderId" title="【@Customer.BasicInfo.CustomerName】销售订单信息" fresh="false">@SalesorderDomainModel.SalesorderCode</a></td>
+                         @:<td>@(CustomerComeFrom.GetCustomDataValueByValueId(Customer.BasicInfo.SalesFrom))</td>
+                         @:<td>@((Customer.BasicInfo.CustomerName == null) ? "" : Customer.BasicInfo.CustomerName)</td>
+                          @:<td>@SalesOrderInfoService.Instance.GetSalesorderProductNameList(SalesorderDomainModel)</td>
+                
+                        @:<td>@SalesorderDomainModel.BasicInfo.Remark</td>
+                      
+                         @:<td>@SalesorderDomainModel.BasicInfo.CreatedOn</td>
+                            @:<td>@((User == null) ? "" : User.BasicInfo.CnName)</td>
+                      @:</tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+    <div class="panelBar">
+        <div class="pages">
+            <span>显示</span>
+            <select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+                <option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+                <option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+                <option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+                <option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+            </select>
+            <span>条，共 @ViewBag.SalesorderTotal 条</span>
+        </div>
+        <div class="pagination" targetType="navTab" totalCount="@ViewBag.SalesorderTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,171 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@using IBP.Common;
+@{
+    Layout = "";
+    string salesOrderId = Request.QueryString["sid"];
+    string pagename = Request.QueryString["page"];
+
+
+    SalesOrderDomainModel SalesorModel = SalesOrderInfoService.Instance.GetSalesorderDomainModelById(salesOrderId, false);
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(SalesorModel.BasicInfo.CustomerId, false);
+
+    CustomDataDomainModel Paycardbank = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel Openexception = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡异常类型", false);
+    CustomDataDomainModel IdTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("证件类型", false);
+
+}
+<div class="pageContent">
+    <form method="post" action="/OrderCenter/DoSalesOrderOpening" class="pageForm required-validate"
+    onsubmit="return validateCallback(this, dialogAjaxDone)">
+    <input type="hidden" name="orderId" value="@salesOrderId" />
+    <input type="hidden" name="page" value="@pagename" />
+    <div class="pageFormContent" layouth="58">
+        <div class="information02">
+            <h2>
+                销售订单【@SalesorModel.SalesorderCode】开户确认操作</h2>
+            <div class="New_box02">
+                <dl>
+                    <span>
+                        <dd>
+                            客户姓名：</dd>
+                        <dt>
+                            <input  type="text" name="CustomerName"readonly="readonly" class="customPhone" value="@Customer.BasicInfo.CustomerName"   /></dt>
+                    </span>
+                    <span>
+                        <dd>
+                            所选号码：</dd>
+                        <dt>
+                            @{
+                                if (SalesorModel.CommuniationPackageList != null)
+                                {
+                                    foreach (SalesorderCommuniationpackageInfoModel communiationPackageInfo in SalesorModel.CommuniationPackageList.Values)
+                                    {
+
+                                <input type="text" name="bindMainPhonenumber"readonly="readonly" class="customPhone" value="@((communiationPackageInfo == null) ? "" : communiationPackageInfo.BindMainPhonenumber)"  />
+
+                                    }
+                                }
+
+                            }</dt>
+                    </span>
+                    <span>
+                    <dd>
+                        托收银行：</dd>
+                    <dt>
+                        @{
+                            if (SalesorModel.CommuniationPackageList != null)
+                            {
+                                foreach (SalesorderCommuniationpackageInfoModel communiationPackageInfo in SalesorModel.CommuniationPackageList.Values)
+                                {
+
+                                    string BankCardType = Paycardbank.GetCustomDataValueByValueId(communiationPackageInfo.CollectionBankId);
+                            <input type="text" name="productName"readonly="readonly" class="customPhone"  value="@BankCardType "   />    
+                                }
+                            }
+
+                        }</dt>
+                    </span> 
+                </dl>
+                <dl>
+                    <span style="width: 350px;">
+                        <dd>
+                            托收账号：</dd>
+                        <dt style="width: 250px;">
+                            @{
+                                if (SalesorModel.CommuniationPackageList != null)
+                                {
+                                    foreach (SalesorderCommuniationpackageInfoModel communiationPackageInfo in SalesorModel.CommuniationPackageList.Values)
+                                    {                        
+                                <div class="New_box02_color">@((communiationPackageInfo == null) ? "" : communiationPackageInfo.CollectionCardNumber)</div>   
+                                    }
+                                }
+
+                            }</dt>
+                    </span>
+                    <span>
+                        <dd>
+                            证件类型：</dd>
+                        <dt>
+                            <input type="text" name=" PayIdcardType"readonly="readonly" class="customPhone" value="@IdTypeList.GetCustomDataValueByValueId(SalesorModel.BasicInfo.PayIdcardTypeId)"   /></dt>
+                    </span>
+                </dl>
+                <dl>
+                    <span style="width: 350px;">
+                        <dd>
+                            证件号：</dd>
+                        <dt style="width: 250px;">
+                            <div class="New_box02_color">@CommonUtil.CreditCard(SalesorModel.BasicInfo.PayIdcardNumber)</div>
+                        </dt>
+                    </span>
+                </dl>
+                <dl style="height: 75px;">
+                    <dd>
+                        产品列表：</dd>
+                    <dt>
+                        <textarea readonly="readonly" cols="50" rows="3" style="width: 518px;">@SalesOrderInfoService.Instance.GetSalesorderProductNameList(SalesorModel)</textarea>
+                    </dt>
+                </dl>
+                <dl style="height: 75px;">
+                    <dd>
+                        地址：</dd>
+                    <dt>
+                        <textarea name="DeliveryAddress" cols="50" readonly="readonly" rows="3" style="width: 518px;">@SalesorModel.BasicInfo.DeliveryAddress</textarea></dt>
+                </dl>
+                <dl>
+                    <dd>
+                        开户操作：</dd>
+                    <p>
+                        <input type="radio" value="0" checked name="opType" custjs="exceptionMgr" />开户成功
+                        <input type="radio" value="1" name="opType" custjs="exceptionMgr" />开户异常</p>
+                </dl>
+                <div id="Divexception" class="hideClass">
+                    <dl>
+                        <dd>
+                            异常原因：</dd>
+                        <dt>
+                            <select name="exceptionType">
+                                <option value="">请选择</option>
+                                @{
+                                    if (Openexception != null && Openexception.ValueList.Count > 0)
+                                    {
+                                        foreach (CustomDataValueDomainModel item in Openexception.ValueList.Values)
+                                        {
+                                    @:<option value="@item.ValueId">@item.DataValue</option>
+                            }
+                                    }
+                                }
+                            </select>
+                        </dt>
+                    </dl>
+                    <dl style="height: 75px;">
+                        <dd>
+                            备注：</dd>
+                        <dt>
+                            <textarea name="opExceptionDesc" cols="50" rows="3" style="width: 518px;"></textarea>
+                        </dt>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="formBar">
+        <ul>
+            <li>
+                <div class="buttonActive">
+                    <div class="buttonContent">
+                        <button type="submit">
+                            提交</button></div>
+                </div>
+            </li>
+            <li>
+                <div class="button">
+                    <div class="buttonContent">
+                        <button type="button" class="close">
+                            取消</button></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    </form>
+</div>

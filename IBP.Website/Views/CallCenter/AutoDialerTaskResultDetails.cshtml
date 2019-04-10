@@ -1,0 +1,90 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    Layout = "";
+    string taskId = Request.QueryString["aid"];
+    AutoDialerTaskInfoModel taskInfo = (taskId == null) ? null : AutoDialerTaskInfoService.Instance.Retrieve(taskId);
+    AutoDialerTaskResultDomainModel details = (taskId == null) ? null : AutoDialerTaskInfoService.Instance.GetAutoDialerTaskResult(taskId);
+}
+<div class="pageHeader" style="border:1px #B8D0D6 solid">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>
+				<td>
+                     @{
+                         if (taskInfo == null)
+                        {
+                            @:请从左侧列表中选择一个自动外呼任务
+                        }
+                        else
+                        {
+                            @:【@taskInfo.AutoDialerTaskName】 - 执行情况统计信息
+                        }
+                    }
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div class="pageContent" style="border-left:1px #B8D0D6 solid;border-right:1px #B8D0D6 solid">
+    <table class="table" width="99%" layoutH="66">
+        <thead>
+			<tr>
+				<th width="160">项目</th>
+				<th>描述</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (details != null)
+                {
+                    @:<tr>
+                    @:      <td style="background-color:#efefef;">计划外呼号码条目总数：</td><td colspan="2">@details.PlanningNumberTotal</td>
+                    @:</tr>
+                    @:<tr>
+                    @:      <td style="background-color:#efefef;">当前已发起外呼总次数：</td><td colspan="2">@details.OutDialerNumberTotal</td>
+                    @:</tr>
+                    @:<tr>
+                    @:    <td style="background-color:#efefef;">当前剩余外呼号码总数：</td><td colspan="2">@details.IVRSurplusNumberTotal</td>
+                    @:</tr>
+                    @:<tr><td colspan="3"></td></tr>
+                    @:<tr>
+                    @:    <td style="background-color:#efefff;" colspan="3">有效数据状态统计</td>
+                    @:</tr>     
+                    int counter = 0;
+                    foreach(KeyValuePair<string, string> item in details.ReturnCodeList)
+                    {
+                        @:<tr>
+                        @:    <td style="background-color:#efefef; padding-left:40px;">@item.Key</td><td colspan="2">@item.Value</td>
+                        @:</tr>
+                        counter += Convert.ToInt32(item.Value);
+                    }
+                    @:<tr>
+                    @:    <td style="background-color:#efefff; padding-left:40px;">合计</td><td style="background-color:#efefff;" colspan="2">@counter</td>
+                    @:</tr>
+
+                    @:<tr><td colspan="3"></td></tr>
+                    @:<tr>
+                    @:    <td style="background-color:#efefff;" colspan="3">已发起外呼状态统计</td>
+                    @:</tr>  
+                     counter = 0;
+                    foreach (KeyValuePair<string, string> item in details.OutDialerStatusList)
+                    {
+                        @:<tr>
+                        @:    <td style="background-color:#efefef; padding-left:40px;">@item.Key</td><td colspan="2">@item.Value</td>
+                        @:</tr>
+                        counter += Convert.ToInt32(item.Value);
+                    } 
+                    @:<tr>
+                    @:    <td style="background-color:#efefff; padding-left:40px;">合计</td><td style="background-color:#efefff;" colspan="2">@counter</td>
+                    @:</tr>
+  
+                }
+            }
+            </tbody>
+	</table>
+	<div class="panelBar"></div>
+</div>

@@ -1,0 +1,47 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string roleId = (Request.QueryString["rid"] == null) ? "" : Request.QueryString["rid"].ToString();
+    List<UserInfoModel> unDefineUserList = RoleInfoService.Instance.GetUnDefineRoleUserList();
+}
+
+<div  id="premissionbox2" class="pageContent">
+	
+	<form method="post" action="/UserMgr/DoAddRoleUserList" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+            <input type="hidden" id="hidSelectedRoleUser" name="selectedRoleUser" value="" />
+            <input type="hidden" id="hidRoleId" name="roleId" value="@roleId" />
+            <div class="choose_box">
+              <div class="choose_box_left">
+                 <select id="ddlUnDefineUserList" multiple="multiple" style="height:300px;width:100%">
+                        @{
+                            if(unDefineUserList != null && unDefineUserList.Count > 0)
+                            {
+                                foreach(UserInfoModel user in unDefineUserList)
+                                {
+                                    @:<option value="@user.UserId">【@user.WorkId.Replace("WORKID_","")】@user.CnName (@user.EnName)</option>
+                                }
+                            }
+                        }
+                  </select>
+              </div>
+              <div class="choose_box_middle">
+               <span><a custjs="rolepremission" id="moveAllRight_p" class="button"><span>选择</span></a></span> <br />
+                <span><a custjs="rolepremission" id="moveAllLeft_p" class="button"><span>移除</span></a></span>
+              </div>
+              <div class="choose_box_right"> 
+                 <select id="ddlRoleUserSelected" multiple="multiple" style="height:300px;width:100%"></select>
+              </div>
+            </div>
+            			
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

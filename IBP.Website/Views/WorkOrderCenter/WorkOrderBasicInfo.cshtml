@@ -1,0 +1,73 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+    WorkOrderDomainModel WorkOrder = ViewBag.WorkOrder as WorkOrderDomainModel;
+    Dictionary<string, WorkorderTypeInfoModel> TypeList = ViewBag.TypeList as Dictionary<string, WorkorderTypeInfoModel>;
+    CustomDataDomainModel OrderLevel = ViewBag.OrderLevel as CustomDataDomainModel;
+    Dictionary<string, string> WorkOrderStatusDict = ViewBag.WorkOrderStatusDict as Dictionary<string, string>;
+    Dictionary<string, string> WorkOrderResultDict = ViewBag.WorkOrderResultDict as Dictionary<string, string>;
+    UserDomainModel User = null;
+}
+
+<div class="New_box03">
+   <dl>
+        <span>
+            <dd>工单编号：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@WorkOrder.BasicInfo.WorkorderCode"/></dt>
+        </span>
+        <span>
+            <dd>工单类型：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@(TypeList[WorkOrder.BasicInfo.WorkorderType.ToUpper()].TypeName)"/></dt>
+        </span>
+        <span>
+            <dd>工单级别：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@(OrderLevel.ValueList[WorkOrder.BasicInfo.Level].DataValue)"/></dt>
+        </span>
+        <span>
+            <dd>当前流转状态：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@((WorkOrder.BasicInfo.NowStatusId == null) ? "" : ((WorkOrderStatusDict.ContainsKey(WorkOrder.BasicInfo.NowStatusId) ? WorkOrderStatusDict[WorkOrder.BasicInfo.NowStatusId] : "")))"/></dt>
+        </span>
+        <span>
+            <dd>当前处理结果：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@((WorkOrder.BasicInfo.NowResultId == null) ? "" : (WorkOrderResultDict.ContainsKey(WorkOrder.BasicInfo.NowResultId) ? WorkOrderResultDict[WorkOrder.BasicInfo.NowResultId] : ""))"/></dt>
+        </span>
+        <span>
+            <dd>创建时间：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@WorkOrder.BasicInfo.CreatedOn"/></dt>
+        </span>
+        @{User = (WorkOrder.BasicInfo.CreatedBy == null) ? null : UserInfoService.Instance.GetUserDomainModelById(WorkOrder.BasicInfo.CreatedBy, false);}
+        <span>
+            <dd>创建人：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@((User == null) ? "" : "【" + User.WorkId + "】" + User.BasicInfo.CnName)"/></dt>
+        </span>
+        <span>
+            <dd>开始处理时间：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@WorkOrder.BasicInfo.FirstProcessTime"/></dt>
+        </span>
+        <span>
+            <dd>关闭时间：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@WorkOrder.BasicInfo.ClosedTime"/></dt>
+        </span>
+        @{User = (WorkOrder.BasicInfo.ClosedUser == null) ? null : UserInfoService.Instance.GetUserDomainModelById(WorkOrder.BasicInfo.ClosedUser, false);}
+        <span>
+            <dd>关闭人：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@((User == null) ? "" : "【" + User.WorkId + "】" + User.BasicInfo.CnName)"/></dt>
+        </span>
+        <span>
+            <dd>预约时间：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@WorkOrder.BasicInfo.AdvanceTime"/></dt>
+        </span>
+        <span>
+            <dd>过期时间：</dd>
+            <dt><input class="text" readonly="readonly" type="text" size="12" value="@WorkOrder.BasicInfo.ExpiredTime"/></dt>
+        </span>
+    </dl>
+    <dl style="height:50px;">
+        <dd>工单描述：</dd>
+        <dt><p><textarea class="text" readonly="readonly" style="height:30px;" size="12">@WorkOrder.BasicInfo.Description</textarea></p></dt>
+    </dl>
+    </div>

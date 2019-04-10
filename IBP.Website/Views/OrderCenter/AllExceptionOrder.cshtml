@@ -1,0 +1,303 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    CustomerDomainModel Customer = null;
+    UserDomainModel User = null;
+    List<string> SalesorderIdList = ViewBag.SalesorderIdList as List<string>;
+    SalesOrderDomainModel SalesorderDomainModel = null;
+    CustomDataDomainModel IdTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("证件类型", false);
+    CustomDataDomainModel BankTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel CompanyTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("配送公司", false);
+    CustomDataDomainModel Paycardbank = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    Dictionary<string, QueryItemDomainModel> QueryCollection = ViewBag.QueryCollection as Dictionary<string, QueryItemDomainModel>;
+    CustomDataDomainModel CustomerComeFrom = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("订单来源", false);
+
+
+}
+
+
+<form id="pagerForm" method="post" action="/OrderCenter/AllExceptionOrder">
+<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+<input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+
+<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/OrderCenter/AllExceptionOrder" method="post">
+<div id="waitchargeorderBox" class="pageHeader">
+    <div class="searchBar">
+       <div class="searbg">
+            <dl style="width:180px;">
+            <dd>订单来源：</dd>
+            <dt><select name="salesFrom">
+                    <option value="All">所有来源</option>
+                    @{
+                        if (CustomerComeFrom != null && CustomerComeFrom.ValueList != null)
+                        {
+                            foreach (CustomDataValueDomainModel item in CustomerComeFrom.ValueList.Values)
+                            {
+                                if(item.Status == 1)
+                                {
+                                    continue;
+                                }
+                                @:<option value="@item.ValueId" @CommonUtil.SetComboxSelected(item.ValueId, (QueryCollection.ContainsKey("order_source")) ? QueryCollection["order_source"].SearchValue : "")) >@item.DataValue</option>
+                            }
+                        }
+                    }
+               </select>
+               </dt>
+               </dl>
+              <dl>
+            <dd>异常原因：</dd>
+            <dt><select name="exception">
+                    <option value="">所有异常</option>
+                    <option value="3" @CommonUtil.SetComboxSelected("3", ViewBag.exception) >质检异常</option>
+                    <option value="2" @CommonUtil.SetComboxSelected(2,ViewBag.exception)>扣款异常</option>
+                    <option value="4" @CommonUtil.SetComboxSelected(4,ViewBag.exception)>审批异常</option>
+                     <option value="5" @CommonUtil.SetComboxSelected(5,ViewBag.exception)>开户异常</option>
+                    <option value="6" @CommonUtil.SetComboxSelected(6,ViewBag.exception)>备货异常</option>
+                    <option value="7" @CommonUtil.SetComboxSelected(7,ViewBag.exception)>发货异常</option>
+                    <option value="8" @CommonUtil.SetComboxSelected(8,ViewBag.exception)>签收异常</option>
+                    <option value="9" @CommonUtil.SetComboxSelected(9,ViewBag.exception)>回收异常</option>
+                    <option value="12"@CommonUtil.SetComboxSelected(12,ViewBag.exception)>退款异常</option>
+                    <option value="13"@CommonUtil.SetComboxSelected(13,ViewBag.exception)>退货异常</option>
+                    <option value="14"@CommonUtil.SetComboxSelected(14,ViewBag.exception)>销户异常</option>   
+               </select>
+               </dt>
+               </dl>
+                <dl><dd>客户姓名：</dd><dt><input type="text" name="customerName" value="@(QueryCollection.ContainsKey("customer_basic_info.customer_name") ? QueryCollection["customer_basic_info.customer_name"].SearchValue : "")"/></dt></dl> 
+                <dl><dd>创建人：</dd><dt><input type="text" name="createdUserName" value="@(QueryCollection.ContainsKey("created_user_info.work_id") ? QueryCollection["created_user_info.work_id"].SearchValue.Replace("WORKID_", "") : "")" /></dt></dl>            
+                <dl><dd>来电号码：</dd><dt><input type="text" name="incomePhoneNumber"value="@(QueryCollection.ContainsKey("salesorder_communiationpackage_info.bind_subsidiary_phonenumber") ? QueryCollection["salesorder_communiationpackage_info.bind_subsidiary_phonenumber"].SearchValue : "")" /></dt></dl>               
+                <dl><dd>产品名称：</dd><dt><input type="text" name="product_name"value="@(QueryCollection.ContainsKey("product_name") ? QueryCollection["product_name"].SearchValue : "")" /></dt></dl>
+                <div class="searbgcha"> <div class="buttonActive"><div class="buttonContent"><button name="querysubmit" type="submit">查询</button></div></div></div>
+                </div>
+        </div>
+    </div>
+
+</form>
+<div class="pageContent">
+    <div class="panelBar">
+        <ul class="toolBar">
+            <li class="line">line</li>
+           	<li><a class="icon" href="/System/ExportBankCardInfo" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+        </ul>
+    </div>
+   <table class="table"  layouth="115" width="2400">
+        <thead>
+            <tr>
+                <th width="100" @CommonUtil.SetSortOrder("salesorder_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    订单编号
+                </th>
+                <th width="80" @CommonUtil.SetSortOrder("customer_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    客户姓名
+                </th>
+                <th width="80" @CommonUtil.SetSortOrder("pay_idcard_type_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    证件类型
+                </th>
+                <th width="80" @CommonUtil.SetSortOrder("pay_price", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    扣款金额
+                </th>
+                <th width="80" @CommonUtil.SetSortOrder("pay_type", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    支付方式
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("created_by", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    创建人
+                </th>
+                <th width="80" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    创建时间
+                </th>
+                     <th width="100" @CommonUtil.SetSortOrder("approval_time", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    审批时间
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("remark", ViewBag.OrderField, ViewBag.OrderDirection)>
+                    订单备注
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("pay_idcard_number", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   证件号码
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("pay_idcard_number", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   机主姓名
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("bind_main_phonenumber", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   绑定主号码
+                </th>
+                  <th width="100" @CommonUtil.SetSortOrder("bind_subsidiary_phonenumber", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   绑定副号码
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("collection_customer_name", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   托收户名
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("collection_card_number", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   托收账号
+                </th>
+                  <th width="100" @CommonUtil.SetSortOrder("collection_card_number", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   托收银行
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("delivery_receive_customer_name", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   收货人
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("delivery_receive_phonenumber", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   收货人电话
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("delivery_address", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   配送地址
+                </th>
+                  <th width="100" @CommonUtil.SetSortOrder("delivery_address", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   是否要发票
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("sign_time", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   签收时间
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("sex", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   性别
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("recover_time", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   资料回收时间
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("delivery_order_code", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   配送单号
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("charge_time", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   扣款时间
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("charge_user_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   扣款人
+                </th>
+                 <th width="100" @CommonUtil.SetSortOrder("now_order_status_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   订单状态
+                </th>
+                <th width="100" @CommonUtil.SetSortOrder("delivery_receive_customer_name", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   收货人
+                </th>
+                   <th width="100" @CommonUtil.SetSortOrder("delivery_company_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   物流公司
+                </th>
+                   <th width="100" @CommonUtil.SetSortOrder("cancel_time", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   撤销时间
+                </th>
+                  <th width="100" @CommonUtil.SetSortOrder("pay_card_bank_id", ViewBag.OrderField, ViewBag.OrderDirection)>
+                   开户行
+                </th>
+                   
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                UserDomainModel userDomainModel = null;
+                if (SalesorderIdList != null)
+                {
+                    foreach (string salesOrderId in SalesorderIdList)
+                    {
+                        SalesorderDomainModel = SalesOrderInfoService.Instance.GetSalesorderDomainModelById(salesOrderId, false);
+                        Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(SalesorderDomainModel.BasicInfo.CustomerId, false);
+                        User = (SalesorderDomainModel.BasicInfo.CreatedBy == null) ? null : UserInfoService.Instance.GetUserDomainModelById(SalesorderDomainModel.BasicInfo.CreatedBy, false);
+                        userDomainModel = (SalesorderDomainModel.BasicInfo.ChargeUserId == null) ? null : UserInfoService.Instance.GetUserDomainModelById(SalesorderDomainModel.BasicInfo.ChargeUserId, false);
+                        //SalesPackageBasicInfo=SalesPackageInfoService.Instance.GetSalePackageDomainModelById("",false);
+                         @:<tr target="sid_user" rel="@salesOrderId">
+
+                         @:<td><a href="/OrderCenter/SalesOrderDetail?sid=@salesOrderId" target="navTab" rel="@salesOrderId" title="【@Customer.BasicInfo.CustomerName】销售订单信息" fresh="false">@SalesorderDomainModel.SalesorderCode</a></td>
+                         @:<td>@((Customer.BasicInfo.CustomerName == null) ? "" : Customer.BasicInfo.CustomerName)</td>
+                         @:<td>@((SalesorderDomainModel.BasicInfo.PayIdcardTypeId == null) ? "" : (IdTypeList.ValueList.ContainsKey(SalesorderDomainModel.BasicInfo.PayIdcardTypeId) ? IdTypeList.ValueList[SalesorderDomainModel.BasicInfo.PayIdcardTypeId].DataValue : ""))</td>
+
+                         @:<td> @SalesorderDomainModel.BasicInfo.PayPrice</td>
+                         @:<td> @SalesorderDomainModel.OrderPaytypeName</td>
+                         @:<td>@((User == null) ? "" : User.BasicInfo.CnName)</td>
+                         @:<td>@SalesorderDomainModel.BasicInfo.CreatedOn</td>
+                         @:<td>@SalesorderDomainModel.BasicInfo.ApprovalTime</td>
+                         @:<td>@SalesorderDomainModel.BasicInfo.Remark</td>
+                         @:<td>@CommonUtil.MarkIdCard(SalesorderDomainModel.BasicInfo.PayIdcardNumber)</td>
+                          @:<td>
+                                 if (SalesorderDomainModel.CommuniationPackageList != null)
+                                 {
+                                     foreach (SalesorderCommuniationpackageInfoModel Communiationpackage in SalesorderDomainModel.CommuniationPackageList.Values)
+                                     {
+                                         @(Communiationpackage.OwnerCustomerName)
+                                     }
+                                 }
+                          @: </td>
+                          @:<td>
+                                 if (SalesorderDomainModel.CommuniationPackageList != null)
+                                 {
+                                     foreach (SalesorderCommuniationpackageInfoModel Communiationpackage in SalesorderDomainModel.CommuniationPackageList.Values)
+                                     {
+                                         @(Communiationpackage.BindMainPhonenumber )
+                                     }
+                                 }
+                          @: </td>
+                          @:<td>
+                                 if (SalesorderDomainModel.CommuniationPackageList != null)
+                                 {
+                                     foreach (SalesorderCommuniationpackageInfoModel Communiationpackage in SalesorderDomainModel.CommuniationPackageList.Values)
+                                     {
+                                         @(Communiationpackage.BindSubsidiaryPhonenumber )
+                                     }
+                                 }
+                          @: </td>
+                          @:<td>
+                                 if (SalesorderDomainModel.CommuniationPackageList != null)
+                                 {
+                                     foreach (SalesorderCommuniationpackageInfoModel Communiationpackage in SalesorderDomainModel.CommuniationPackageList.Values)
+                                     {
+                                         @(Communiationpackage.CollectionCustomerName)
+                                     }
+                                 }
+                          @: </td>
+                          @:<td>
+                                 if (SalesorderDomainModel.CommuniationPackageList != null)
+                                 {
+                                     foreach (SalesorderCommuniationpackageInfoModel Communiationpackage in SalesorderDomainModel.CommuniationPackageList.Values)
+                                     {
+                                         @(CommonUtil.MarkCreditCard(Communiationpackage.CollectionCardNumber) )
+                                     }
+                                 }
+                          @: </td>
+                          @:<td>
+                                 if (SalesorderDomainModel.CommuniationPackageList != null)
+                                 {
+                                     foreach (SalesorderCommuniationpackageInfoModel Communiationpackage in SalesorderDomainModel.CommuniationPackageList.Values)
+                                     {
+
+                                         string BankCardType = Paycardbank.GetCustomDataValueByValueId(Communiationpackage.CollectionBankId);
+                                         @BankCardType                                         
+                                     }
+                                 }
+                          @: </td>
+                                                                        
+                          @:<td>@SalesorderDomainModel.BasicInfo.DeliveryReceiveCustomerName</td>                        
+                          @:<td>@SalesorderDomainModel.BasicInfo.DeliveryReceivePhonenumber</td>
+                          @:<td>@SalesorderDomainModel.BasicInfo.DeliveryAddress</td> 
+                          @:<td>@((SalesorderDomainModel.BasicInfo.NeedInvoice == 0) ? "是" : "否")</td>
+                          @:<td>@SalesorderDomainModel.BasicInfo.SignTime</td>
+                          @:<td>@((Customer.BasicInfo.Sex == 0) ? "男" : (Customer.BasicInfo.Sex == 1) ? "女" : "未知")</td>
+                          @:<td>@SalesorderDomainModel.BasicInfo.RecoverTime</td>
+                          @:<td>@SalesorderDomainModel.BasicInfo.DeliveryOrderCode</td>
+                          @:<td>@SalesorderDomainModel.BasicInfo.ChargeTime</td>
+                         @:<td>@((userDomainModel == null) ? "" : userDomainModel.BasicInfo.CnName)</td>
+                         @:<td>@SalesorderDomainModel.OrderStatusName</td>
+                         @:<td>@SalesorderDomainModel.BasicInfo.DeliveryReceiveCustomerName</td>
+                         @:<td> @((SalesorderDomainModel.BasicInfo.DeliveryCompanyId == null) ? "" : (CompanyTypeList.ValueList.ContainsKey(SalesorderDomainModel.BasicInfo.DeliveryCompanyId) ? CompanyTypeList.ValueList[SalesorderDomainModel.BasicInfo.DeliveryCompanyId].DataValue : "")) </td>
+                         @:<td>@SalesorderDomainModel.BasicInfo.CancelTime</td> 
+                         @:<td> @((SalesorderDomainModel.BasicInfo.PayCardBankId == null) ? "" : (Paycardbank.ValueList.ContainsKey(SalesorderDomainModel.BasicInfo.PayCardBankId) ? Paycardbank.ValueList[SalesorderDomainModel.BasicInfo.PayCardBankId].DataValue : "")) </td> 
+                      @:</tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+    <div class="panelBar">
+        <div class="pages">
+            <span>显示</span>
+            <select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+                <option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+                <option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+                <option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+                <option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+            </select>
+            <span>条，共 @ViewBag.SalesorderTotal 条</span>
+        </div>
+        <div class="pagination" targetType="navTab" totalCount="@ViewBag.SalesorderTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+    CustomDataDomainModel CardTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel IdTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("证件类型", false);
+}
+
+<table class="table"  layoutH="295" minH="295" width="100%">
+	<thead>
+		<tr>
+            <th width="120">信息类型</th>
+			<th width="120">银行卡号码</th>
+			<th width="90">开卡行</th>
+            <th width="90">姓名</th>
+			<th width="90">证件类型</th>
+            <th width="120">证件号码</th>
+            <th width="200">账单地址</th>
+            <th width="120">创建时间</th>
+		</tr>
+	</thead>
+	<tbody>
+        @{
+            if(Customer.CreditCardList != null)
+            {
+                UserDomainModel user = null;
+                ChinaInfoModel chinaInfo = null;
+                foreach (CustomerCreditcardInfoModel item in Customer.CreditCardList.Values)
+                {
+                    user = UserInfoService.Instance.GetUserDomainModelById(item.CreatedBy, false);
+                    chinaInfo = (item.BillChinaId != null) ? ChinaInfoService.Instance.GetChinaInfo(item.BillChinaId.ToString()) : null;
+                    <tr>
+                        <td>@item.InfoType</td>
+                        <td><a class="add" href="/CallCenter/EditCreditCardInfo?cid=@Customer.BasicInfo.CustomerId&cardid=@item.CreditcardId" target="dialog" maxable="false" rel="@Customer.BasicInfo.CustomerId" mask="true" width="800" height="370">@CommonUtil.MarkCreditCard(item.CreditcardNumber)</a></td>
+                        <td>@CardTypeList.GetCustomDataValueByValueId(item.Bank,"未知")</td>
+                        <td>@item.CardUsername</td>
+                        <td>@IdTypeList.GetCustomDataValueByValueId(item.IdcardType,"未知")</td>
+                        <td>@CommonUtil.MarkIdCard(item.IdcardNumber)</td>
+                        <td>@((chinaInfo == null) ? item.BillAddress : string.Format("{0} {1} {2} {3}", chinaInfo.ProvinceAreaName, chinaInfo.CityName, chinaInfo.CountyName, item.BillAddress))</td>
+                        <td>@item.CreatedOn</td>
+		            </tr>
+                }
+            }
+        }
+        </tbody>
+</table>
+

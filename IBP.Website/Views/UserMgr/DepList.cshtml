@@ -1,0 +1,82 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    DepartmentDomainModel departmentTree = DepartmentInfoService.Instance.GetDepartmentTree(false);
+    Layout = "";
+}
+<div class="pageContent">
+    <div id="depbox" class="unitBox" style="float: left; display: block; overflow: auto;
+        width: 284px;">
+        <div class="pageHeader" style="border-right: 1px #B8D0D6 solid">            
+            <div class="searchBar">
+                <table class="searchContent">
+                    <tr>
+                        <td>
+                            部门列表
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="pageContent" style="border-right: 1px #B8D0D6 solid">
+            <div class="panelBar">
+                <ul class="toolBar">
+                    <li>
+                        <a custjs="department" id="addDepartment" title="新建部门" rel="usermgr_deplist" class="add" href="/UserMgr/NewDepartment" mask="true">
+                            <span>新建</span>
+                        </a>
+                    </li>
+                    <li class="line">line</li>
+                    <li><a custjs="department" id="editDepartment" class="edit" href="/UserMgr/EditDepartment"
+                        mask="true"><span>编辑</span></a></li>
+                    <li class="line">line</li>
+                    <li><a custjs="department" id="delDepartment" class="delete" href="/UserMgr/DoDeleteDepartment"
+                        title="确定要删除选中部门吗?"><span>删除</span></a></li>     
+                    <li class="line">line</li>               
+                </ul>
+            </div>
+
+            <ul class="tree expand" layouth="85">
+                @{
+                    if (departmentTree.ChildDepartment != null)
+                    {
+                        foreach (DepartmentDomainModel item in departmentTree.ChildDepartment.Values)
+                        {
+                            @:<li><a href="/UserMgr/DepUserList?did=@item.DepartmentId" target="ajax" rel="jbsxBox3">@item.DepartmentName</a>
+                                 if (item.ChildDepartment != null)
+                                 {
+                                     @:<ul>
+                                        foreach (DepartmentDomainModel item2 in item.ChildDepartment.Values)
+                                        {
+                                            @:<li><a href="/UserMgr/DepUserList?did=@item2.DepartmentId" target="ajax" rel="jbsxBox3">@item2.DepartmentName</a>
+                                                if (item2.ChildDepartment != null)
+                                                {
+                                                    @:<ul>
+                                                    foreach (DepartmentDomainModel item3 in item2.ChildDepartment.Values)
+                                                    {
+                                                        @:<li><a href="/UserMgr/DepUserList?did=@item3.DepartmentId" target="ajax" rel="jbsxBox3">@item3.DepartmentName</a></li>
+                                                    }
+                                                    @:</ul>
+                                                }
+                                            @:</li>
+                                        }
+                                     @:</ul>
+                                 }
+                            @:</li>                           
+                        }
+                    }
+                 }
+            </ul>
+            <div class="panelBar">
+                <div class="pages">
+                     
+                </div>
+                 
+            </div>
+        </div>
+    </div>
+    <div id="jbsxBox3" class="unitBox" style="margin-left: 288px;">
+        @Html.Partial("DepUserList")
+    </div>
+</div>

@@ -1,0 +1,75 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@using Framework.Utilities;
+
+@{
+    Layout = "";
+    string workOrderIdList = Request.QueryString["oid"];
+    string page = Request.QueryString["page"];
+    string processFor = (Request.QueryString["processfor"]== null) ? "" : Request.QueryString["processfor"];
+    Dictionary<string, UserGroupInfoModel> groupList = UserGroupInfoService.Instance.GetUserGroupList(false);
+    UserDomainModel user = UserInfoService.Instance.GetUserDomainModelById(SessionUtil.Current.UserId,false);
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/WorkOrderCenter/DoAssignmentWorkOrder" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+            <input type="hidden" value="@workOrderIdList" name="workOrderIdList" />
+            <input type="hidden" value="@page" name="pageName" />
+            <input type="hidden" value="@processFor" name="processFor" />
+            <div class="information02"> 
+                <h2>工单转交处理</h2>
+                <div class="New_box02">
+                    @{
+                        if (processFor != "")
+                        {
+                            <dl>
+                            <div style="padding:10px 0px 0px 30px; height:100px;">
+                                转交至用户：【@user.WorkId】@user.BasicInfo.CnName 
+                            </div>
+                            </dl>
+                        }
+                        else
+                        {
+                        
+                    <dl>             
+                            <table width="650px">
+                                <tr>
+                                    <td valign="top">转交至用户组:</td>
+                                    <td>
+                                    <select custjs="customermgr" class="request" id="lstUserGroupList" name="userGroupList" multiple="multiple" style="height:100px;width:270px">
+                                    @{
+                                       if (groupList != null)
+                                       {
+                                           foreach (UserGroupInfoModel item in groupList.Values)
+                                           {
+                                                <option value="@item.UserGroupId">@item.GroupName</option>
+                                           }
+                                       }
+                                    }
+                                    </select>
+                                    </td>
+                                </tr>                                
+                                <tr>
+                                    <td valign="top">转交给指定用户：</td>                                
+                                    <td><select id="lstGroupUserList" name="groupUserList" multiple="multiple" style="height:100px;width:270px"></select></td>
+                                </tr>
+                            </table>
+                    </dl>  
+                        }
+                        }     
+                </div>
+		    </div>
+        </div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>

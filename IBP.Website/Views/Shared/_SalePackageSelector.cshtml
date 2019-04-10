@@ -1,0 +1,104 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+    List<SalesPackageInfoModel> SalePackageList = ViewBag.SalePackageList as List<SalesPackageInfoModel>;
+    List<string> proIdList = ViewBag.ProductItemList as List<string>;
+}
+
+<div class="tabsPage">
+<div class="navTab-panel tabsPageContent layoutBox"style="height:470px; padding-top:49px;">
+<div class="page unitBox">
+    <form id="pagerForm" method="post" action="/OrderCenter/PhoneSaleOrderProductSelector">
+	    <input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	    <input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	    <input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+        <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+	    <input type="hidden" name="itemPrice" value="@ViewBag.ItemPrice" />
+        <input type="hidden" name="saleCityId" value="@ViewBag.SaleCity" />
+        <input type="hidden" name="productCategoryId" value="@ViewBag.ProductCategoryId" />
+    </form>
+
+    <div class="pageHeader"  style="background-color:#fff">
+	    <form rel="pagerForm" onsubmit="return divSearch(this,'divProductSelector');" action="/OrderCenter/PhoneSaleOrderProductSelector" method="post">
+	    <input type="hidden" name="itemPrice" value="@ViewBag.ItemPrice" />
+        <input type="hidden" name="saleCityId" value="@ViewBag.SaleCity" />
+        <input type="hidden" name="productCategoryId" value="@ViewBag.ProductCategoryId" />
+		    
+            <div  class="searbg">
+             <dl><dd style="width:100px;">产品包名称：</dd><dt style="width:90px; padding-top:3px;"><input type="text" name="categoryName" value="@ViewBag.CategoryName" /></dt><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></dl>
+             
+           </div>    	
+	 
+	    </form>
+    </div>
+
+    <div class="pageContent">
+        <input type="hidden" name="selectedProductCategoryId" id="selectedProductCategoryId" producttype="SalesPackage" />
+	    <table class="table" targetType="dialog" rel="divProductSelector" layoutH="300">
+		    <thead>
+			    <tr>
+                <th width="200" @CommonUtil.SetSortOrder("package_name", ViewBag.OrderField, ViewBag.OrderDirection) >产品包名称</th>
+				<th width="60" @CommonUtil.SetSortOrder("location", ViewBag.OrderField, ViewBag.OrderDirection) >产品定位</th>
+				<th width="80" @CommonUtil.SetSortOrder("begin_time", ViewBag.OrderField, ViewBag.OrderDirection) >有效起始时间</th>
+				<th width="80" @CommonUtil.SetSortOrder("end_time", ViewBag.OrderField, ViewBag.OrderDirection) >有效截止时间</th>
+				<th width="90" @CommonUtil.SetSortOrder("price_total", ViewBag.OrderField, ViewBag.OrderDirection) >业务总额</th>
+				<th width="90" @CommonUtil.SetSortOrder("sale_price", ViewBag.OrderField, ViewBag.OrderDirection)  >购机金额</th>
+				<th width="70" @CommonUtil.SetSortOrder("stored_price", ViewBag.OrderField, ViewBag.OrderDirection)  >预存话费</th>
+				<th width="70" @CommonUtil.SetSortOrder("return_months", ViewBag.OrderField, ViewBag.OrderDirection)  >返还月数</th>
+				<th width="70" @CommonUtil.SetSortOrder("month_return_price", ViewBag.OrderField, ViewBag.OrderDirection)  >每月返还</th>
+				<th width="70" @CommonUtil.SetSortOrder("month_keep_price", ViewBag.OrderField, ViewBag.OrderDirection)  >每月补存</th>
+				<th width="70" @CommonUtil.SetSortOrder("stages", ViewBag.OrderField, ViewBag.OrderDirection)  >分期数</th>
+				<th width="70" @CommonUtil.SetSortOrder("stage_price", ViewBag.OrderField, ViewBag.OrderDirection)  >每期金额</th>
+				<th width="200" @CommonUtil.SetSortOrder("remark", ViewBag.OrderField, ViewBag.OrderDirection)  >备注</th>
+			    </tr>
+		    </thead>
+		    <tbody>
+                @{
+                if (SalePackageList != null)
+                {
+                    foreach (SalesPackageInfoModel item in SalePackageList)
+                    {
+			            <tr ptid="package" rel="@item.SalesPackageId"  name="btnLoadProductGuide" pcid="@item.SalesPackageId" custjs="phoneordermgr"> 
+				            <td>@item.PackageName</td>
+				            <td>@item.Location</td>
+				            <td>@((item.BeginTime != null) ? Convert.ToDateTime(item.BeginTime).ToString("yyyy-MM-dd") : "")</td>
+				            <td>@((item.EndTime != null) ? Convert.ToDateTime(item.EndTime).ToString("yyyy-MM-dd") : "")</td>				            
+				            <td>@item.PriceTotal</td>
+				            <td>@item.SalePrice</td>
+				            <td>@item.StoredPrice</td>
+                            <td>@item.ReturnMonths</td>
+                            <td>@item.MonthReturnPrice</td>
+                            <td>@item.MonthKeepPrice</td>
+                            <td>@item.Stages</td>
+                            <td>@item.StagePrice</td>
+                            <td>@item.Remark</td>
+			            </tr>                        
+                    }
+                }
+            }
+		    </tbody>
+	    </table>
+	    <div class="panelBar">
+		    <div class="pages">
+			    <span>显示</span>
+			    <select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				    <option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				    <option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				    <option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				    <option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			    </select>
+			    <span>条，共 @ViewBag.SalePackageTotal 条</span>
+		    </div>		
+		    <div class="pagination" targetType="dialog" rel="divProductSelector" totalCount="@ViewBag.SalePackageTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+	    </div>
+    </div>
+    <div id="divProductSalesGuide">
+        @Html.Partial("_ProductSalesGuideInfo")
+    </div>
+</div>
+</div>
+</div>

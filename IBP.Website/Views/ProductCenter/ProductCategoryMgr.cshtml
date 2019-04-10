@@ -1,0 +1,129 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    List<ProductCategoryInfoModel> ProductCategoryList = ViewBag.ProductCategoryList as List<ProductCategoryInfoModel>;
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+    Dictionary<string, ProductCategoryGroupInfoModel> categoryGroupList = ProductCategoryGroupInfoService.Instance.GetProductCategoryGroupList(false);
+
+}
+
+<form id="pagerForm" method="post" action="/ProductCenter/ProductCategoryMgr">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+
+
+<div id="productCategoryBox" class="pageHeader">
+	<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/ProductCenter/ProductCategoryMgr" method="post">
+	<div class="searchBar">
+     <div class="searbg">
+      <dl style="width:175px;">
+        <dd>类型分组：</dd>
+        <dt><select name="categoryGroupName">
+                        @{
+                            if(categoryGroupList != null)
+                            {
+                                <option value="">所有</option>
+                                foreach(ProductCategoryGroupInfoModel item in categoryGroupList.Values)
+                                {
+                                    <option value="@item.ProductCategoryGroupId" @CommonUtil.SetComboxSelected(item.ProductCategoryGroupId, ViewBag.ProductGroupName) >@item.GroupName</option>
+                                }
+                            }
+                        }
+                    </select>
+          </dt>
+          </dl>
+          <dl style="width:180px;">
+        <dd>销售城市：</dd>
+        <dt><select name="saleCity">
+                    @{
+                        <option value="">所有</option>
+                        if (SaleCity != null)
+                        {
+                            foreach(CustomDataValueDomainModel item in SaleCity.ValueList.Values)
+                            {
+                                <option value="@item.ValueId"  @CommonUtil.SetComboxSelected(item.ValueId, ViewBag.SaleCity) >@item.DataValue</option>
+                            }
+                        }
+                    }
+                </select>
+          </dt>
+          </dl>
+          <dl>
+        <dd>类型名称：</dd>
+        <dt><input type="text" name="categoryName" value="@ViewBag.CategoryName" /></dt>
+          </dl>
+          <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></div>
+        </div>
+		
+	</div>
+	</form>
+</div>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+			<li><a class="add" href="/ProductCenter/NewProductCategory" target="dialog" maxable="false"  rel="ProductCenter_ProductCategoryMgr" title="新建产品类型信息" mask="true" width="910" height="600"><span>新建</span></a></li>
+			<li><a class="edit" href="/ProductCenter/EditProductCategory?catid={cat_id}" target="dialog" maxable="false"  rel="ProductCenter_ProductCategoryMgr" title="编辑产品类型信息" mask="true" width="910" height="600"><span>编辑</span></a></li>
+			<li><a title="确实要删除这些记录吗?" target="ajaxTodo" href="/ProductCenter/DoDelProductCategory?catid={cat_id}" class="delete"><span>删除</span></a></li>
+			<li class="line">line</li>
+			<li><a class="icon" href="#" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+		</ul>
+	</div>
+	<table class="table" layoutH="115">
+		<thead>
+			<tr>
+				<th width="60" @CommonUtil.SetSortOrder("sort_order", ViewBag.OrderField, ViewBag.OrderDirection) >序号</th>
+                <th width="160" @CommonUtil.SetSortOrder("group_name", ViewBag.OrderField, ViewBag.OrderDirection) >所属分组名称</th>
+				<th width="160" @CommonUtil.SetSortOrder("category_name", ViewBag.OrderField, ViewBag.OrderDirection) >产品类别名称</th>  
+                <th width="100" @CommonUtil.SetSortOrder("item_price", ViewBag.OrderField, ViewBag.OrderDirection) >销售价格</th>              
+                <th width="100" @CommonUtil.SetSortOrder("sale_city", ViewBag.OrderField, ViewBag.OrderDirection) >产品销售城市</th>
+				<th width="160" @CommonUtil.SetSortOrder("category_code", ViewBag.OrderField, ViewBag.OrderDirection) >产品类别编码</th>
+				<th width="100" @CommonUtil.SetSortOrder("status", ViewBag.OrderField, ViewBag.OrderDirection) >状态</th>
+				<th width="140" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection) >创建时间</th>
+				<th width="260" >类别描述信息</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (ProductCategoryList != null)
+                {
+                    foreach (ProductCategoryInfoModel item in ProductCategoryList)
+                    {
+			            <tr target="cat_id" rel="@item.ProductCategoryId">                        
+				            <td>@item.SortOrder</td>
+                            <td>@(string.IsNullOrEmpty(item.GroupName) ? "" : (categoryGroupList.ContainsKey(item.GroupName) ? categoryGroupList[item.GroupName].GroupName : ""))</td>
+				            <td>@item.CategoryName</td>
+                            <td>@item.ItemPrice</td>
+                            <td>@(string.IsNullOrEmpty(item.SaleCity) ? "所有" : SaleCity.GetCustomDataValueByValueId(item.SaleCity, "所有"))</td>
+                            <td>@item.CategoryCode</td>
+				            <td>@((item.Status == 0) ? "启用" : "禁用")</td>
+				            <td>@item.CreatedOn</td>
+				            <td>@item.Remark</td>
+			            </tr>                        
+                    }
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				<option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				<option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.ProductCategoryTotal 条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.ProductCategoryTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+
+	</div>
+</div>

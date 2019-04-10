@@ -1,0 +1,72 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    Dictionary<string, WorkorderTypeInfoModel> WorkOrderTypeList = WorkorderTypeInfoService.Instance.GetWorkOrderDictionary(false);
+}
+
+<div class="pageContent">
+	
+	<form method="post" action="/UserMgr/DoNewUserGroupInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+			<div class="unit">
+				<label>用户组名称：</label>
+				<input type="text" name="groupName" size="30" minlength="3" maxlength="10" class="required" />
+			</div>
+			<div class="unit">
+				<label>描述信息：</label>
+				<textarea name="groupDesc" cols="90" rows="1"></textarea>
+			</div>
+            <div class="unit">
+	            <div class="tabs" currentIndex="0" eventType="click" style="margin-right:10px;">
+		            <div class="tabsHeader">
+			            <div class="tabsHeaderContent">
+				            <ul>
+                                <li><a href="javascript:;"><span>呼叫中心</span></a></li>
+                                <li><a href="javascript:;"><span>业务中心</span></a></li>
+                                <li><a href="javascript:;"><span>订单中心</span></a></li>
+                                <li><a href="javascript:;"><span>工单中心</span></a></li>
+				            </ul>
+			            </div>
+		            </div>
+		            <div class="tabsContent" style="height:365px; background-color:White;">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div>
+                            <fieldset style="margin-bottom:15px">
+                                <legend>工单处理权限</legend>
+                                @{
+                                    if(WorkOrderTypeList != null)
+                                    {
+                                        foreach(WorkorderTypeInfoModel item in WorkOrderTypeList.Values)
+                                        {
+                                            <fieldset style="margin-bottom:15px">
+                                                <legend>@item.TypeName</legend>
+                                                <label><input type="checkbox" name="wopBox" value="@("WORKORDER_" + item.WorkorderTypeId + "_SELECT")" />查询</label>
+                                                <label><input type="checkbox" name="wopBox" value="@("WORKORDER_" + item.WorkorderTypeId + "_PROCESS")" />处理</label>
+                                                <label><input type="checkbox" name="wopBox" value="@("WORKORDER_" + item.WorkorderTypeId + "_CLOSE")" />关闭</label>
+                                                <label><input type="checkbox" name="wopBox" value="@("WORKORDER_" + item.WorkorderTypeId + "_DELETE")" />删除</label>
+                                                <label><input type="checkbox" name="wopBox" value="@("WORKORDER_" + item.WorkorderTypeId + "_MANAGE")" />完全控制</label>
+                                            </fieldset>                                            
+                                        }
+                                    }
+                                }
+                            </fieldset>
+                        </div>
+		            </div>
+		            <div class="tabsFooter">
+			            <div class="tabsFooterContent"></div>
+		            </div>
+	            </div> 
+            </div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

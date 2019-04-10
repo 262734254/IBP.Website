@@ -1,0 +1,186 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@using Framework.Utilities;
+
+@{
+    Layout = "";
+    string workOrderId = Request.QueryString["oid"];
+    WorkOrderDomainModel WorkOrder = WorkorderInfoService.Instance.GetWorkorderDomainModelById(workOrderId, false);
+    Dictionary<string, WorkorderTypeInfoModel> TypeList = WorkorderTypeInfoService.Instance.GetWorkOrderDictionary(false);
+    WorkOrderTypeDomainModel typeModel = WorkorderTypeInfoService.Instance.GetTypeDomainModelById(WorkOrder.BasicInfo.WorkorderType, false);
+    CustomDataDomainModel OrderLevel = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("工单级别", false);
+    Dictionary<string, string> WorkOrderStatusDict = WorkorderTypeInfoService.Instance.GetWorkorderStatusNameList(false);
+    Dictionary<string, string> WorkOrderResultDict = WorkorderTypeInfoService.Instance.GetWorkorderResultNameList(false);
+    ViewBag.Readonly = true;
+
+    CustomerDomainModel Customer = null;
+    ViewBag.LocationBoxName = Guid.NewGuid().ToString();
+    if (WorkOrder != null)
+    {
+        Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(WorkOrder.BasicInfo.RelCustomerId, false);
+        ViewBag.Customer = Customer;
+        ViewBag.WorkOrder = WorkOrder;
+        ViewBag.TypeList = TypeList;
+        ViewBag.OrderLevel = OrderLevel;
+        ViewBag.WorkOrderStatusDict = WorkOrderStatusDict;
+        ViewBag.WorkOrderResultDict = WorkOrderResultDict;
+        if(string.IsNullOrEmpty(WorkOrder.BasicInfo.RelOrderId) == false)
+        {
+            ViewBag.SalesOrder = SalesOrderInfoService.Instance.GetSalesorderDomainModelById(WorkOrder.BasicInfo.RelOrderId, false);
+        }
+    }      
+}
+
+<div class="pageContent">
+	<form name="customerbasicInfoForm" method="post" action="/CallCenter/DoUpdateCustomerBasicInfo" class="pageForm required-validate">
+        <div class="panelBar">
+	        <ul class="toolBar">
+            @{
+                if (WorkOrder.BasicInfo.ProcessStatus == 2)
+                {
+ 		            <li style=" float:right;"><a class="icon icontxt" href="#"><span>关闭工单</span></a></li>
+		            <li class="line" style=" float:right;">line</li>
+@* 		            <li style=" float:right;"><a class="icon icontxt" href="#"><span>提交质检</span></a></li>
+		            <li class="line" style=" float:right;">line</li>
+*@ 		            <li style=" float:right;"><a class="icon icontxt" href="#"><span>提交审批</span></a></li>
+		            <li class="line" style=" float:right;">line</li>
+                    <li><a class="icon icontxt" href="#" ><span>工单处理</span></a></li>
+		            <li><a class="icon icontxt" href="#" ><span>转交他人</span></a></li>
+                    <li><a class="icon icontxt" href="#" ><span>修改预约时间</span></a></li>
+                    <li><a class="icon icontxt" href="#" ><span>修改过期时间</span></a></li>
+                    <li><a class="icon icontxt" href="#" ><span>工单审批</span></a></li>
+                    if (WorkorderInfoService.Instance.HasQualityCheckWorkOrderPremission() && WorkOrder.BasicInfo.QualityCheckStatus != 1)
+                    {
+                        <li><a class="add" href="/WorkOrderCenter/NewWorkOrderQualityChecked?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" target="dialog" maxable="false" title="工单质检" rel="@WorkOrder.BasicInfo.WorkOrderId" mask="true" width="800" height="450"><span>工单质检</span></a></li>
+                    }
+                }
+                else
+                {
+                    if (WorkorderInfoService.Instance.HasCloseWorkOrderPremission()
+                        && WorkOrder.BasicInfo.NowStatusId != typeModel.EndStatusInfo.WorkorderStatusId)
+                    {
+		                <li style=" float:right;"><a class="edit" href="/WorkOrderCenter/DoCloseWorkOrder?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" rel="@WorkOrder.BasicInfo.WorkOrderId" target="ajaxTodo" title="您确定要关闭工单吗?"><span>关闭工单</span></a></li>
+                        <li class="line" style=" float:right;">line</li>
+                    }
+                    if (WorkorderInfoService.Instance.HasSubmitQualityCheckWorkOrderPremission()
+                        && WorkOrder.BasicInfo.NowStatusId != typeModel.QuilityCheckedStatusInfo.WorkorderStatusId
+                        && WorkOrder.BasicInfo.NowStatusId != typeModel.BeginStatusInfo.WorkorderStatusId
+                        && typeModel.QuilityCheckedStatusInfo != null)
+                    {
+ 		                <li style=" float:right;"><a class="edit" href="/WorkOrderCenter/DoSubmitQualityCheckedWorkOrder?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" rel="@WorkOrder.BasicInfo.WorkOrderId" target="ajaxTodo" title="您确定要提交质检吗?"><span>提交质检</span></a></li>
+                        <li class="line" style=" float:right;">line</li>                       
+                    }
+                    if (WorkorderInfoService.Instance.HasSubmitApprovalWorkOrderPremission()
+                        && WorkOrder.BasicInfo.NowStatusId != typeModel.ApprovalStatusInfo.WorkorderStatusId
+                        && WorkOrder.BasicInfo.NowStatusId != typeModel.QuilityCheckedStatusInfo.WorkorderStatusId
+                        && WorkOrder.BasicInfo.NowStatusId != typeModel.BeginStatusInfo.WorkorderStatusId
+                        && typeModel.ApprovalStatusInfo != null)
+                    {
+ 		                <li style=" float:right;"><a class="edit" href="/WorkOrderCenter/DoSubmitApprovalWorkOrder?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" rel="@WorkOrder.BasicInfo.WorkOrderId" target="ajaxTodo" title="您确定要提交审批吗?"><span>提交审批</span></a></li>
+                        <li class="line" style=" float:right;">line</li>                       
+                    }
+
+
+
+                    if (WorkOrder.BasicInfo.NowProcessUserid != SessionUtil.Current.UserId)
+                    {
+                        if (WorkOrder.BasicInfo.NowStatusId == typeModel.ApprovalStatusInfo.WorkorderStatusId ||
+                            WorkOrder.BasicInfo.NowStatusId == typeModel.QuilityCheckedStatusInfo.WorkorderStatusId)
+                        {
+                            <li><a class="add icontxt" href="#"><span>工单处理</span></a></li>
+		                    <li><a class="add icontxt" href="#"><span>转交他人</span></a></li>
+                            <li class="line">line</li>    
+                            <li><a class="add icontxt" href="#"><span>修改预约时间</span></a></li>
+                            <li><a class="add icontxt" href="#"><span>修改过期时间</span></a></li>
+                        }
+                        else
+                        {
+                            <li><a class="add" href="/WorkOrderCenter/NewWorkOrderProcessRecord?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" target="dialog" maxable="false" title="本工单已转交他人处理，您确定要新增处理记录吗？" rel="@WorkOrder.BasicInfo.WorkOrderId" mask="true" width="800" height="480"><span>工单处理</span></a></li>
+		                    <li><a class="add" href="/WorkOrderCenter/WorkOrderAssignment?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" target="dialog" maxable="false" title="本工单已转交他人处理，您确定要修改转交吗？" rel="@WorkOrder.BasicInfo.WorkOrderId" mask="true" height="380"><span>转交他人</span></a></li>
+                            <li class="line">line</li>    
+                            <li><a class="add" href="/WorkOrderCenter/ChangeWorkorderAdvanceTime?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" target="dialog" maxable="false" title="本工单已转交他人处理，您确定要修改预约时间吗？" rel="@WorkOrder.BasicInfo.WorkOrderId" mask="true" height="200"><span>修改预约时间</span></a></li>
+                            <li><a class="add" href="/WorkOrderCenter/ChangeWorkorderExpiredTime?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" target="dialog" maxable="false" title="本工单已转交他人处理，您确定要修改过期时间吗？" rel="@WorkOrder.BasicInfo.WorkOrderId" mask="true" height="200"><span>修改过期时间</span></a></li>
+                            <li class="line">line</li>
+                            <li><a class="add" href="/CallCenter/NewPhoneSaleOrder?page=workorderdetail&oid=@WorkOrder.BasicInfo.WorkOrderId&cid=@Customer.BasicInfo.CustomerId"target="dialog" maxable="false"rel="@Customer.BasicInfo.CustomerId" mask="true" width="1000" height="550"><span>新增订单</span></a></li>
+                        }
+                    }
+                    else
+                    {
+                        if (WorkOrder.BasicInfo.NowStatusId == typeModel.ApprovalStatusInfo.WorkorderStatusId ||
+                            WorkOrder.BasicInfo.NowStatusId == typeModel.QuilityCheckedStatusInfo.WorkorderStatusId)
+                        {
+                            <li><a class="add icontxt" href="#"><span>工单处理</span></a></li>
+		                    <li><a class="add icontxt" href="#"><span>转交他人</span></a></li>
+                            <li class="line">line</li>    
+                            <li><a class="add icontxt" href="#"><span>修改预约时间</span></a></li>
+                            <li><a class="add icontxt" href="#"><span>修改过期时间</span></a></li>
+                        }
+                        else
+                        {
+                            <li><a class="add" href="/WorkOrderCenter/NewWorkOrderProcessRecord?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" target="dialog" maxable="false" title="新增工单处理记录" rel="@WorkOrder.BasicInfo.WorkOrderId" mask="true" width="800" height="480"><span>工单处理</span></a></li>
+		                    <li><a class="add" href="/WorkOrderCenter/WorkOrderAssignment?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" target="dialog" maxable="false" title="转交他人处理" rel="@WorkOrder.BasicInfo.WorkOrderId" mask="true" height="380"><span>转交他人</span></a></li>
+                            <li class="line">line</li>
+                            <li><a class="add" href="/WorkOrderCenter/ChangeWorkorderAdvanceTime?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" target="dialog" maxable="false" title="修改预约时间" rel="@WorkOrder.BasicInfo.WorkOrderId" mask="true" height="200"><span>修改预约时间</span></a></li>
+                            <li><a class="add" href="/WorkOrderCenter/ChangeWorkorderExpiredTime?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" target="dialog" maxable="false" title="修改过期时间" rel="@WorkOrder.BasicInfo.WorkOrderId" mask="true" height="200"><span>修改过期时间</span></a></li>
+                            <li class="line">line</li>
+                            <li><a class="add" href="/CallCenter/NewPhoneSaleOrder?page=workorderdetail&oid=@WorkOrder.BasicInfo.WorkOrderId&&cid=@Customer.BasicInfo.CustomerId"target="dialog" maxable="false"rel="@Customer.BasicInfo.CustomerId" mask="true" width="1000" height="550"><span>新增订单</span></a></li>
+                        }
+                    }
+                    <li class="line">line</li>
+
+                    if (WorkorderInfoService.Instance.HasApprovalWorkOrderPremission()
+                        && WorkOrder.BasicInfo.NowStatusId == typeModel.ApprovalStatusInfo.WorkorderStatusId)
+                    {
+                        <li><a class="add" href="/WorkOrderCenter/NewWorkOrderApproval?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" target="dialog" maxable="false" title="工单审批" rel="@WorkOrder.BasicInfo.WorkOrderId" mask="true" width="800" height="450"><span>工单审批</span></a></li>
+                    }
+                    if(WorkOrder.BasicInfo.QualityCheckStatus != 1)
+                    {
+                        if (WorkorderInfoService.Instance.HasQualityCheckWorkOrderPremission()
+                            && WorkOrder.BasicInfo.NowStatusId == typeModel.QuilityCheckedStatusInfo.WorkorderStatusId)
+                        {
+                            <li><a class="add" href="/WorkOrderCenter/NewWorkOrderQualityChecked?page=detail&oid=@WorkOrder.BasicInfo.WorkOrderId" target="dialog" maxable="false" title="工单质检" rel="@WorkOrder.BasicInfo.WorkOrderId" mask="true" width="800" height="450"><span>工单质检</span></a></li>
+                        }
+                    }
+                }
+                }
+	        </ul>
+        </div>
+
+        <div custjs="flowcontrol"  locname="@ViewBag.LocationBoxName" name="locationDiv" levelRegion="city" class="location">
+            <input type="hidden" name="chinaId" class="chinaIdBox" value="@Customer.BasicInfo.ChinaId" />
+            @Html.Partial("_LocationPanel")
+        </div>
+
+        <div class="wrap">
+            <div class="information02">
+                <input type="hidden" name="customerId" value="@Customer.BasicInfo.CustomerId" />
+                
+
+                <h2>工单基本信息【编号：@WorkOrder.BasicInfo.WorkorderCode，客户名称：<a href="/CallCenter/CustomerInfo?cid=@Customer.BasicInfo.CustomerId" target="navTab" rel="@Customer.BasicInfo.CustomerId" title="【@Customer.BasicInfo.CustomerName】客户信息" fresh="false">@Customer.BasicInfo.CustomerName</a>】</h2>
+                 @Html.Partial("WorkOrderBasicInfo")
+            </div>
+        </div>
+    </form>
+    <div class="tabs" currentIndex="0" eventType="click">
+	    <div class="tabsHeader">
+		    <div class="tabsHeaderContent">
+			    <ul>
+                    <li><a href="javascript:;"><span>工单处理记录（@WorkOrder.ProcessList.Count）</span></a></li>
+				    <li><a href="javascript:;"><span>关联客户信息</span></a></li>
+				    <li><a href="javascript:;"><span>关联订单信息</span></a></li>
+                    <li><a href="javascript:;"><span>工单质检信息</span></a></li>
+			    </ul>
+		    </div>
+	    </div>
+	    <div class="tabsContent">
+            <div>@Html.Partial("WorkOrderProcessInfo")</div>
+		    <div>@Html.Partial("_CustomerBasicInfo")</div>
+            <div>@Html.Partial("_SalesorderBasicInfo")</div>
+            <div>@Html.Partial("WorkOrderCheckedInfo")</div>
+	    </div>
+	    <div class="tabsFooter">
+		    <div class="tabsFooterContent"></div>
+	    </div>
+    </div>
+</div>

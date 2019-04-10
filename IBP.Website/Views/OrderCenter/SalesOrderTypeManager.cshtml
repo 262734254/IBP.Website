@@ -1,0 +1,72 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    Dictionary<string, SalesorderTypeInfoModel> SalesorderDict = SalesorderTypeInfoService.Instance.GetSalesorderTypeInfoList(false);
+}
+
+<div class="pageContent">
+    <div id="premissionbox" class="unitBox" style="float: left; display: block; overflow: auto;
+        width: 284px;">
+        <div class="pageHeader" style="border-right:1px #B8D0D6 solid">            
+            <div class="searchBar">
+                <table class="searchContent">
+                    <tr>
+                        <td>
+                            订单类型信息
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="pageContent" style="border-right: 1px #B8D0D6 solid">
+            <div class="panelBar">
+                <ul class="toolBar">
+                      <li>
+                        <a title="新建工单类型" class="add icontxt" href="#" mask="true">
+                            <span>新建</span>
+                        </a>
+                    </li>
+                    <li class="line">line</li>
+                    <li><a class="edit icontxt" href="#" mask="true"><span>编辑</span></a></li>
+                    <li class="line">line</li>
+                    <li><a class="delete icontxt" href="#"><span>删除</span></a></li>     
+                    <li class="line">line</li>                    
+                </ul>
+            </div>
+            	<table class="table" width="99%" layoutH="110">
+		            <thead>
+			            <tr>
+				            <th width="80">类型名称</th>
+			            </tr>
+		            </thead>
+		            <tbody>
+                         @{
+                             if (SalesorderDict != null)
+                             {
+                                 foreach (SalesorderTypeInfoModel Salesorder in SalesorderDict.Values)
+                                 {
+                                      @:<tr target="salesorder_id" rel="@Salesorder.SalesorderTypeId">
+                                         @:<td style="padding-left:20px;">
+                                                @:<a href="/OrderCenter/SalesorderTypeStatusManager?id=@Salesorder.SalesorderTypeId" target="ajax" rel="roleUserBox">@Salesorder.SalesorderTypeName</a>
+                                         @:</td>
+                                      @:</tr>
+                                 }
+                             }
+                         }
+		            </tbody>
+	            </table>
+
+            <div class="panelBar">
+                <div class="pages">
+                     
+                </div>
+                 
+            </div>
+        </div>
+    </div>
+    <div id="roleUserBox" class="unitBox" style="margin-left: 288px;">
+        @Html.Partial("SalesorderTypeStatusManager")
+    </div>
+</div>

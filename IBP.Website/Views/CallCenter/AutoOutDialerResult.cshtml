@@ -1,0 +1,82 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    List<AutoDialerTaskInfoModel> taskList = ViewBag.TaskList as List<AutoDialerTaskInfoModel>;
+}
+
+<form id="pagerForm" method="post" action="/CallCenter/AutoOutDialerResult">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+
+<div class="pageContent">
+    <div id="autoDialerResultBox" class="unitBox" style="float: left; display: block; overflow: auto;
+        width: 440px;">
+        <div class="pageHeader" style="border: 1px #B8D0D6 solid">            
+            <div class="searchBar">
+                <table class="searchContent">
+                    <tr>
+                        <td>
+                            自动外呼任务列表
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="pageContent" style="border-left: 1px #B8D0D6 solid; border-right: 1px #B8D0D6 solid">
+               	<table class="table" layoutH="85">
+		            <thead>
+			            <tr>
+				            <th width="80">操作</th>
+				            <th width="120" @CommonUtil.SetSortOrder("auto_dialer_task_name", ViewBag.OrderField, ViewBag.OrderDirection) >任务名称</th>
+				            <th width="60" @CommonUtil.SetSortOrder("begin_time", ViewBag.OrderField, ViewBag.OrderDirection) >外呼开始日期</th>
+				            <th width="80" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection)  >创建时间</th>
+			            </tr>
+		            </thead>
+		            <tbody>
+                        @{
+                            if (taskList != null)
+                            {
+                                foreach (AutoDialerTaskInfoModel item in taskList)
+                                {
+			                        @:<tr>
+				                        @:<td>
+                                          if (item.Status == 0)
+                                          { 
+				                                @:<a class="button" href="/CallCenter/DoUpdateAutoDialerTaskStatus?status=1&aid=@item.AutoDialerTaskId" target="ajaxTodo"  rel="autoDialerTaskBox" title="确定执行该任务吗?"><span>执行</span></a> 
+                                          }
+                                          else if (item.Status == 1)
+                                          {
+				                                @:<a class="button" href="/CallCenter/DoUpdateAutoDialerTaskStatus?status=2&aid=@item.AutoDialerTaskId" target="ajaxTodo"  rel="autoDialerTaskBox" title="确定暂停该任务吗?" style="margin-right:5px;"><span>暂停</span></a>
+				                                @:<a class="button" href="/CallCenter/DoUpdateAutoDialerTaskStatus?status=0&aid=@item.AutoDialerTaskId" target="ajaxTodo"  rel="autoDialerTaskBox" title="确定暂停该任务吗?"><span>停止</span></a> 
+                                          }
+                                          else if (item.Status == 2)
+                                          {
+				                                @:<a class="button" href="/CallCenter/DoUpdateAutoDialerTaskStatus?status=1&aid=@item.AutoDialerTaskId" target="ajaxTodo"  rel="autoDialerTaskBox" title="确定执行该任务吗?" style="margin-right:5px;"><span>执行</span></a>
+				                                @:<a class="button" href="/CallCenter/DoUpdateAutoDialerTaskStatus?status=0&aid=@item.AutoDialerTaskId" target="ajaxTodo"  rel="autoDialerTaskBox" title="确定中止该任务吗?"><span>中止</span></a> 
+                                          }
+				                        @:</td>
+				                        <td><a href="/CallCenter/AutoDialerTaskResultDetails?aid=@item.AutoDialerTaskId" target="ajax" rel="autoDialerTaskDetailsBox">@item.AutoDialerTaskName</a></td>
+				                        <td>@Convert.ToDateTime(item.BeginTime).ToString("yyyy-MM-dd")</td>
+				                        <td>@item.CreatedOn</td>
+			                        @:</tr>                        
+                                }
+                            }
+                        }
+		            </tbody>
+	            </table>
+
+            <div class="panelBar">
+		        <div class="pagination" targetType="navTab" totalCount="@ViewBag.TaskTotal" numPerPage="@ViewBag.PageSize" pageNumShown="5" currentPage="@ViewBag.PageIndex"></div>
+            </div>
+        </div>
+    </div>
+    <div id="autoDialerTaskDetailsBox" class="unitBox" style="margin-left: 444px;">
+         @Html.Partial("AutoDialerTaskResultDetails")
+    </div>
+</div>

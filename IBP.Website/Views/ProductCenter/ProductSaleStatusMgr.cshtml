@@ -1,0 +1,139 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    List<ProductCategoryInfoModel> ProductCategoryList = ViewBag.ProductCategoryList as List<ProductCategoryInfoModel>;
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+    Dictionary<string, ProductCategoryGroupInfoModel> categoryGroupList = ProductCategoryGroupInfoService.Instance.GetProductCategoryGroupList(false);
+    List<string> ProductList = ViewBag.ProductIdList as List<string>;
+}
+
+<form id="pagerForm" method="post" action="/ProductCenter/ProductSaleStatusMgr">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+
+
+<div id="productCategoryBox" class="pageHeader">
+	<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/ProductCenter/ProductSaleStatusMgr" method="post">
+	<div class="searchBar">
+     <div class="searbg">
+      <dl style="width:175px;">
+        <dd>类型分组：</dd>
+        <dt><select name="categoryGroupName">
+                        @{
+                            if(categoryGroupList != null)
+                            {
+                                <option value="">所有</option>
+                                foreach(ProductCategoryGroupInfoModel item in categoryGroupList.Values)
+                                {
+                                    <option value="@item.ProductCategoryGroupId" @CommonUtil.SetComboxSelected(item.ProductCategoryGroupId, ViewBag.ProductGroupName) >@item.GroupName</option>
+                                }
+                            }
+                        }
+                    </select>
+          </dt>
+          </dl>
+         <dl style="width:175px;">
+        <dd>产品类型：</dd>
+        <dt><select name="productCategoryId">
+                        @{
+                            if(categoryGroupList != null)
+                            {
+                                <option value="">所有</option>
+                                foreach(ProductCategoryGroupInfoModel item in categoryGroupList.Values)
+                                {
+                                    <option value="@item.ProductCategoryGroupId" @CommonUtil.SetComboxSelected(item.ProductCategoryGroupId, ViewBag.ProductGroupName) >@item.GroupName</option>
+                                }
+                            }
+                        }
+                    </select>
+          </dt>
+          </dl>
+          <dl>
+            <dd>销售状态：</dd>
+            <dt><select name="salesStatus">
+                <option value="">所有</option>
+                <option value="已建档" @CommonUtil.SetComboxSelected("已建档", ViewBag.StatusName)>已建档</option>
+                <option value="已开放" @CommonUtil.SetComboxSelected("已开放", ViewBag.StatusName)>已开放</option>
+                <option value="已分配" @CommonUtil.SetComboxSelected("已分配", ViewBag.StatusName)>已分配</option>
+                <option value="已锁定" @CommonUtil.SetComboxSelected("已锁定", ViewBag.StatusName)>已锁定</option>
+                <option value="已销售" @CommonUtil.SetComboxSelected("已销售", ViewBag.StatusName)>已销售</option>
+            </select></dt>
+          </dl>
+          <dl>
+        <dd>产品名称：</dd>
+        <dt><input type="text" name="productName" value="@ViewBag.ProductName" /></dt>
+          </dl>
+          <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></div>
+        </div>
+		
+	</div>
+	</form>
+</div>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+			<li><a class="add" href="/ProductCenter/NewProductCategory" target="dialog" maxable="false"  rel="ProductCenter_ProductCategoryMgr" title="新建产品类型信息" mask="true" width="910" height="600"><span>新建</span></a></li>
+			<li><a class="edit" href="/ProductCenter/EditProductCategory?catid={cat_id}" target="dialog" maxable="false"  rel="ProductCenter_ProductCategoryMgr" title="编辑产品类型信息" mask="true" width="910" height="600"><span>编辑</span></a></li>
+			<li><a title="确实要删除这些记录吗?" target="ajaxTodo" href="/ProductCenter/DoDelProductCategory?catid={cat_id}" class="delete"><span>删除</span></a></li>
+			<li class="line">line</li>
+			<li><a class="icon" href="#" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+		</ul>
+	</div>
+	<table class="table" layoutH="115">
+		<thead>
+			<tr>
+                <th width="22"><input type="checkbox" group="ids" class="checkboxCtrl"></th>
+				<th width="60" @CommonUtil.SetSortOrder("product_code", ViewBag.OrderField, ViewBag.OrderDirection) >产品代码</th>
+                <th width="160" @CommonUtil.SetSortOrder("product_name", ViewBag.OrderField, ViewBag.OrderDirection) >产品名称</th>      
+                <th width="100" @CommonUtil.SetSortOrder("sales_status", ViewBag.OrderField, ViewBag.OrderDirection) >销售状态</th>
+				<th width="140" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection) >创建时间</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (ProductList != null)
+                {
+                    ProductInfoDomainModel productInfo = null;
+                    foreach (string productId in ProductList)
+                    {
+                        productInfo = ProductInfoService.Instance.GetProductDomainInfoByProductId(productId, false);
+                        if(productInfo == null)
+                        {
+                            continue;
+                        }
+                        
+			            <tr target="pid" rel="@productId">
+                            <td><input name="ids" value="@productId" type="checkbox"></td>             
+				            <td>@productInfo.BasicInfo.ProductCode</td>
+                            <td>@productInfo.BasicInfo.ProductName</td>
+				            <td>@productInfo.BasicInfo.SalesStatus</td>
+                            <td>@productInfo.BasicInfo.CreatedOn</td>
+			            </tr>                        
+                    }
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				<option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				<option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.ProductCategoryTotal 条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.ProductCategoryTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+
+	</div>
+</div>

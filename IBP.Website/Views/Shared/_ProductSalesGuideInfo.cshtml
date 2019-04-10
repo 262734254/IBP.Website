@@ -1,0 +1,58 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    ProductCategoryInfoModel categoryInfo = (Request.QueryString["pcid"] == null) ? null : ProductCategoryInfoService.Instance.Retrieve(Request.QueryString["pcid"].ToString());
+    SalePackageDomainModel packageInfo = (Request.QueryString["ptid"] != "package") ? null : SalesPackageInfoService.Instance.GetSalePackageDomainModelById(Request.QueryString["pcid"].ToString(), false);
+}
+
+     <div class="tabs" currentIndex="0" eventType="click">
+	    <div class="tabsHeader">
+		    <div class="tabsHeaderContent">
+			    <ul>
+                    <li><a href="javascript:;"><span>产品详细介绍</span></a></li>
+				    <li><a href="javascript:;"><span>营销话术指引</span></a></li>
+			    </ul>
+		    </div>
+	    </div>
+	    <div class="tabsContent">
+            <div style="height:175px; background-color:#fff;">
+                @{
+                    if (packageInfo != null)
+                    {
+                        HtmlString cDescription = new HtmlString(packageInfo.BasicInfo.Description);
+                        @cDescription
+                    }
+                    else
+                    {
+                        if (categoryInfo != null)
+                        {
+                            HtmlString cDescription = new HtmlString(categoryInfo.Description);
+                            @cDescription
+                        }
+                    }
+                }
+            </div>
+		    <div style="height:180px; background-color:#fff;">
+                @{
+                    if (packageInfo != null)
+                    {
+                        HtmlString saleGuide = new HtmlString(packageInfo.BasicInfo.SalesGuide);
+                        @saleGuide
+                    }
+                    else
+                    {
+                        if (categoryInfo != null)
+                        {
+                            HtmlString saleGuide = new HtmlString(categoryInfo.SalesGuide);
+                            @saleGuide
+                        }
+                    }
+                }
+            </div>
+	    </div>
+	    <div class="tabsFooter">
+		    <div class="tabsFooterContent"></div>
+	    </div>
+    </div>

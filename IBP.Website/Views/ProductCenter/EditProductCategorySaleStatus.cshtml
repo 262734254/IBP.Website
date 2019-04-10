@@ -1,0 +1,45 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    ProductCategoryInfoModel catInfo = (Request.QueryString["id"] == null) ? null : ProductCategoryInfoService.Instance.GetProductCategoryInfoById(Request.QueryString["id"].Split('|')[1]);
+    ProductCategorySalesStatusModel statusInfo = (Request.QueryString["id"] == null) ? null : ProductCategorySalesStatusService.Instance.GetProductCategorySalesStatusInfoById(Request.QueryString["id"].Split('|')[1], Request.QueryString["id"].Split('|')[0]);
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/ProductCenter/DoUpdateProductCategorySaleStatus" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+            <input type="hidden" value="@statusInfo.SalesStatusId" name="statusId" />
+            <input type="hidden" value="@catInfo.ProductCategoryId" name="categoryId" />
+            <input type="hidden" value="@statusInfo.SortOrder" name="sortOrder" />
+            <div class="unit">
+				<label>产品类型名称：</label>
+				<label>@catInfo.CategoryName</label>
+			</div>
+			<div class="unit">
+				<label>销售状态名称：</label>
+				<input name="statusName" class="required" type="text" size="30" value="@statusInfo.SalestatusName" alt="请输入产品销售状态名称"/>
+			</div>
+			<div class="unit">
+				<label>销售状态描述：</label>
+				<textarea name="statusDesc" cols="40" rows="5" >@statusInfo.Description</textarea>
+			</div>
+            <div class="unit">
+				<label>状态：</label>
+				<input type="radio" value="0" name="Status" @((statusInfo.Status == 0) ? "checked" : "") />启用
+                <input type="radio" value="1" name="Status" @((statusInfo.Status == 1) ? "checked" : "") />禁用
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+

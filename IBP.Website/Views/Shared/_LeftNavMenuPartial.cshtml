@@ -1,0 +1,46 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@using Framework.Utilities;
+
+@{
+    ActionDomainModel MenuTree = PermissionService.GetMenuTreeByRoleId(SessionUtil.Current.RoleId);
+}
+
+<div class="accordion" fillspace="sidebar">
+    @{
+        if(MenuTree != null && MenuTree.ChildActionList != null)
+        {
+            foreach(ActionDomainModel tree1 in MenuTree.ChildActionList.Values)
+            {
+                @:<div class="accordionHeader">
+                    @:<h2><span>Folder</span>@tree1.DisplayName</h2>
+                @:</div>
+                if(tree1.ChildActionList != null)
+                {
+                    @:<div class="accordionContent">
+                        @:<ul class="tree treeFolder">
+                        foreach(ActionDomainModel tree2 in tree1.ChildActionList.Values)
+                        {
+                            if(tree2.ChildActionList == null || tree2.ChildActionList.Count == 0)
+                            {
+                                @:<li><a href="/@tree2.ControllerName.Replace("Controller","")/@tree2.ActionName" target="navTab" id="@(tree2.ControllerName.Replace("Controller","") + "_" + tree2.ActionName)"  rel="@(tree2.ControllerName.Replace("Controller","") + "_" + tree2.ActionName)">@tree2.DisplayName</a></li>
+                            }
+                            else
+                            {
+                                @:<li><a>@tree2.DisplayName</a>
+                                    @:<ul>
+                                        foreach (ActionDomainModel tree3 in tree2.ChildActionList.Values)
+                                        {
+                                            @:<li><a href="/@tree3.ControllerName.Replace("Controller", "")/@tree3.ActionName" target="navTab" id="@(tree3.ControllerName.Replace("Controller","") + "_" + tree3.ActionName)" rel="@(tree3.ControllerName.Replace("Controller","") + "_" + tree3.ActionName)">@tree3.DisplayName</a></li>
+                                        }
+                                    @:</ul>
+                                @:</li>
+                            }
+                        }
+                        @:</ul>
+                    @:</div>                    
+                }         
+            }
+        }
+    }
+</div>

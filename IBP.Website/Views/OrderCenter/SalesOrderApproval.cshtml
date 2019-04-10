@@ -1,0 +1,82 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@using IBP.Common;
+@{
+    Layout = "";
+    string salesOrderId = Request.QueryString["sid"];
+    string pagename = Request.QueryString["page"];
+   
+   SalesOrderDomainModel   SalesorModel = SalesOrderInfoService.Instance.GetSalesorderDomainModelById(salesOrderId, false);
+   CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(SalesorModel.BasicInfo.CustomerId, false);
+   
+   CustomDataDomainModel Paycardbank = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+   CustomDataDomainModel Approvalexception = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("审批异常类型", false);
+
+
+    }
+<div class="pageContent">
+	
+	<form method="post" action="/OrderCenter/DoSalesOrderApproval" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		 <input type="hidden" name="orderId" value="@salesOrderId" />
+        <input type="hidden" name="page" value="@pagename" />
+        <div class="pageFormContent" layoutH="58">
+           <div class="information02">
+             <h2>审批</h2>
+             <div class="New_box02">
+               <dl>
+                  <span>
+                    <dd>客户姓名：</dd>
+                    <dt><input  type="text" name="CustomerName"readonly="readonly" class="customPhone" value="@Customer.BasicInfo.CustomerName"   /></dt>
+                  </span>
+                  <span>
+                    <dd>订单编号：</dd>
+                    <dt><input  type="text" name="salesorder_code"readonly="readonly"class="customPhone" value="@SalesorModel.BasicInfo.SalesorderCode" /></dt>
+                  </span>
+                </dl> 
+                <dl style="height: 75px;">
+                    <dd>产品列表：</dd>
+                    <dt><textarea readonly="readonly"  cols="50" rows="3"style="width:518px;">@SalesOrderInfoService.Instance.GetSalesorderProductNameList(SalesorModel)
+</textarea> </dt>
+                </dl>
+                <dl>
+                    <dd>请选择：</dd>
+                    <p><input type="radio" value="0" checked name="opType" />通过
+                    <input type="radio" value="1" name="opType" />异常</p>
+                </dl>
+                <div id="Divexception"  class="hideClass">
+                <dl>
+                  <dd>异常原因：</dd>
+                  <dt>
+                   <select name="exceptionType" >
+                        <option value="">请选择</option>
+                         @{
+                            if (Approvalexception != null && Approvalexception.ValueList.Count > 0)
+                            {
+                                foreach (CustomDataValueDomainModel item in Approvalexception.ValueList.Values)
+                                {
+                            @:<option value="@item.ValueId">@item.DataValue</option>
+                            }
+                            }
+                        }
+                    </select>
+                  </dt>
+                  
+                </dl> <dl style="height: 75px;">
+                    <dd>备注：</dd>
+                    <dt><textarea name="opExceptionDesc" cols="50" rows="3"style="width:518px;"></textarea> </dt>
+                </dl>
+                </div>
+             </div>
+           </div> 
+
+              
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

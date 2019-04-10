@@ -1,0 +1,37 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@using Framework.Utilities;
+
+@{
+    Layout = "";
+    string workOrderIdList = Request.QueryString["oid"];
+    string page = Request.QueryString["page"];
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/WorkOrderCenter/DoChangeWorkorderAdvanceTime" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+            <input type="hidden" value="@workOrderIdList" name="workOrderIdList" />
+            <input type="hidden" value="@page" name="pageName" />
+            <div class="information02"> 
+                <h2>修改工单预约时间</h2>
+                <div class="New_box02">
+                    <dl>
+                        <dd>预约时间：</dd>
+                        <dt><input type="text" style="width:120px;" name="advanceTime" readonly="readonly" class="date required" format="yyyy-MM-dd HH:mm"/>  </dt>
+                    </dl>
+                </div>
+		    </div>
+        </div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>

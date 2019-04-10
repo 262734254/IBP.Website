@@ -1,0 +1,101 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    ActionDomainModel ActionTree = PermissionService.GetMenuTree(true);
+    string roleId = Request.QueryString["rid"];
+    if(roleId == "")
+    {
+        throw new Exception("角色ID不存在");
+    }
+    RoleDomainModel roleInfo = RoleInfoService.Instance.GetRoleDomainModel(roleId);
+    
+    List<string> existActionList = PermissionService.GetRoleActionIdList(roleId);
+}
+
+<div class="pageContent">
+	
+	<form method="post" action="/UserMgr/DoUpdateRole" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+            <input type="hidden" name="roleId" value="@roleInfo.RoleId" />
+			<div class="unit">
+				<label>角色名称：</label>
+				<input type="text" name="roleName" size="30" minlength="3" maxlength="10" class="required" value="@roleInfo.RoleName" />
+			</div>
+			<div class="unit">
+				<label>描述：</label>
+				<textarea name="roleDesc" cols="90" rows="1" value="@roleInfo.Description" >@roleInfo.Description</textarea>
+			</div>
+            <div class="unit">
+	            <div class="tabs" currentIndex="0" eventType="click" style="margin-right:10px;">
+		            <div class="tabsHeader">
+			            <div class="tabsHeaderContent">
+				            <ul>      
+                                @{
+                                    foreach (ActionDomainModel item in ActionTree.ChildActionList.Values)
+                                    {
+                                        <li><a href="javascript:;"><span>@item.DisplayName</span></a></li>
+                                    }
+                                }                          
+				            </ul>
+			            </div>
+		            </div>
+		            <div class="tabsContent" style="height:365px; background-color:White;">
+                        @{
+                            foreach (ActionDomainModel item in ActionTree.ChildActionList.Values)
+                            {
+                                @:<div>
+                                if (item.ChildActionList != null)
+                                {
+                                    foreach (ActionDomainModel child in item.ChildActionList.Values)
+                                    {
+                                        @:<fieldset style="margin-bottom:15px">                                    
+                                        @:<legend>@child.DisplayName</legend>
+                                        if (child.ChildActionList == null)
+                                        {
+                                            if (child.ActionGroupList != null)
+                                            {
+                                                foreach (ActionDomainModel groupItem in child.ActionGroupList.Values)
+                                                {
+                                                    @:<label><input type="checkbox" @((existActionList.Contains(groupItem.ActionId)) ? "checked" : "") name="chkPmBox" value="@groupItem.ActionId" />@groupItem.DisplayName</label>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            foreach (ActionDomainModel child2 in child.ChildActionList.Values)
+                                            {
+                                                @:<fieldset style="margin-left:40px;margin-bottom:15px">                                    
+                                                @:<legend>@child2.DisplayName</legend>
+                                                if (child2.ActionGroupList != null)
+                                                {
+                                                    foreach (ActionDomainModel groupItem in child2.ActionGroupList.Values)
+                                                    {
+                                                        @:<label><input type="checkbox"  @((existActionList.Contains(groupItem.ActionId)) ? "checked" : "") name="chkPmBox" value="@groupItem.ActionId" />@groupItem.DisplayName</label>
+                                                    }
+                                                }
+                                                @:</fieldset>
+                                            }
+                                        }
+                                        @:</fieldset>
+                                    }
+                                }
+                                @:</div>
+                            }
+                        }
+		            </div>
+		            <div class="tabsFooter">
+			            <div class="tabsFooterContent"></div>
+		            </div>
+	            </div> 
+            </div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

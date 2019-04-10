@@ -1,0 +1,146 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    Dictionary<string, ProductCategoryInfoModel> CatList = ProductCategoryInfoService.Instance.GetProductCategoryList(false);
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+}
+
+<div class="pageContent">
+    <form method="post" action="/BusinessCenter/DoAddSalePackageInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+    <div class="pageFormContent"  layouth="60">
+        <dl>
+			<dt>项目名称：</dt>
+			<dd><input name="packageName" type="text" value="" class="text required"/></dd>
+		</dl>           
+        <dl>
+            <dt>销售城市：</dt>
+            <dd><select name="city" custjs="businessmgr" id="ddlSaleCity">
+            @{
+                <option value="">所有</option>
+                if (SaleCity != null)
+                {
+                    foreach(CustomDataValueDomainModel item in SaleCity.ValueList.Values)
+                    {
+                        <option value="@item.ValueId" >@item.DataValue</option>
+                    }
+                }
+            }
+			</select></dd>
+        </dl>
+        <dl>
+			<dt>产品定位：</dt>
+			<dd>
+                <select name="location">
+                    <option value="低端">低端</option>
+                    <option value="中端">中端</option>
+                    <option value="高端">高端</option>
+                </select>
+            </dd>
+		</dl>     
+        <dl>
+			<dt>状态：</dt>
+			<dd>
+                <select id="ddlStatus" name="productSaleStatus">
+                   <option value="0">启用</option>
+                   <option value="1">禁用</option>
+                </select>
+            </dd>
+		</dl>
+        <div class="unit">
+        <div class="tabs" currentIndex="0" eventType="click">
+	        <div class="tabsHeader">
+		        <div class="tabsHeaderContent">
+			        <ul>
+                        <li><a href="javascript:;"><span>项目基本信息</span></a></li>
+				        <li><a href="javascript:;"><span>营销产品组成</span></a></li>
+                        <li><a href="javascript:;"><span>产品包详细介绍</span></a></li>
+                        <li><a href="javascript:;"><span>营销话术指引</span></a></li>
+			        </ul>
+		        </div>
+	        </div>
+	        <div class="tabsContent" style="background-color:White;">
+                <div  layouth="175">
+                <dl>
+			        <dt>有效起始时间：</dt>
+			        <dd><input format="yyyy-MM-dd" value=""  type="text" name="beginTime" class="required date"  readonly="true" /></dd>
+		        </dl>   
+                <dl>
+			        <dt>有效截止时间：</dt>
+			        <dd><input format="yyyy-MM-dd" value=""  type="text" name="endTime" class="required date"  readonly="true" /></dd>
+		        </dl> 
+                <dl>
+                    <dt>业务总额：</dt>
+                    <dd><input value=""  type="text"  name="totalPrice" class="required number" /></dd>
+                </dl>
+                <dl>
+                    <dt>购机金额：</dt>
+                    <dd><input value=""  type="text"  name="salePrice" class="required number" /></dd>
+                </dl>
+                <dl>
+                    <dt>预存话费：</dt>
+                    <dd><input value=""  type="text"  name="storedPrice" class="required number" /></dd>
+                </dl>
+                <dl>
+                    <dt>返还月数：</dt>
+                    <dd><input value=""  type="text"  name="returnMonths" class="required number" /></dd>
+                </dl>
+                <dl>
+                    <dt>每月返还：</dt>
+                    <dd><input value=""  type="text"  name="monthReturns" class="required number" /></dd>
+                </dl>
+                <dl>
+                    <dt>每月补存：</dt>
+                    <dd><input value=""  type="text"  name="monthKeep" class="required number" /></dd>
+                </dl>
+                <dl>
+                    <dt>分期数：</dt>
+                    <dd><input value=""  type="text"  name="stages" class="required number" /></dd>
+                </dl>
+                <dl>
+                    <dt>每期金额：</dt>
+                    <dd><input value=""  type="text"  name="stagePrice" class="required number" /></dd>
+                </dl>
+                <div class="divider"></div>
+                <dl style="width:508px; height:35px;">
+                    <dt>备注信息：</dt>
+                    <dd><input value="" style="width:508px; height:30px;" type="text"  name="remark" class="text" /></dd>
+                </dl>
+                </div>
+		        <div layouth="175" id="packageProductSelector"> @Html.Partial("SalePackageProductSelector")</div>
+                <div layouth="175">
+                <textarea class="editor" name="description" style="height:335px; width:100%;"
+								upLinkUrl="upload.php" upLinkExt="zip,rar,txt" 
+								upImgUrl="upload.php" upImgExt="jpg,jpeg,gif,png" 
+								upFlashUrl="upload.php" upFlashExt="swf"
+								upMediaUrl="upload.php" upMediaExt:"avi">
+							</textarea>
+                </div>
+                <div layouth="175">
+                <textarea class="editor" name="salesGuide" style="height:335px; width:100%;"
+								upLinkUrl="upload.php" upLinkExt="zip,rar,txt" 
+								upImgUrl="upload.php" upImgExt="jpg,jpeg,gif,png" 
+								upFlashUrl="upload.php" upFlashExt="swf"
+								upMediaUrl="upload.php" upMediaExt:"avi">
+							</textarea>
+                </div>
+	        </div>
+	        <div class="tabsFooter">
+		        <div class="tabsFooterContent"></div>
+	        </div>
+        </div>
+        </div>
+    </div>
+     
+    <div class="formBar">
+        <ul>
+            <li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+            <li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+        </ul>
+    </div>
+    </form>
+</div>
+
+

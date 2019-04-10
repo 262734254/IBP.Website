@@ -1,0 +1,81 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    Dictionary<string, WorkorderTypeInfoModel> Dict = WorkorderTypeInfoService.Instance.GetWorkOrderDictionary(false);
+    WorkOrderTypeTreeDomainModel workorderTypeTree = WorkorderTypeInfoService.Instance.GetWorkOrderTypeTree(false);
+}
+
+<div class="pageContent">
+    <div id="workorderTypeBox" class="unitBox" style="float: left; display: block; overflow: auto;
+        width: 234px;">
+        <div class="pageHeader" style="border: 1px #B8D0D6 solid">            
+            <div class="searchBar">
+                <table class="searchContent">
+                    <tr>
+                        <td>
+                            工单类型列表
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="pageContent" style="border-left: 1px #B8D0D6 solid; border-right: 1px #B8D0D6 solid">
+             <div class="panelBar">
+                <ul class="toolBar">
+                    <li>
+                        <a title="新建工单类型" class="add icontxt" href="#" mask="true">
+                            <span>新建</span>
+                        </a>
+                    </li>
+                    <li class="line">line</li>
+                    <li><a class="edit icontxt" href="#" mask="true"><span>编辑</span></a></li>
+                    <li class="line">line</li>
+                    <li><a class="delete icontxt" href="#"><span>删除</span></a></li>     
+                    <li class="line">line</li>               
+                </ul>
+            </div>
+            <ul class="tree expand" layouth="88">
+                @{
+                    if (workorderTypeTree.ChildTypeList != null)
+                    {
+                        foreach (WorkOrderTypeTreeDomainModel item in workorderTypeTree.ChildTypeList.Values)
+                        {
+                            @:<li><a href="/WorkOrderCenter/WorkOrderTypeDetails?id=@item.BasicInfo.WorkorderTypeId" target="ajax" rel="workorderDetailBox">@item.BasicInfo.TypeName</a>
+                                 if (item.ChildTypeList != null)
+                                 {
+                                     @:<ul>
+                                        foreach (WorkOrderTypeTreeDomainModel item2 in item.ChildTypeList.Values)
+                                        {
+                                            @:<li><a href="/WorkOrderCenter/WorkOrderTypeDetails?id=@item2.BasicInfo.WorkorderTypeId" target="ajax" rel="workorderDetailBox">@item2.BasicInfo.TypeName</a>
+                                                if (item2.ChildTypeList != null)
+                                                {
+                                                    @:<ul>
+                                                    foreach (WorkOrderTypeTreeDomainModel item3 in item2.ChildTypeList.Values)
+                                                    {
+                                                        @:<li><a href="/WorkOrderCenter/WorkOrderTypeDetails?id=@item3.BasicInfo.WorkorderTypeId" target="ajax" rel="workorderDetailBox">@item3.BasicInfo.TypeName</a></li>
+                                                    }
+                                                    @:</ul>
+                                                }
+                                            @:</li>
+                                        }
+                                     @:</ul>
+                                 }
+                            @:</li>                           
+                        }
+                    }
+                 }
+            </ul>
+            <div class="panelBar">
+                <div class="pages">
+                     
+                </div>
+                 
+            </div>
+        </div>
+    </div>
+    <div id="workorderDetailBox" class="unitBox" style="margin-left: 238px;">
+        @Html.Partial("WorkOrderTypeDetails")
+    </div>
+</div>

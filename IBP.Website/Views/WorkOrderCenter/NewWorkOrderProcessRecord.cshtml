@@ -1,0 +1,235 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string workOrderId = Request.QueryString["oid"];
+    string page = Request.QueryString["page"];
+    WorkOrderDomainModel WorkOrder = WorkorderInfoService.Instance.GetWorkorderDomainModelById(workOrderId, false);
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(WorkOrder.BasicInfo.RelCustomerId, false);
+    CustomerDomainModel CustomerPhone = ViewBag.Customer as CustomerDomainModel;
+
+    CustomDataDomainModel WorkOrderProimary = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("工单级别", false);
+    Dictionary<string, UserGroupInfoModel> groupList = UserGroupInfoService.Instance.GetUserGroupList(false);
+    CustomDataDomainModel ContactPurposeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("联系记录(联系目的)", false);
+    CustomDataDomainModel ContactResultList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("联系记录(联系结果)", false);
+
+    WorkOrderTypeDomainModel typeModel = WorkorderTypeInfoService.Instance.GetTypeDomainModelById(WorkOrder.BasicInfo.WorkorderType, true);
+    string DataTag = Customer.BasicInfo.CustomerId + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff");
+}
+<div class="pageContent">
+    <form method="post" action="/WorkOrderCenter/DoNewWorkOrderProcessRecord" class="pageForm required-validate"
+    onsubmit="return validateCallback(this, dialogAjaxDone);">
+    <div class="pageFormContent" layouth="56">
+        <input type="hidden" name="workOrderId" value="@workOrderId" />
+        <input type="hidden" name="customerId" value="@Customer.BasicInfo.CustomerId" />
+        <input type="hidden" value="@page" name="pageName" />
+        <div class="information02">
+            <h2>
+                新建工单【@WorkOrder.BasicInfo.WorkorderCode】处理记录信息</h2>
+            <div class="New_box02">
+                <dl>
+                    <dd>
+                        客户联系：</dd>
+                    <dt>
+                        <input style="width: 15px;" type="radio" name="hasContactRecords" checked="checked" />是
+                        <input style="width: 15px;" type="radio" name="hasContactRecords" />否</dt>
+                    <dd>
+                        联系方向：</dd>
+                    <dt>
+                        <select name="calldirection">
+                            <option value="1">呼入</option>
+                            <option selected value="2">呼出</option>
+                        </select></dt>
+                    <dd>
+                        联系目的：</dd>
+                    <dt>
+                        <select name="purpose">
+                            @{
+                                if (ContactPurposeList != null && ContactPurposeList.ValueList != null)
+                                {
+                                    foreach (CustomDataValueDomainModel item in ContactPurposeList.ValueList.Values)
+                                    {
+                                        if (item.DataValue == "工单处理")
+                                        {
+                                @:<option selected value="@item.ValueId">@item.DataValue</option>
+                                        }
+                                        else
+                                        {                                   
+                                @:<option value="@item.ValueId">@item.DataValue</option>
+                                        }
+                                    }
+                                }
+                            }
+                        </select>
+                    </dt>
+                    <dd>
+                        联系电话：</dd>
+                    <dt>
+                        <select class="contactPhone" name="contactPhone">
+                            @{
+                                if (Customer.PhoneNumberList != null)
+                                {
+                                    foreach (CustomerPhoneInfoModel item in Customer.PhoneNumberList.Values)
+                                    {
+                                <option value="@item.PhoneNumber" callvalue="@CustomerPhoneInfoService.Instance.GetOutCallNumber(item)">@item.PhoneNumber</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </dt>
+                </dl>
+                <dl>
+                    <dd>
+                        其他号码：</dd>
+                    <dt>
+                        <input type="text" style="width: 78px;" class="customPhone" name="otherNumber" /></dt>
+                    <dd>
+                        <a class="button" href="#" custjs="softcti" name="btnOutCallSelector" customerid="@DataTag" callnumber="">
+                            <button class="buttonContent">
+                                外呼</button></a>
+                    </dd>
+                    <dd>
+                        预约时间：</dd>
+                    <dt>
+                        <input type="text" readonly="readonly" class="date" format="yyyy-MM-dd HH:mm" name="advanceTime" /></dt>
+                    <span style="width: 300px;">
+                        <dd>
+                            处理结果：</dd>
+                        <dt style="width: 200px;">
+                            <select id="ddlWorkTypeResult" style="width: 190px;" name="workTypeResult">
+                                @{
+                                     <option value="">请选择</option>
+                                    if (typeModel != null && typeModel.StatusList.Values != null)
+                                    {
+                                        foreach (WorkorderResultInfoModel item in typeModel.ResultList.Values)
+                                        {
+                                            if (item.Status == 1)
+                                            {
+                                                continue;
+                                            }
+                                            if (item.WorkorderResultId == typeModel.BeginResultInfo.WorkorderResultId)
+                                            {
+                                                continue;
+                                            }
+                                    @:<option value="@item.WorkorderResultId">@item.ResultName</option>
+                                                }
+                                    }
+                                }
+                            </select>
+                        </dt>
+                    </span>
+                </dl>
+                <dl>
+                    <span style="width: 200px; display: none;">
+                        <dd>
+                            流转状态：</dd>
+                        <dt style="width: 90px;">
+                            <select id="ddlWorkTypeStatus" style="width: 80px;" name="workTypeStatus">
+                                @{
+                                    if (typeModel != null && typeModel.StatusList.Values != null)
+                                    {
+                                        foreach (WorkorderStatusInfoModel item in typeModel.StatusList.Values)
+                                        {
+                                            if (item.StatusTag != 0)
+                                            {
+
+                                                if (item.StatusTag == 2 && WorkorderInfoService.Instance.HasCloseWorkOrderPremission() == false)
+                                                {
+                                                    continue;
+                                                }
+                                    @:<option value="@item.WorkorderStatusId">@item.StatusName</option>
+                                                }
+                                        }
+                                    }
+                                }
+                            </select>
+                        </dt>
+                    </span>
+                    <dd>
+                        联系结果：</dd>
+                    <dt>
+                        <select name="result">
+                            <option value="">请选择</option>
+                            @{
+                                if (ContactResultList != null && ContactResultList.ValueList != null)
+                                {
+                                    foreach (CustomDataValueDomainModel item in ContactResultList.ValueList.Values)
+                                    {
+                                        if (item.Status == 1)
+                                        {
+                                            continue;
+                                        }
+                                @:<option value="@item.ValueId">@item.DataValue</option>
+                                 }
+                                }
+                            }
+                        </select>
+                    </dt>
+                    <span style="width: 800px; height: 50px;">
+                        <dd>
+                            记录描述：</dd>
+                        <dt style="width: 500px; height: 200px;">
+                            <textarea name="workOrderDesc" cols="88" rows="2" style="width: 630px; height: 30px;"></textarea></dt>
+                    </span>
+                </dl>
+                <dl>
+                    <dd>
+                        转交工单：</dd>
+                    <dt style="width: 660px; height: 120px;">
+                        <table width="650px">
+                            <tr>
+                                <td style="padding: 5px;">
+                                    分派给用户组:
+                                </td>
+                                <td style="padding: 5px;">
+                                    分派给指定用户：
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-right: 40px;">
+                                    <select custjs="customermgr" class="request" id="lstUserGroupList" name="userGroupList"
+                                        multiple="multiple" style="height: 100px; width: 300px">
+                                        @{
+                                            if (groupList != null)
+                                            {
+                                                foreach (UserGroupInfoModel item in groupList.Values)
+                                                {
+                                            <option value="@item.UserGroupId">@item.GroupName</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="lstGroupUserList" name="groupUserList" multiple="multiple" style="height: 100px;
+                                        width: 270px">
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </dt>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="formBar">
+        <ul>
+            <li>
+                <div class="buttonActive">
+                    <div class="buttonContent">
+                        <button type="submit">
+                            提交工单处理记录</button></div>
+                </div>
+            </li>
+            <li>
+                <div class="button">
+                    <div class="buttonContent">
+                        <button type="button" class="close">
+                            取消</button></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    </form>
+</div>

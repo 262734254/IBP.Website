@@ -1,0 +1,228 @@
+﻿@{
+    Layout = "";
+}
+
+<form id="pagerForm" method="post" action="demo_page1.html">
+	<input type="hidden" name="status" value="${param.status}">
+	<input type="hidden" name="keywords" value="${param.keywords}" />
+	<input type="hidden" name="pageNum" value="1" />
+	<input type="hidden" name="numPerPage" value="${model.numPerPage}" />
+	<input type="hidden" name="orderField" value="${param.orderField}" />
+</form>
+
+
+<div class="pageHeader">
+	<form onsubmit="return navTabSearch(this);" action="/UserMgr/UserList" method="post">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>
+                <td style="width:110px;">
+                <select class="combox" name="keytype">
+						<option value="全部">全部客户来源</option>
+						<option value="折页">折页</option>
+                        <option value="短信">短信</option>
+                        <option value="营业厅">营业厅</option>
+                        <option value="电商">电商</option>
+                        <option value="其他">其他</option>
+					</select>
+                </td>
+                <td>
+                    客户姓名：<input type="text" alt="" class="textInput" maxlength="20" size="10" name="name"/>
+                </td>                
+				<td>
+					客户电话：<input type="text" alt="" class="phone textInput" size="10" name="phone"/>
+				</td>	
+                <td>
+					客户归属：<input type="text" alt="" class="phone textInput" size="10" name="phone2"/>
+				</td>	
+             </tr>
+             <tr>
+                <td class="dateRange" colspan="4">
+					建档日期:
+					<input type="text" value="" readonly="readonly" class="date" name="dateStart">
+					<span class="limit">-</span>
+					<input type="text" value="" readonly="readonly" class="date" name="dateEnd">
+				</td>
+			</tr>
+		</table>
+    	<div class="subBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></li>
+			</ul>
+		</div>
+	</div>
+	</form>
+</div>
+
+<div style="border:1px #B8D0D6 solid" class="pageContent j-resizeGrid">
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+			<li>将选中的客户分配给工号：<input type="text" alt="" class="textInput required" maxlength="20" size="15" name="name"/></li>
+			<li><a title="确实要分配选中的客户吗?" target="selectedTodo" rel="ids" href="demo/common/ajaxDone.html" class="delete"><span>确定</span></a></li>
+			<li class="line">line</li>
+		</ul>
+	</div>
+	<table class="table" width="1700" layoutH="138">
+		<thead>
+			<tr>
+				<th width="22"><input type="checkbox" group="ids" class="checkboxCtrl"></th>
+				<th width="130" orderField="workId">客户编号</th>
+				<th width="120" orderField="enName">客户姓名</th>
+				<th width="100" orderField="teamName">手机号码</th>
+				<th width="120" orderField="departmentName">办公电话</th>
+				<th width="120" orderField="userStatus">固定电话</th>
+				<th width="120" orderField="entryDate">其他号码</th>
+				<th width="90" orderField="postName">来源</th>
+				<th width="80" orderField="cnName">客户等级</th>
+				<th width="80" orderField="positiveDate">卡1等级</th>
+				<th width="220" orderField="positiveDate">卡1开卡地</th>
+				<th width="80" orderField="positiveDate">卡2等级</th>
+				<th width="220" orderField="positiveDate">卡2开卡地</th>
+				<th width="220" orderField="positiveDate">配送城市1</th>
+				<th width="220" orderField="positiveDate">配送城市2</th>
+				<th width="220" orderField="positiveDate">备注信息</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr target="sid_user" rel="1">
+				<td><input name="ids" value="xxx" type="checkbox"></td>
+				<td>C201111301400329</td>
+				<td>周强</td>
+				<td>13926515895</td>
+				<td>61591234</td>
+				<td>61591234</td>
+				<td></td> 
+                <td>折页</td>
+                <td>VIP</td>
+                <td>普卡</td>
+                <td>深圳</td>
+                <td></td>
+                <td></td>
+                <td>广东深圳宝安</td>
+                <td>广东广州天河</td>
+				<td>
+					这个客户大大滴好！~
+				</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td><input name="ids" value="xxx" type="checkbox"></td>
+				<td>C201111301400329</td>
+				<td>周强</td>
+				<td>13926515895</td>
+				<td>61591234</td>
+				<td>61591234</td>
+				<td></td> 
+                <td>折页</td>
+                <td>VIP</td>
+                <td>普卡</td>
+                <td>深圳</td>
+                <td></td>
+                <td></td>
+                <td>广东深圳宝安</td>
+                <td>广东广州天河</td>
+				<td>
+					这个客户大大滴好！~
+				</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td><input name="ids" value="xxx" type="checkbox"></td>
+				<td>C201111301400329</td>
+				<td>周强</td>
+				<td>13926515895</td>
+				<td>61591234</td>
+				<td>61591234</td>
+				<td></td> 
+                <td>折页</td>
+                <td>VIP</td>
+                <td>普卡</td>
+                <td>深圳</td>
+                <td></td>
+                <td></td>
+                <td>广东深圳宝安</td>
+                <td>广东广州天河</td>
+				<td>
+					这个客户大大滴好！~
+				</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td><input name="ids" value="xxx" type="checkbox"></td>
+				<td>C201111301400329</td>
+				<td>周强</td>
+				<td>13926515895</td>
+				<td>61591234</td>
+				<td>61591234</td>
+				<td></td> 
+                <td>折页</td>
+                <td>VIP</td>
+                <td>普卡</td>
+                <td>深圳</td>
+                <td></td>
+                <td></td>
+                <td>广东深圳宝安</td>
+                <td>广东广州天河</td>
+				<td>
+					这个客户大大滴好！~
+				</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td><input name="ids" value="xxx" type="checkbox"></td>
+				<td>C201111301400329</td>
+				<td>周强</td>
+				<td>13926515895</td>
+				<td>61591234</td>
+				<td>61591234</td>
+				<td></td> 
+                <td>折页</td>
+                <td>VIP</td>
+                <td>普卡</td>
+                <td>深圳</td>
+                <td></td>
+                <td></td>
+                <td>广东深圳宝安</td>
+                <td>广东广州天河</td>
+				<td>
+					这个客户大大滴好！~
+				</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td><input name="ids" value="xxx" type="checkbox"></td>
+				<td>C201111301400329</td>
+				<td>周强</td>
+				<td>13926515895</td>
+				<td>61591234</td>
+				<td>61591234</td>
+				<td></td> 
+                <td>折页</td>
+                <td>VIP</td>
+                <td>普卡</td>
+                <td>深圳</td>
+                <td></td>
+                <td></td>
+                <td>广东深圳宝安</td>
+                <td>广东广州天河</td>
+				<td>
+					这个客户大大滴好！~
+				</td>
+			</tr>
+         </tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20">20</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+			</select>
+			<span>条，共${totalCount}条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="200" numPerPage="20" pageNumShown="10" currentPage="1"></div>
+
+	</div>
+</div>
+
+
+</div>

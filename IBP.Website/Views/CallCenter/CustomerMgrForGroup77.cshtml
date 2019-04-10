@@ -1,0 +1,116 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomDataDomainModel CustomerComeFrom = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("客户来源", false);
+    List<string> CustomerIdList = ViewBag.CustomerIdList as List<string>;
+    ViewBag.QueryPlane = Guid.NewGuid().ToString();
+    CustomerDomainModel Customer = null;
+
+    Dictionary<string, QueryItemDomainModel> QueryCollection = ViewBag.QueryCollection as Dictionary<string, QueryItemDomainModel>;
+}
+
+<form id="pagerForm" method="post" action="/CallCenter/CustomerMgrForGroup77">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+	
+    
+<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/CallCenter/CustomerMgrForGroup77" method="post">
+    <div name="queryPanel" locname="@ViewBag.QueryPlane" class="location">
+        @Html.Partial("_WorkOrderQuerySelector")
+    </div>
+<div id="customerMgrBox" class="pageHeader">
+	<div class="searchBar">
+        <div class="searbg">
+                <dl><dd>客户来源：</dd>
+                <dt>
+                <select name="salesFrom">
+                    @{
+                        if (CustomerComeFrom != null && CustomerComeFrom.ValueList != null)
+                        {
+                            foreach (CustomDataValueDomainModel item in CustomerComeFrom.ValueList.Values)
+                            {
+                                if (item.DataValue == "40077项目")
+                                {
+                                    @:<option selected value="@item.ValueId" @CommonUtil.SetComboxSelected(item.ValueId, (QueryCollection.ContainsKey("sales_from")) ? QueryCollection["sales_from"].SearchValue : "")) >@item.DataValue</option>
+                                    break;
+                                }
+                            }
+                        }
+                    }
+               </select>
+               </dt></dl>
+               <dl><dd>客户姓名：</dd><dt><input type="text" id="customer_name_out" name="customer_name_out" value="@(QueryCollection.ContainsKey("customer_name") ? QueryCollection["customer_name"].SearchValue : "")" /></dt></dl>
+               <dl><dd>联系号码：</dd><dt><input type="text"  name="phone_number" value="@(QueryCollection.ContainsKey("phone_number") ? QueryCollection["phone_number"].SearchValue : "")" /></dt></dl>  
+          <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button locname="@ViewBag.QueryPlane" custjs="flowcontrol" id="btnCustomerQueryPanel" type="button">更多查询条件</button></div></div></div>
+          <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button name="querysubmit" type="submit">查询</button></div></div></div>
+        </div>
+
+	</div>	
+</div>
+</form>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+        	<li><a class="add" href="/CallCenter/AddCustomerInfo?page=customermgr77" target="dialog" maxable="false"rel="CallCenter_CustomerMgrForGroup77" title="新建客户信息" mask="true" width="680" height="480"><span>新建</span></a></li>
+		</ul>
+	</div>
+	<table class="table" layoutH="115">
+		<thead>
+			<tr>
+				<th width="22"><input type="checkbox" group="ids" class="checkboxCtrl"></th>
+				<th width="100" @CommonUtil.SetSortOrder("customer_code", ViewBag.OrderField, ViewBag.OrderDirection)>客户编号</th>
+				<th width="80" @CommonUtil.SetSortOrder("customer_name", ViewBag.OrderField, ViewBag.OrderDirection)>客户姓名</th>
+				<th width="50" @CommonUtil.SetSortOrder("sex", ViewBag.OrderField, ViewBag.OrderDirection)>性别</th>
+				<th width="90" @CommonUtil.SetSortOrder("sales_from", ViewBag.OrderField, ViewBag.OrderDirection)>来源</th>
+				<th width="100" @CommonUtil.SetSortOrder("mobile_phone", ViewBag.OrderField, ViewBag.OrderDirection)>手机号码</th>
+				<th width="120" @CommonUtil.SetSortOrder("home_phone", ViewBag.OrderField, ViewBag.OrderDirection)>固定电话</th>
+				<th width="120" @CommonUtil.SetSortOrder("other_phone", ViewBag.OrderField, ViewBag.OrderDirection)>其他号码</th>
+				<th width="220" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection) class="desc">建档时间</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if(CustomerIdList != null)
+                {                    
+                    foreach(string customerId in CustomerIdList)
+                    {
+                        Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+                        <tr target="sid_user" rel="@customerId">
+                            <td><input name="ids" value="@customerId" type="checkbox"></td>
+                            <td><a href="/CallCenter/CustomerInfo?cid=@customerId" target="navTab" rel="@customerId" title="【@Customer.BasicInfo.CustomerName】客户信息" fresh="false">@Customer.BasicInfo.CustomerCode</a></td>
+                            <td>@Customer.BasicInfo.CustomerName</td>
+                            <td>@((Customer.BasicInfo.Sex == 0) ? "男" : ((Customer.BasicInfo.Sex == 1) ? "女" : "未知"))</td>
+                            <td>@CustomerComeFrom.GetCustomDataValueByValueId(Customer.BasicInfo.SalesFrom)</td>
+                            <td>@Customer.BasicInfo.MobilePhone</td>
+                            <td>@Customer.BasicInfo.HomePhone</td>
+                            <td>@Customer.BasicInfo.OtherPhone</td>
+                            <td>@Customer.BasicInfo.CreatedOn</td>
+                        </tr>
+                    }
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				<option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				<option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.CustomerTotal 条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.CustomerTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+
+	</div>
+</div>

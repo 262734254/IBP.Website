@@ -1,0 +1,86 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    ProductCategoryInfoModel catInfo = (Request.QueryString["catid"] == null) ? null : ProductCategoryInfoService.Instance.GetProductCategoryInfoById(Request.QueryString["catid"]);
+    Dictionary<string, ProductCategoryAttributesModel> dict = (Request.QueryString["catid"] == null) ? null : ProductCategoryAttributesService.Instance.GetProductCategoryAttributeList(Request.QueryString["catid"], false);
+}
+<div class="pageHeader" style="border-left:1px #B8D0D6 solid">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>
+				<td>
+                    @{
+                        if (catInfo == null)
+                        {
+                            @:请从左侧列表中选择一个产品类型名称
+                        }
+                        else
+                        {
+                            @:【@catInfo.CategoryName】 - 属性管理
+                        }
+                    }
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div class="pageContent" style="border-left:1px #B8D0D6 solid;">
+          <div class="panelBar">
+		    <ul class="toolBar">
+            @{
+                if (catInfo != null)
+                {
+			        <li><a target="dialog" maxable="false"  class="add" href="/ProductCenter/NewProductCategoryAttribute?catid=@catInfo.ProductCategoryId" rel="proSaleStatusListBox" title="添加产品类型属性" mask="true" width="600" height="450"><span>添加</span></a></li>
+			        <li><a target="dialog" maxable="false" class="edit" href="/ProductCenter/EditProductCategoryAttribute?id={sid_obj}" rel="proSaleStatusListBox" title="编辑产品类型属性" mask="true" width="600" height="450"><span>编辑</span></a></li>
+			        <li><a class="delete" href="/ProductCenter/DoDeleteProductCategoryAttribute?id={sid_obj}" target="ajaxTodo" title="执行本操作将直接丢失产品表中此属性所有数据，确定删除吗?"><span>删除</span></a></li>
+			        <li class="line">line</li>
+			        <li><a class="edit" href="/ProductCenter/DoMoveUpProductCategoryAttribute?id={sid_obj}" target="ajaxTodo" title="确定要上移选中成员吗?"><span>上移</span></a></li>
+			        <li><a class="edit" href="/ProductCenter/DoMoveDownProductCategoryAttribute?id={sid_obj}" target="ajaxTodo" title="确定要下移选中成员吗?"><span>下移</span></a></li> 		     
+               }
+            }
+               </ul>
+	       </div>
+	<table class="table" width="99%" layoutH="110">
+		<thead>
+			<tr>
+				<th>序号</th>
+				<th>属性名称</th>
+                <th>所属组名称</th>
+                <th>字段类型</th>
+                <th>长度</th>
+                <th>是否必填</th>
+                <th>状态</th>
+                <th>创建时间</th>
+                <th>描述</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (dict != null && dict.Count > 0)
+                {
+                    foreach (ProductCategoryAttributesModel item in dict.Values)
+                    {
+                        @:<tr target="sid_obj" rel="@(item.CategoryAttributeId + "|" + item.ProductCategoryId)">
+                            @:<td>@item.SortOrder</td>
+                            @:<td>@item.AttributeName</td>
+                            @:<td>@item.GroupName</td>
+                            @:<td>@CommonUtil.GetFieldTypeName(item.FieldType)</td>
+                            @:<td>@((item.FieldType == "custom" || item.FieldType == "datetime" || item.FieldType == "text") ? "" : item.FieldMinLength.ToString() + ((item.FieldMaxLength <= 0 || item.FieldMaxLength == null) ? "" : " , ") + item.FieldMaxLength.ToString())</td>
+                            @:<td>@((item.IsRequest ==0) ? "是" : "否")</td>
+                            @:<td>@((item.Status == 0) ? "启用" : "禁用")</td>
+                            @:<td>@item.CreatedOn</td>
+                            @:<td>@item.Description</td>
+                        @:</tr>
+                    }                   
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+
+	</div>
+</div>

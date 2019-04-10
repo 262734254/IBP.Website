@@ -1,0 +1,57 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@using Framework.Utilities;
+@{
+    ChinaInfoModel LocationInfo = ChinaInfoService.Instance.GetChinaInfo(ViewBag.ChinaId);
+
+}
+
+<div class="locationBox x_wrap">
+
+    <div class="x_wrap_01"id="provinceAreaBox">
+        <span hid='1' cid='1'>华中</span>
+        <span hid='2' cid='2'>华东</span>
+        <span hid='3' cid='3' class="ord">华南</span>
+        <span hid='4' cid='4'>华北</span>
+        <span hid='5' cid='5'>东北</span>
+        <span hid='6' cid='6'>西南</span>
+        <span hid='7' cid='7'>西北</span>
+        <span hid='8' cid='8'>台港澳</span>
+    </div>
+    <div class="x_wrap_04"id="provinceBox">
+        <span cid='26'  hid='11'>广东</span>
+        <span cid='27'  hid='12'>广西</span>
+        <span cid='28'  hid='13'>海南</span>
+    </div>
+    <div class="x_wrap_02"id="cityBox">
+        <span cid='471'  hid='393'>广州</span>
+        <span cid='472'  hid='394'>深圳</span>
+        <span cid='473'  hid='395'>佛山</span>
+        <span cid='474'  hid='396'>珠海</span>
+        <span cid='475'  hid='397'>东莞</span>
+        <span cid='476'  hid='398'>肇庆</span>
+        <span cid='477'  hid='399'>阳江</span>
+        <span cid='478'  hid='400'>湛江</span>
+        <span cid='479'  hid='401'>韶关</span>
+        <span cid='480'  hid='402'>梅州</span>
+        <span cid='481'  hid='403'>河源</span>
+        <span cid='482'  hid='404'>惠州</span>
+        <span cid='483'  hid='405'>汕尾</span>
+        <span cid='484'  hid='406'>中山</span>
+        <span cid='485'  hid='407'>云浮</span>
+        <span cid='486'  hid='408'>江门</span>
+        <span cid='487'  hid='409'>茂名</span>
+        <span cid='488'  hid='410'>清远</span>
+        <span cid='489'  hid='411'>潮州</span>
+        <span cid='490'  hid='412'>汕头</span>
+        <span cid='491'  hid='413'>揭阳</span>
+    </div>
+    <div class="x_wrap_03"id="countyBox">
+        <span cid='1695'  hid='1106'>福田</span>
+        <span cid='1696'  hid='1107'>罗湖</span>
+        <span cid='1697'  hid='1108'>南山</span>
+        <span cid='1698'  hid='1109'>宝安</span>
+        <span cid='1699'  hid='1110'>龙岗</span>
+        <span cid='1700'  hid='1111'>盐田</span>
+    </div>
+</div>

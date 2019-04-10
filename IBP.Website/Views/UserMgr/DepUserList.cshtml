@@ -1,0 +1,74 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    string departmentId = (Request.QueryString["did"] == null) ? "" : Request.QueryString["did"].ToString();
+
+    DepartmentDomainModel departmentInfo = DepartmentInfoService.Instance.GetDepartmentDomainInfoById(departmentId);
+    
+    List<UserInfoModel> userList = DepartmentInfoService.Instance.GetDepartmentUserList(departmentId);
+}
+<div class="pageHeader" style="border-left:1px #B8D0D6 solid">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>
+				<td>
+                    @{
+                        if(departmentInfo == null)
+                        {
+                            <input type="hidden" id="hidSelectedDepartment" value="" />
+                            @:请从左侧部门结构树中选择一个部门
+                        }
+                        else
+                        {
+                            <input type="hidden" id="hidSelectedDepartment" value="@departmentInfo.DepartmentId" />
+                            @:【@departmentInfo.DepartmentName】 - 部门成员管理
+                        }
+                    }
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div class="pageContent" style="border-left:1px #B8D0D6 solid;">
+<div class="panelBar">
+		<ul class="toolBar">
+			<li><a class="add" href="/UserMgr/AddDepUser?did=@departmentId" title="添加部门成员" target="dialog" maxable="false" mask="true" width="650" height="430"><span>添加</span></a></li>
+			<li><a class="delete" href="/UserMgr/DoRemoveDepartmentUser?did=@departmentId&uid={sid_obj}" target="ajaxTodo" title="确定要从本部门移除吗?"><span>移除</span></a></li>
+			<li class="line">line</li>
+		</ul>
+	</div>
+	<table class="table" width="99%" layoutH="110">
+		<thead>
+			<tr>
+				@*<th>操作</th>*@
+				<th width="80">工号</th>
+				<th>姓名</th>
+                <th>职务</th>
+                <th>入职时间</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (userList != null && userList.Count > 0)
+                {
+                    foreach (UserInfoModel user in userList)
+                    {
+                        @:<tr target="sid_obj" rel="@user.UserId">
+ 				            @*@:<td><a class="button" href="/UserMgr/DoRemoveDepartmentUser?did=@departmentId&uid=@user.UserId" target="ajaxTodo" title="确定要从本部门移除吗?"><span>移除</span></a></td>*@
+                            @:<td>@user.WorkId.Replace("WORKID_","")</td>
+                            @:<td>@user.CnName (@user.EnName)</td>
+                            @:<td>@user.PostName</td>
+                            @:<td>@user.EntryDate</td>
+                        @:</tr>
+                    }                   
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+
+	</div>
+</div>

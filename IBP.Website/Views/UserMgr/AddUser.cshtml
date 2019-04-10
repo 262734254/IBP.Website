@@ -1,0 +1,142 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    CustomDataDomainModel CustomList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("工作状态", false);
+      Dictionary<string,RoleDomainModel> roleDict = RoleInfoService.Instance.GetRoleDomainList(false);
+      DepartmentDomainModel departmentTree = DepartmentInfoService.Instance.GetDepartmentTree(false);
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/UserMgr/DoAddUserInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+			<p>
+				<label>工   号：</label>
+			<input name="work_id" class="alphanumeric required"  type="text" size="30" value="" alt="请输入工号"/>
+			</p>
+			<p>
+				<label>英 文 名：</label>
+				<input name="en_name" class="lettersonly"  type="text" size="30" value="" alt="请输入英文名"/>
+			</p>
+			<p>
+				<label>中 文 名：</label>
+                <input name="cn_name" class="required" type="text" size="30" value="" alt="请输入中文名"/>
+			</p>
+            <p>
+				<label>登录账号：</label>
+				<input name="LoginName" class="alphanumeric required"  type="text" size="30" value="" alt="请输入登录账号"/>
+			</p>
+			<p>
+				<label>登录密码：</label>
+				<input name="login_pwd" class="required alphanumeric" minlength="6" maxlength="20"  type="password" size="30" value="" alt="请输入登录密码"/>
+			</p>		
+            <p>
+				<label>CIT账号：</label>
+				<input name="cti_user_id" class="alphanumeric required"  type="text" size="30" value="" alt="请输入CIT账号"/>
+			</p>
+            <p>
+				<label>CIT密码：</label>
+				<input name="cti_user_pwd" class="required alphanumeric" minlength="6" maxlength="20"  type="password" size="30" value="" alt="请输入CIT密码"/>
+			</p>
+             <p>
+				<label>职   务：</label>
+				<input name="PostName"  type="text" size="30" value="" alt="请输入职务"/>
+			</p>
+               <p>
+				<label>账号状态：</label>
+				<input type="radio" value="0" name="Status" checked />启用
+                <input type="radio" value="1" name="Status" />禁用
+			</p>
+             <p>
+				<label>用户邮箱：</label>
+				<input name="user_email" class="email"  type="text" size="30" value="" alt="请输入用户邮箱"/>
+			</p>
+             <p>
+				<label>入职日期：</label>
+				<input name="entry_date" class="required date" readonly="true" type="text" size="30" value="" />
+			</p>
+           
+             <p>
+				<label>团队名称：</label>
+
+                <input name="team_name"  type="text" size="30" value="" alt="请输入团队名称"/>
+			</p>
+            <p>
+				<label>角     色：</label>
+				<select name="rolseid"  class="required" >
+					<option value="">请选择</option>
+                     @{
+                             if(roleDict != null)
+                             {
+                                 foreach(RoleDomainModel role in roleDict.Values)
+                                 {
+                                      <option value="@role.RoleId">@role.RoleName</option>
+                                 
+                                 }
+                             }
+                         }
+				</select>
+                
+			</p>
+             <p>
+				<label>状    态：</label>
+				<select name="work_status" >
+				
+				@{
+                    if (CustomList != null)
+                    {
+                        foreach (CustomDataValueDomainModel customValue in CustomList.ValueList.Values)
+                        {
+                                <option value="@customValue.ValueId">@customValue.DataValue</option>
+                            }
+                        }
+                    }
+				</select>
+			</p>
+            <p>
+            <label>部     门：</label>
+				<select name="departmentid"  class="required"  >
+                	<option value="">请选择</option>
+					@{
+                    if (departmentTree.ChildDepartment != null)
+                    {
+                        foreach (DepartmentDomainModel item in departmentTree.ChildDepartment.Values)
+                        {
+                              <option value="@item.DepartmentId">@item.DepartmentName</option>
+                                 if (item.ChildDepartment != null)
+                                 {
+                                    
+                                        foreach (DepartmentDomainModel item2 in item.ChildDepartment.Values)
+                                        {
+                                            <option value="@item2.DepartmentId">@item2.DepartmentName</option>
+                                                if (item2.ChildDepartment != null)
+                                                {
+                                                   
+                                                    foreach (DepartmentDomainModel item3 in item2.ChildDepartment.Values)
+                                                    {
+                                                        <option value="@item3.DepartmentId">@item3.DepartmentName</option>    
+                                                     }
+                                                 
+                                                }
+                                        
+                                        }
+                              
+                                 }
+                        }
+                    }
+                 }
+				</select>
+                </p>
+			
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">创建用户信息</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+</div>
+

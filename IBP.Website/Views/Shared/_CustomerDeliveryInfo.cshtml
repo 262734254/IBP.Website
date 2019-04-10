@@ -1,0 +1,55 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+    CustomDataDomainModel CardTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel IdTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("证件类型", false);
+}
+
+
+<table class="table"  layoutH="295" minH="295" width="100%">
+	<thead>
+		<tr>
+			<th width="90">收货人</th>
+			<th width="100">收货电话</th>
+            <th width="80">配送属性</th>
+            <th width="80">配送省份</th>
+			<th width="80">配送城市</th>
+            <th width="80">配送地区</th>
+            <th width="200">配送地址</th>
+            <th width="80">邮编</th>
+            <th width="120">是否发票</th>
+            <th width="120">创建时间</th>
+		</tr>
+	</thead>
+	<tbody>
+        @{
+            if(Customer.DeliveryList != null)
+            {
+                UserDomainModel user = null;
+                ChinaInfoModel chinaInfo = null;
+                foreach (CustomerDeliveryInfoModel item in Customer.DeliveryList.Values)
+                {
+                    user = UserInfoService.Instance.GetUserDomainModelById(item.CreatedBy, false);
+                    chinaInfo = (item.DeliveryRegionId != null) ? ChinaInfoService.Instance.GetChinaInfo(item.DeliveryRegionId.ToString()) : null;
+                    <tr>
+                        <td>@item.Consignee</td>
+                        <td>@item.ConsigneePhone</td>
+                        <td>@((item.DeliveryType == 2 || item.DeliveryType == null) ? "其他" : ((item.DeliveryType == 0) ? "公司" : "家庭")) </td>
+                        <td>@((chinaInfo == null) ? "" : chinaInfo.ProvinceName)</td>
+                        <td>@((chinaInfo == null) ? "" : chinaInfo.CityName)</td>
+                        <td>@((chinaInfo == null) ? "" : chinaInfo.CountyName)</td>
+                        <td>@item.DeliveryAddress</td>
+                        <td>@item.PostCode</td>
+                        <td>@(string.IsNullOrEmpty(item.BillTitle) ? "需要" : item.BillTitle)</td>
+                        <td>@item.CreatedOn</td>
+		            </tr>
+                }
+            }
+        }
+        </tbody>
+</table>
+

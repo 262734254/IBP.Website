@@ -1,0 +1,53 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    Dictionary<string, ProductCategoryGroupInfoModel> groupList = ProductCategoryGroupInfoService.Instance.GetProductCategoryGroupList(false);
+    ProductCategoryGroupInfoModel groupInfo = (Request.QueryString["gid"] == null) ? null : groupList[Request.QueryString["gid"].ToString()];
+
+    if (groupInfo == null)
+    {
+        throw new Exception("获取产品类型信息异常，参数未传递");
+    }
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/ProductCenter/DoUpdateProductCategoryGroup" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+            <input type="hidden" name="categoryGroupId" value="@groupInfo.ProductCategoryGroupId" />
+            <div class="unit">
+				<label>分组名称：</label>
+				<input name="groupName" class="text" type="text" size="30" value="@groupInfo.GroupName"/>
+			</div>
+            <div class="unit">
+				<label>是否独立价格：</label>
+                <input type="radio" value="0" name="isItemPrice" @((groupInfo.IsItemPrice == 0) ? "checked" : "") />是
+                <input type="radio" value="1" name="isItemPrice" @((groupInfo.IsItemPrice == 1) ? "checked" : "")  />否
+			</div>
+            <div class="unit">
+				<label>排序索引：</label>
+				<input name="sortOrder" class="number" type="text" size="30" value="@groupInfo.SortOrder"/>
+			</div>
+			<div class="unit">
+				<label>类型描述：</label>
+				<textarea name="categoryGroupDesc" cols="40" rows="5" >@groupInfo.Description</textarea>
+			</div>
+            <div class="unit">
+				<label>状态：</label>
+				<input type="radio" value="0" name="Status" @((groupInfo.Status == 0) ? "checked" : "") />启用
+                <input type="radio" value="1" name="Status" @((groupInfo.Status == 1) ? "checked" : "")  />禁用
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">更新产品分组信息</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+

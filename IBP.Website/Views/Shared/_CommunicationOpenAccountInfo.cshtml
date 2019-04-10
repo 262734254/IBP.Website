@@ -1,0 +1,157 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    ProductShoppingCartDomainModel ShoppingCartInfo = ViewBag.ShoppingCartInfo as ProductShoppingCartDomainModel;
+    CustomDataDomainModel IdCardType = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("证件类型", false);
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+    string customerId = Request.QueryString["cid"];
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+    CustomDataDomainModel CardTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+}
+
+<div id="divOpenAccount">
+    @{
+        if (ShoppingCartInfo == null || ShoppingCartInfo.ProductList== null || ShoppingCartInfo.ProductList.Count == 0)
+        {
+            <fieldset style="padding-left:10px; margin-bottom:15px;">
+	              <legend>电信开户信息</legend>
+                  <div style="margin:20px;">当前购物车中未选择电信合约号码，无须填写开户信息。</div>
+             </fieldset>
+        }
+        else
+        {
+            if (ShoppingCartInfo.ProductList != null && ShoppingCartInfo.ProductList.Count > 0)
+            {
+                int counter = 0;
+                if (ShoppingCartInfo.hasCommunicationPackage == false && ShoppingCartInfo.hasPhoneNumber == true)
+                {
+                    <fieldset style="padding-left:10px; margin-bottom:15px;">
+	                      <legend>电信开户信息</legend>
+                          <div style="margin:20px;">                          
+                            当前购物车中包含电信合约号码产品，必须选择相应的套餐与之匹配，否则将无法提交创建订单。
+                          </div>
+                     </fieldset>                    
+                } 
+                else if (ShoppingCartInfo.hasPhoneNumber == false && ShoppingCartInfo.hasCommunicationPackage == false)
+                {
+                    <fieldset style="padding-left:10px; margin-bottom:15px;">
+	                      <legend>电信开户信息</legend>
+                          <div style="margin:20px;">                          
+                            当前购物车中未选择电信合约号码，无须填写开户信息。
+                          </div>
+                     </fieldset>   
+                }
+                else if (ShoppingCartInfo.hasPhoneNumber == false && ShoppingCartInfo.hasCommunicationPackage == true)
+                {
+                    <fieldset style="padding-left:10px; margin-bottom:15px;">
+	                      <legend>电信开户信息</legend>
+                          <div style="margin:20px;">                          
+                            当前购物车中包含电信合约套餐，必须选择合约号码与之匹配，否则将无法提交创建订单。
+                          </div>
+                     </fieldset>   
+                }
+                else if (ShoppingCartInfo.PhoneNumberTotal != ShoppingCartInfo.CommuniationPackageTotal)
+                {
+                    <fieldset style="padding-left:10px; margin-bottom:15px;">
+	                      <legend>电信开户信息</legend>
+                          <div style="margin:20px;">                          
+                            当前购物车中包含电信合约套餐与合约号码数量不相匹配，请检查订单产品选择。
+                          </div>
+                     </fieldset> 
+                }
+                else
+                {
+                    foreach (ShoppingCartItemInfo Cart in ShoppingCartInfo.ProductList.Values)
+                    {
+                        if (Cart.IsPhoneNumber)
+                        {
+                            counter++;
+                            @:<input type="hidden" name="@("hidBindNumber" + counter.ToString())" value="@Cart.ProductInfo.BasicInfo.ProductId" />
+                            @:<input type="hidden" name="@("hidCartId" + counter.ToString())" value="@Cart.ItemId" />
+                            @:<fieldset style="padding-left:10px; margin-bottom:15px;">
+	                        @:     <legend>电信合约号码：@Cart.ProductInfo.BasicInfo.ProductName</legend>
+                            @:     <table class="list" width="99%">
+                            @:            <thead>
+                            @:               <tr>
+                            @:                   <th style="width:100px;">开户城市</th>
+                            @:                   <th>绑定套餐</th>
+                            @:                   <th>机主信息</th>
+                            @:                   <th>托收信息</th>
+                            @:               </tr>
+                            @:           </thead>
+                            @:       <tbody>
+                            @:           <tr>
+                            @:               <td>
+                            @:                   <select name="@("ddlOpeningCity" + counter.ToString())" action="CreateAccountInfo" custjs="phoneordermgr">
+                                                   if (SaleCity != null)
+                                                   {
+                                                       foreach (CustomDataValueDomainModel item in SaleCity.ValueList.Values)
+                                                       {
+                                                          @:<option value="@item.ValueId" @CommonUtil.SetComboxSelected(item.DataValue, Customer.BasicInfo.ComeFrom) >@item.DataValue</option>
+                                                       }
+                                                   }
+			                @:                  </select>
+                            @:              </td>
+                            @:               <td>
+                            @:                  <select name="@("ddlBindPackage" + counter.ToString())" action="CreateAccountInfo" custjs="phoneordermgr">
+                                                foreach (ShoppingCartItemInfo packageInfo in ShoppingCartInfo.ProductList.Values)
+                                                {
+                                                    if (packageInfo.IsCommunicationPackage)
+                                                    {
+                                                        foreach (CommuniationPackageInfo package in packageInfo.CommuniationPackageInfo.Values)
+                                                        {
+                                                            ProductCategoryDomainModel packageModel = ProductInfoService.Instance.GetProductCategoryDomainModelById(package.PackageInfoId);
+                                                            @:<option value="@package.PackageInfoId">@packageModel.BasicInfo.CategoryName</option>
+                                                        }
+                                                    }
+                                                }
+                            @:                  </select>
+                            @:              </td>
+                            @:               <td>
+                            @:                    <select name="@("ddlCreditCard" + counter.ToString())" action="CreateAccountInfo" custjs="phoneordermgr"> 
+                                                    string bindOwnerPhoneId = ShoppingCartInfo.GetPhoneNumberBindCreditId(Cart.ItemId);
+                                                    if (Customer.CreditCardList != null)
+                                                    {
+                                                        foreach (CustomerCreditcardInfoModel creditInfo in Customer.CreditCardList.Values)
+                                                        {
+                                                            @:<option value="@creditInfo.CreditcardId"  @CommonUtil.SetComboxSelected(bindOwnerPhoneId, creditInfo.CreditcardId)>机主姓名：@creditInfo.CardUsername</option>
+                                                        }
+                                                    }
+                            @:                    </select>
+                            @:                   <div class="button"><div class="buttonContent"><button custjs="phoneordermgr"  href="/CallCenter/NewCreditCardInfo?page=newPhoneSaleOrder&infotype=getidcard&cid=@Customer.BasicInfo.CustomerId" target="dialog" maxable="false" rel="@Customer.BasicInfo.CustomerId" mask="true" width="800" height="370" id="btnNewPhoneSaleOrderNewCreditCard" close="NewPhoneSaleOrderSubDialogClose" type="button">添加</button></div></div>
+                            @:              </td>
+                            @:               <td>
+                            @:                    <select id="@("ddlCollection" + counter.ToString())" name="@("ddlCollection" + counter.ToString())" action="CreateAccountInfo" custjs="phoneordermgr">   
+                                                     
+                                                                                                         string bindCollectionId = ShoppingCartInfo.GetPhoneNumberBindCollectionId(Cart.ItemId);
+                                                        @:<option value="" @((bindCollectionId == null) ? "selected" : "")>不托收</option>
+                                                        @:<option value="">----------</option>
+                                                         if (Customer.CreditCardList != null)
+                                                         {
+                                                             foreach (CustomerCreditcardInfoModel creditInfo in Customer.CreditCardList.Values)
+                                                             {
+                                                                  @:<option title="@creditInfo.BillAddress"  value="@creditInfo.CreditcardId" @CommonUtil.SetComboxSelected(bindCollectionId, creditInfo.CreditcardId) >
+                                                                      @:托收户名：@creditInfo.CardUsername
+                                                                  @:</option>
+                                                              }
+                                                         }
+                                                     
+                            @:                    </select>
+                            @:                         <div class="button"><div class="buttonContent"><button custjs="phoneordermgr"  href="/CallCenter/NewCreditCardInfo?page=newPhoneSaleOrder&infotype=getcollection&cid=@Customer.BasicInfo.CustomerId" target="dialog" maxable="false" rel="@Customer.BasicInfo.CustomerId" mask="true" width="800" height="370" id="btnNewPhoneSaleOrderNewCreditCard" close="NewPhoneSaleOrderSubDialogClose" type="button">添加</button></div></div>
+                            @:              </td>
+                            @:           </tr>
+                            @:       </tbody>
+                            @:     </table>
+                            @:</fieldset>
+                        }
+                    }
+                }
+            }
+        }
+        }
+    <input type="hidden" id="hidOpenAccountInfo" name="hidOpenAccountInfo" value="@((ShoppingCartInfo == null) ? "" : ShoppingCartInfo.GetCommuniationPackageString())" name="hidOpenAccountInfo" cpackagetotal="@((ShoppingCartInfo == null) ? "0" : ShoppingCartInfo.CommunicationPackageTotal.ToString())" />
+
+</div>

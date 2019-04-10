@@ -1,0 +1,64 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    Dictionary<string, ProductCategoryInfoModel> proCatList = ProductCategoryInfoService.Instance.GetProductCategoryList(false);
+    string productCategoryId = ((Request.QueryString["pcid"] == null) ? ProductCategoryInfoService.Instance.GetProductCategoryInfoBySortOrder(1).ProductCategoryId : Request.QueryString["pcid"].ToString());
+    Dictionary<string, ProductCategorySalesStatusModel> proStatusList = ProductCategorySalesStatusService.Instance.GetProductCategorySalesStatusList(productCategoryId, false);
+    Dictionary<string, ProductCategoryAttributesModel> proAttList = ProductCategoryAttributesService.Instance.GetProductCategoryAttributeList(productCategoryId, false);
+    List<string> groupList = ProductCategoryAttributesService.Instance.GetProductCategoryAttributeGroupList(productCategoryId, false);
+}
+<div class="pageContent">
+    <form method="post" action="/ProductCenter/DoAddProductInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+    <div class="pageFormContent" style="overflow-x:hidden; overflow-y:hidden;" layouth="345">
+    <fieldset>
+		<legend>产品基本信息</legend>
+        <dl>
+			<dt>产品类型：</dt>
+			<dd>
+                <select id="ddlProCat" custjs="productmgr" name="productCategory">
+                    @{
+                        foreach(ProductCategoryInfoModel cat in proCatList.Values)
+                        {
+                            <option value="@cat.ProductCategoryId" >@cat.CategoryName</option>
+                        }
+                     }
+                </select>
+            </dd>
+		</dl>
+		<dl>
+			<dt>产品编码：</dt>
+			<dd><input id="txtPorCode" name="productCode" type="text" style="width:80px;" value="" class="alphanumeric required"/><input custjs="productmgr" type="checkbox" value="0" id="chkAutoProId" name="autoProductId" />自动生成</dd>
+		</dl>
+        <dl>
+			<dt>销售状态：</dt>
+			<dd>
+                <select id="ddlSaleStatus" name="productSaleStatus">
+                    @{
+                        foreach(ProductCategorySalesStatusModel cat in proStatusList.Values)
+                        {
+                            <option value="@cat.SalesStatusId" >@cat.SalestatusName</option>
+                        }
+                     }
+                </select>
+            </dd>
+		</dl>
+		<dl>
+			<dt>产品名称：</dt>
+			<dd><input class="required text" name="productName" type="text" /></dd>
+		</dl>
+    </fieldset>
+    </div>
+   <div id="divExtAttributeBox" class="pageFormContent" layouth="175">
+        @Html.Partial("ProductExtAttributeList")
+    </div>
+    <div class="formBar">
+        <ul>
+            <li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+            <li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+        </ul>
+    </div>
+    </form>
+</div>

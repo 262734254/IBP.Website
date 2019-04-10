@@ -1,0 +1,330 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    SalesOrderDomainModel SalesOrder = ViewBag.SalesOrder as SalesOrderDomainModel;
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+    CustomDataDomainModel IdCardTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("证件类型", false);
+    CustomDataDomainModel BankTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel CompanyTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("配送公司", false);
+    CustomDataDomainModel Paycardbank = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+    UserDomainModel User = null;
+    ChinaInfoModel chinaInfo = string.IsNullOrEmpty(SalesOrder.BasicInfo.PayCityId) ? null : ChinaInfoService.Instance.GetChinaInfo(SalesOrder.BasicInfo.PayCityId);
+    ChinaInfoModel DeliverychinaInfo = (SalesOrder.BasicInfo.DeliveryChinaId != null) ? ChinaInfoService.Instance.GetChinaInfo(SalesOrder.BasicInfo.DeliveryChinaId.ToString()) : null;
+
+    string openBank = Paycardbank.GetCustomDataValueByValueId(SalesOrder.BasicInfo.PayCardBankId);
+    string payIdCardType = IdCardTypeList.GetCustomDataValueByValueId(SalesOrder.BasicInfo.PayIdcardTypeId);
+}
+
+
+
+<div class="pageContent">
+	<form name="salesorderDetailForm" method="post" action="/OrderCenter/DoUpdateSalesorderInfo" class="pageForm required-validate">
+        <div class="panelBar">
+	        <ul class="toolBar">
+            @{
+                if (SalesOrder.SalesorderStatus != SalesOrderStatus.Cancel && SalesOrder.SalesorderStatus != SalesOrderStatus.Successed)
+                {
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitFollow)
+                    {
+                        <li><a class="add" href="/OrderCenter/DoSubmitSalesorder?page=orderdetail&sid=@SalesOrder.SalesorderId&otype=@SalesOrder.BasicInfo.SalesorderTypeId"  target="ajaxTodo" title="您确定要提交当前销售订单吗?"><span>提交订单</span></a></li>
+                    }
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitCheck && SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.WaitCheck))
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderCheck?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单质检" rel="@SalesOrder.SalesorderId" mask="true" width="700" height="500"><span>订单质检</span></a></li>
+                    }
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitCharge && SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.WaitCharge))
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderCharge?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单扣款" rel="@SalesOrder.SalesorderId" mask="true" width="900" height="470"><span>订单扣款</span></a></li>
+                    }
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitApproval && SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.WaitApproval))
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderApproval?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单审批" rel="@SalesOrder.SalesorderId" mask="true" width="700" height="500"><span>订单审批</span></a></li>
+                    }
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitOpening && SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.WaitOpening))
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderOpening?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单开户" rel="@SalesOrder.SalesorderId" mask="true" width="660" height="630"><span>订单开户</span></a></li>
+                    }
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitStocking && SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.WaitStocking))
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderStocking?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单备货" rel="@SalesOrder.SalesorderId" mask="true" width="700" height="610"><span>订单备货</span></a></li>
+                    }
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitDelivery && SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.WaitDelivery))
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderDelivery?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单发货" rel="@SalesOrder.SalesorderId" mask="true" width="700" height="600"><span>订单发货</span></a></li>
+                    }
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitSign && SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.WaitSign))
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderSign?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单签收确认" rel="@SalesOrder.SalesorderId" mask="true" width="700" height="610"><span>订单签收</span></a></li>
+                    }
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitRecover && SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.WaitRecover))
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderRecover?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单资料回收" rel="@SalesOrder.SalesorderId" mask="true" width="700" height="530"><span>订单回收</span></a></li>
+                    }
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitRefund && SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.WaitRefund))
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderRefund?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单退款" rel="@SalesOrder.SalesorderId" mask="true" width="700" height="500"><span>订单退款</span></a></li>
+                    }
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitReturns && SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.WaitReturns))
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderReturn?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单退货" rel="@SalesOrder.SalesorderId" mask="true" width="670" height="500"><span>订单退货</span></a></li>
+                    }
+                    if (SalesOrder.SalesorderStatus == SalesOrderStatus.WaitCancelOpening && SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.WaitCancelOpening))
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderCancelOpening?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单销户" rel="@SalesOrder.SalesorderId" mask="true" width="800" height="500"><span>订单销户</span></a></li>
+                    }
+                    <li class="line">line</li>
+                    if (SalesOrderInfoService.Instance.HasUpdateSalesorderPremission())
+                    {
+                        <li style="float:right;"><a class="add" href="/OrderCenter/UpdateSalesorderInfo?page=orderdetail&sid=@SalesOrder.SalesorderId&cid=@Customer.BasicInfo.CustomerId" target="dialog" maxable="false" title="更新订单信息" rel="@SalesOrder.SalesorderId" mask="true" width="1000" height="550"><span>更新订单信息</span></a></li>
+                    }
+                    if (SalesOrderInfoService.Instance.HasSalesorderProcessPremission(SalesOrderStatus.Cancel, SalesOrder))
+                    {
+                        <li style="float:right;"><a class="add" href="/OrderCenter/SalesOrderCancel?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="撤消订单" rel="@SalesOrder.SalesorderId" mask="true" width="550" height="300"><span>撤消订单</span></a></li>
+                    }
+                }
+                else
+                {
+                    <li><a class="icon icontxt" href="#" ><span>更新订单信息</span></a></li>
+                    if(SalesOrder.BasicInfo.IsDelayCheck == 0)
+                    {
+                         <li><a class="add" href="/OrderCenter/SalesOrderCheck?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单质检" rel="@SalesOrder.SalesorderId" mask="true" width="700" height="500"><span>订单质检</span></a></li>
+                    }
+                    if (SalesOrder.BasicInfo.NowOrderStatusId != Convert.ToInt32(SalesOrderStatus.Cancel).ToString() && SalesOrder.BasicInfo.RecoverTime == null && SalesOrder.BasicInfo.RecoverUserId == null)
+                    {
+                        <li><a class="add" href="/OrderCenter/SalesOrderRecover?page=orderdetail&sid=@SalesOrder.SalesorderId" target="dialog" maxable="false" title="订单资料回收" rel="@SalesOrder.SalesorderId" mask="true" width="700" height="530"><span>订单回收</span></a></li>
+                    }
+                }
+            }
+	        </ul>
+        </div>
+        <div class="wrap">
+            <div class="information02">
+                <h2>订单基本信息【编号：@SalesOrder.SalesorderCode，客户名称：<a href="/CallCenter/CustomerInfo?cid=@Customer.BasicInfo.CustomerId" target="navTab" rel="@Customer.BasicInfo.CustomerId" title="【@Customer.BasicInfo.CustomerName】客户信息" fresh="false">@Customer.BasicInfo.CustomerName（@Customer.BasicInfo.CustomerCode）</a>】</h2>
+                @Html.Partial("_SalesorderBasicInfo")
+            </div>
+        </div>
+    </form>
+    <div class="tabs" currentIndex="0" eventType="click">
+	    <div class="tabsHeader">
+		    <div class="tabsHeaderContent">
+			    <ul>
+                    <li><a href="javascript:;"><span>处理记录（@((SalesOrder != null && SalesOrder.ProcessLogs != null) ? SalesOrder.ProcessLogs.Count : 0)）</span></a></li>
+				    <li><a href="javascript:;"><span>产品列表（@((SalesOrder != null && SalesOrder.ProductList != null) ? SalesOrder.ProductList.Count : 0)）</span></a></li>
+				    <li><a href="javascript:;"><span>开户信息</span></a></li>
+                    <li><a href="javascript:;"><span>支付信息</span></a></li>
+                    <li><a href="javascript:;"><span>配送信息</span></a></li>
+			    </ul>
+		    </div>
+	    </div>
+	    <div class="tabsContent">
+            <div>
+                 <table class="table" layoutH="260" width="99%">
+	                <thead>
+		                 <tr>
+                            <th width="120">创建时间</th>
+			                <th width="90">流转状态</th>
+                            <th width="80">处理人</th>
+                            <th width="80">处理记录</th>
+		                </tr>
+	                </thead>  
+                    <tbody>
+                    @{
+                        if (SalesOrder.ProcessLogs != null)
+                        {
+                            foreach (SalesorderProcessLogModel processInfo in SalesOrder.ProcessLogs.Values)
+                            {
+                                @:<tr>
+                                    User = UserInfoService.Instance.GetUserDomainModelById(processInfo.CreatedBy, false);
+                                    <td>@processInfo.CreatedOn</td>
+                                    <td>@processInfo.StatusName</td>
+                                    <td>@((User != null) ? string.Format("{0}/{1}", User.BasicInfo.CnName, User.WorkId) : "")</td>
+                                    <td>@processInfo.Description</td>
+                                @:</tr>
+                            }
+                        }
+                      }
+                    </tbody>
+               </table>
+            </div>
+		     <div>
+                 <table class="table"  layoutH="260" width="99%">
+	                <thead>
+                        <tr>
+			                <th width="90">产品类型</th>
+                            <th width="80">价格</th>
+                            <th>产品名称</th>
+		                </tr>
+	                </thead>
+                    <tbody>
+                        @{
+                            if (SalesOrder.ProductList != null)
+                            {
+                                foreach (SalesorderProductInfoModel productInfoModel in SalesOrder.ProductList.Values)
+                                {
+                                    <tr>
+                                        <td>@((productInfoModel.ProductType == 0) ? "产品包" : (productInfoModel.ProductType == 1) ? "产品类型" : (productInfoModel.ProductType == 2) ? "产品单品" : "")</td>
+                                        <td>@productInfoModel.ItemPrice</td>
+                                        <td>@productInfoModel.ProductName </td>                                        
+		                            </tr>
+                                }
+                            }
+                            }
+                    </tbody>
+               </table>
+            </div>
+             <div>
+             <table class="table"  layoutH="260" width="99%">
+                <thead>
+                    <tr>
+                         <th>开户城市</th>
+                        <th>合约号码</th>
+                        <th>套餐名称</th>
+                        <th>机主信息</th>
+                        <th>托收信息</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @{
+                    if (SalesOrder.CommuniationPackageList != null)
+                    {
+                        int counter = 0;
+                        foreach (SalesorderCommuniationpackageInfoModel communiationPackageInfo in SalesOrder.CommuniationPackageList.Values)
+                        {
+                            ProductCategoryDomainModel packageInfo = ProductInfoService.Instance.GetProductCategoryDomainModelById(communiationPackageInfo.BindCommuniationpackageId);
+
+                            string BankCardType = IdCardTypeList.GetCustomDataValueByValueId(communiationPackageInfo.IdcardTypeId);
+
+                            if (packageInfo != null)
+                            {
+                                counter++;
+                @:                          <tr>
+                @:                              <td>@SaleCity.GetCustomDataValueByValueId(communiationPackageInfo.OpeningCityId)</td>
+                @:                              <td>@communiationPackageInfo.BindMainPhonenumber</td>
+                @:                              <td>@packageInfo.BasicInfo.CategoryName</td>
+                @:                              <td>@communiationPackageInfo.OwnerCustomerName【@CommonUtil.MarkIdCard(communiationPackageInfo.IdcardNumber)】</td>
+                @:                              <td>@((communiationPackageInfo.IsCollection == 0) ? communiationPackageInfo.CollectionCustomerName + "【" + CommonUtil.MarkIdCard(communiationPackageInfo.CollectionCardNumber) + "】" : "")</td>
+                @:                          </tr>
+                            }
+                        }
+                    }
+                }
+                </tbody>
+                </table>   
+            </div>
+             <div layoutH="238">
+                <table class="list" width="99%">
+                    <thead>
+                        <tr>
+                            <th>开户城市</th>
+                            <th>开户行</th>
+                            <th>持卡号码</th>
+                            <th>有效期</th>
+                            <th>安全码</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@((chinaInfo == null) ? "" : chinaInfo.CityName)</td>
+                            <td>@openBank</td>
+                            <td>@CommonUtil.MarkCreditCard(SalesOrder.BasicInfo.PayCardNumber)</td>
+                            <td>@SalesOrder.BasicInfo.PayCardPeriod</td>
+                            <td>***</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="list" width="99%">
+                    <thead>
+                        <tr>
+                            <th>支付方式</th>
+                            <th width="120">持卡人姓名</th>
+                            <th>证件类型</th>
+                            <th>证件号码</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@SalesOrderInfoService.Instance.GetPayTypeName(SalesOrder.BasicInfo.PayType)</td>
+                            <td>@SalesOrder.BasicInfo.PayCustomerName</td>
+                            <td>@payIdCardType</td>
+                            <td>@CommonUtil.MarkIdCard(SalesOrder.BasicInfo.PayIdcardNumber)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="list" width="99%">
+                    <thead>
+                        <tr>
+                            <th>账单信息</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                @{
+                                    if (SalesOrder.BasicInfo.NeedInvoice == 0)
+                                    {
+                                        @:发票标题：@SalesOrder.BasicInfo.InvoiceTitle
+                                    }
+                                    else
+                                    {
+                                        @:客户无需要
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+          <div layoutH="238">
+            <table class="list" width="99%">
+            <thead>
+                <tr>
+                    <th width="80">配送属性</th>
+                    <th width="100">收货人</th>
+                    <th width="120">收货人电话</th>
+                    <th>发票信息</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@((SalesOrder.BasicInfo.DeliveryType == 2 || SalesOrder.BasicInfo.DeliveryType == null) ? "其他" : ((SalesOrder.BasicInfo.DeliveryType == 0) ? "公司" : "家庭"))</td>
+                    <td>@SalesOrder.BasicInfo.DeliveryReceiveCustomerName</td>
+                    <td>@SalesOrder.BasicInfo.DeliveryReceivePhonenumber</td>
+                     <td>
+                                @{
+                                    if (SalesOrder.BasicInfo.NeedInvoice == 0)
+                                    {
+                                        @:发票标题：@SalesOrder.BasicInfo.InvoiceTitle
+                                    }
+                                    else
+                                    {
+                                        @:客户无需要
+                                    }
+                                }
+                            </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="list" width="99%">
+            <thead>
+                <tr>
+                    <th>配送地址</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td>@((DeliverychinaInfo != null) ? DeliverychinaInfo.ProvinceName + " " + DeliverychinaInfo.CityName + " " + DeliverychinaInfo.CountyName : "") @SalesOrder.BasicInfo.DeliveryAddress</td>
+                   
+                </tr>
+            </tbody>
+        </table>
+         </div>
+	    </div>
+	    <div class="tabsFooter">
+		    <div class="tabsFooterContent"></div>
+	    </div>
+    </div>
+</div>

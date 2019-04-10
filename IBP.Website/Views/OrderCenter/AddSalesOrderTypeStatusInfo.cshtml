@@ -1,0 +1,48 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string id = Request.QueryString["id"];
+    if (string.IsNullOrEmpty(id))
+    {
+        throw new Exception("新增订单类型状态异常，未获取到订单类型ID");
+    }
+}
+
+<div class="pageContent">
+	
+	<form method="post" action="/OrderCenter/DoAddSalesOrderTypeStatusInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+            <input type="hidden" name="salesorder_typeId" value="@id" />
+			<div class="unit">
+				<label>状态名称：</label>
+				<input type="text" name="salesorder_status_name" size="30" minlength="3" maxlength="10" class="required" />
+			</div>
+            <div class="unit">
+				<label>状态：</label>
+				<input type="radio" value="0" checked name="status" />启用
+		        <input type="radio" value="1" name="status" />禁用
+			</div>
+            <div class="unit">
+            <label>支付方式：</label>
+            <select name="payment_type" class="required">
+			   <option value="0">分期</option>
+               <option value="1">全额</option>
+               <option value="2">到付</option> 
+               <option value="3">在线支付</option> 
+		    </select>
+             </div>
+			<div class="unit">
+				<label>描述：</label>
+				<textarea name="description" cols="50" rows="5"></textarea>
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

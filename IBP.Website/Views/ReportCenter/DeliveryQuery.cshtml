@@ -1,0 +1,195 @@
+﻿@{
+    Layout = "";
+}
+
+<form id="pagerForm" method="post" action="demo_page1.html">
+	<input type="hidden" name="status" value="${param.status}">
+	<input type="hidden" name="keywords" value="${param.keywords}" />
+	<input type="hidden" name="pageNum" value="1" />
+	<input type="hidden" name="numPerPage" value="${model.numPerPage}" />
+	<input type="hidden" name="orderField" value="${param.orderField}" />
+</form>
+
+
+<div class="pageHeader">
+	<form onsubmit="return navTabSearch(this);" action="/UserMgr/UserList" method="post">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>
+                <td>
+                    订单编号：<input type="text" alt="" class="textInput" maxlength="20" size="10" name="ordernu"/>
+                </td> 
+                <td>
+                    客户姓名：<input type="text" alt="" class="textInput" maxlength="20" size="10" name="name"/>
+                </td>                
+				<td>
+			      <select class="combox" name="keytype">
+						<option value="不限">不限</option>
+						<option value="分期">分期</option>
+                        <option value="全额">全额</option>
+                        <option value="到付">到付</option>
+				</select>
+				</td>	
+                <td>
+					项目名称：<input type="text" alt="" class="phone textInput" size="10" name="phone2"/>
+				</td>
+                <td>
+                    配送公司：<input type="text" alt="" class="textInput" maxlength="10" size="10" name="name"/>
+                </td> 
+                <td>
+					 配送单号：<input type="text" alt="" class="phone textInput" size="10" name="phone"/>
+				</td>
+                </tr>
+               <tr>	
+                <td>
+					收货地址：<input type="text" alt="" class="phone textInput" size="10" name="phone2"/>
+				</td>
+                
+                <td>
+                    备货时间：
+                    <input type="text" value="" readonly="readonly" class="date" name="dateStart">
+					<span class="limit">-</span>
+					<input type="text" value="" readonly="readonly" class="date" name="dateEnd">
+                </td> 	          
+                <td class="dateRange" colspan="2">
+					发货时间:
+					<input type="text" value="" readonly="readonly" class="date" name="dateStart">
+					<span class="limit">-</span>
+					<input type="text" value="" readonly="readonly" class="date" name="dateEnd">
+				</td>
+                </tr>
+               <tr>
+                <td class="dateRange" colspan="2">
+					签收时间:
+					<input type="text" value="" readonly="readonly" class="date" name="dateStart">
+					<span class="limit">-</span>
+					<input type="text" value="" readonly="readonly" class="date" name="dateEnd">
+				</td>
+                <td class="dateRange" colspan="2">
+					资料回收时间:
+					<input type="text" value="" readonly="readonly" class="date" name="dateStart">
+					<span class="limit">-</span>
+					<input type="text" value="" readonly="readonly" class="date" name="dateEnd">
+				</td>
+			</tr>
+		</table>
+    	<div class="subBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></li>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">导出</button></div></div></li>
+			</ul>
+		</div>
+	</div>
+	</form>
+</div>
+
+<div style="border:1px #B8D0D6 solid" class="pageContent j-resizeGrid">
+<div class="pageContent">
+	<table class="table" width="1000" layoutH="138">
+		<thead>
+			<tr>
+				<th width="180" orderField="cnName">序号</th>
+				<th width="150" orderField="workId">订单编号</th>
+				<th width="120" orderField="userStatus">订单状态</th>
+				<th width="120" orderField="entryDate">发货时间</th>
+				<th width="100" orderField="enName">客户姓名</th>
+				<th width="100" orderField="teamName">收货人</th>
+				<th width="220" orderField="departmentName">收货电话</th>
+				<th width="160" orderField="postName">配送地址</th>
+				<th width="220" orderField="positiveDate">配送公司</th>
+                <th width="220" orderField="positiveDate">配送单号</th>
+                <th width="220" orderField="positiveDate">项目名称</th>
+                <th width="220" orderField="positiveDate">订单备注</th>
+                <th width="220" orderField="positiveDate">签收时间</th>
+                <th width="220" orderField="positiveDate">资料回收时间</th>
+			</tr>
+		</thead>
+		<tbody>                     
+			<tr target="sid_user" rel="1">
+                <td>1</td>
+				<td>S11112800050</td>
+				<td>待签收</td> 
+                <td>2011-11-23 18:28</td>
+				<td>汤禹</td>
+				<td>汤禹</td>
+				<td>13450491980</td>
+                <td>万家丽路天际岭隧道北板塘村神冲坡花果山森林幼儿园</td>
+                <td>其他</td>
+                <td>600002435793</td>
+                <td>（广）三星I509-89（上）</td>
+                <td>2011-11-25 16:06</td>
+                <td>2011-11-25 16:06</td>
+                <td>2011-11-25 16:06</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+                <td>1</td>
+				<td>S11112800050</td>
+				<td>待签收</td> 
+                <td>2011-11-23 18:28</td>
+				<td>汤禹</td>
+				<td>汤禹</td>
+				<td>13450491980</td>
+                <td>万家丽路天际岭隧道北板塘村神冲坡花果山森林幼儿园</td>
+                <td>其他</td>
+                <td>600002435793</td>
+                <td>（广）三星I509-89（上）</td>
+                <td>2011-11-25 16:06</td>
+                <td>2011-11-25 16:06</td>
+                <td>2011-11-25 16:06</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+                <td>1</td>
+				<td>S11112800050</td>
+				<td>待签收</td> 
+                <td>2011-11-23 18:28</td>
+				<td>汤禹</td>
+				<td>汤禹</td>
+				<td>13450491980</td>
+                <td>万家丽路天际岭隧道北板塘村神冲坡花果山森林幼儿园</td>
+                <td>其他</td>
+                <td>600002435793</td>
+                <td>（广）三星I509-89（上）</td>
+                <td>2011-11-25 16:06</td>
+                <td>2011-11-25 16:06</td>
+                <td>2011-11-25 16:06</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+                <td>1</td>
+				<td>S11112800050</td>
+				<td>待签收</td> 
+                <td>2011-11-23 18:28</td>
+				<td>汤禹</td>
+				<td>汤禹</td>
+				<td>13450491980</td>
+                <td>万家丽路天际岭隧道北板塘村神冲坡花果山森林幼儿园</td>
+                <td>其他</td>
+                <td>600002435793</td>
+                <td>（广）三星I509-89（上）</td>
+                <td>2011-11-25 16:06</td>
+                <td>2011-11-25 16:06</td>
+                <td>2011-11-25 16:06</td>
+			</tr>
+         </tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20">20</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+			</select>
+			<span>条，共${totalCount}条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="200" numPerPage="20" pageNumShown="10" currentPage="1"></div>
+
+	</div>
+</div>
+
+
+</div>
+
+
+

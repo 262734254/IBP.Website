@@ -1,0 +1,275 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    CustomDataDomainModel Carriers = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("运营商", false);
+    CustomDataDomainModel PhoneBrand = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("优选品牌", false);
+    CustomDataDomainModel Consumer = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("通讯消费", false);
+    CustomDataDomainModel MobilePhonePrice = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("手机价位", false);
+    CustomDataDomainModel CustomerLevel = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("客户等级", false);
+
+    Dictionary<string, QueryItemDomainModel> QueryCollection = ViewBag.QueryCollection as Dictionary<string, QueryItemDomainModel>;
+    QueryItemDomainModel queryItem = null;
+}
+<div class="customerQueryBox">
+    <ul>
+           <li>
+            @{queryItem = QueryCollection.ContainsKey("create_customer_id") ? QueryCollection["create_customer_id"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_create_customer_id" class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")" >
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_create_customer_id" />
+            </div><span>创建人工号：</span>
+            <select name="op_create_customer_id">
+                <option value="equal">等于</option>
+            </select>
+            <input type="text" name="create_customer_id" value="@((queryItem.SearchValue != null) ? queryItem.SearchValue.Replace("WORKID_","") : "")"/>
+        </li>
+
+
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("customer_code") ? QueryCollection["customer_code"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_customer_code" class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_customer_code" />
+            </div><span>客户编号：</span>
+            <select name="op_customer_code">
+                <option value="equal">等于</option>
+            </select>
+            <input type="text" name="customer_code" value="@queryItem.SearchValue" />
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("customer_name") ? QueryCollection["customer_name"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_customer_name" class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")" >
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_customer_name" />
+            </div><span>客户名称：</span>
+            <select name="op_customer_name">
+                <option value="contain" @CommonUtil.SetComboxSelected("contain", queryItem.Operation)>包含</option>
+                <option value="equal"   @CommonUtil.SetComboxSelected("equal", queryItem.Operation)>等于</option>
+            </select>
+            <input type="text" name="customer_name" value="@queryItem.SearchValue"/>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("sex") ? QueryCollection["sex"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_sex"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_sex" />
+            </div><span>性别：</span>
+            <select name="op_sex">
+                <option value="equal">等于</option>
+            </select>
+            <select name="sex" style="width: 120px;">
+                <option value="0" @CommonUtil.SetComboxSelected("0", queryItem.SearchValue)>男</option>
+                <option value="1" @CommonUtil.SetComboxSelected("1", queryItem.SearchValue)>女</option>
+                <option value="2" @CommonUtil.SetComboxSelected("2", queryItem.SearchValue)>未知</option>
+            </select>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("level") ? QueryCollection["level"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_level"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_level" />
+            </div><span>客户等级：</span>
+            <select name="op_level">
+                <option value="equal">等于</option>
+            </select>
+            <select name="level" style="width: 120px;">
+                @{
+                    if (CustomerLevel != null && CustomerLevel.ValueList != null)
+                    {
+                        foreach (CustomDataValueDomainModel item in CustomerLevel.ValueList.Values)
+                        {
+                            @:<option value="@item.ValueId" @CommonUtil.SetComboxSelected(item.ValueId, queryItem.SearchValue)>@item.DataValue</option>
+                        }
+                    }
+                }
+            </select>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("mobile_phone") ? QueryCollection["mobile_phone"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_mobile_phone"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_mobile_phone" />
+            </div><span>手机号码：</span>
+            <select name="op_mobile_phone">
+                <option value="contain" @CommonUtil.SetComboxSelected("contain", queryItem.Operation)>包含</option>
+                <option value="equal"   @CommonUtil.SetComboxSelected("equal", queryItem.Operation)>等于</option>
+            </select>
+            <input type="text" name="mobile_phone" value="@queryItem.SearchValue"/>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("home_phone") ? QueryCollection["home_phone"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_home_phone"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_home_phone" />
+            </div><span>固定号码：</span>
+            <select name="op_home_phone">
+                <option value="contain" @CommonUtil.SetComboxSelected("contain", queryItem.Operation)>包含</option>
+                <option value="equal"   @CommonUtil.SetComboxSelected("equal", queryItem.Operation)>等于</option>
+            </select>
+            <input type="text" name="home_phone" value="@queryItem.SearchValue"/>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("other_phone") ? QueryCollection["other_phone"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_other_phone"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_other_phone" />
+            </div><span>其他号码：</span>
+            <select name="op_other_phone">
+                <option value="contain" @CommonUtil.SetComboxSelected("contain", queryItem.Operation)>包含</option>
+                <option value="equal"   @CommonUtil.SetComboxSelected("equal", queryItem.Operation)>等于</option>
+            </select>
+            <input type="text" name="other_phone" value="@queryItem.SearchValue"/>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("china_id") ? QueryCollection["china_id"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_china_id"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_china_id" />
+            </div><span>归属地区：</span>
+            <select name="op_china_id">
+                <option value="equal">等于</option>
+            </select>
+            <select name="china_id" style="width: 120px;">
+                <option value="471" @CommonUtil.SetComboxSelected("471", queryItem.SearchValue)>广州</option>
+                <option value="472" @CommonUtil.SetComboxSelected("472", queryItem.SearchValue)>深圳</option>
+                <option value="473" @CommonUtil.SetComboxSelected("473", queryItem.SearchValue)>佛山</option>
+                <option value="474" @CommonUtil.SetComboxSelected("474", queryItem.SearchValue)>珠海</option>
+                <option value="475" @CommonUtil.SetComboxSelected("475", queryItem.SearchValue)>东莞</option>
+                <option value="476" @CommonUtil.SetComboxSelected("476", queryItem.SearchValue)>肇庆</option>
+                <option value="477" @CommonUtil.SetComboxSelected("477", queryItem.SearchValue)>阳江</option>
+                <option value="478" @CommonUtil.SetComboxSelected("478", queryItem.SearchValue)>湛江</option>
+                <option value="479" @CommonUtil.SetComboxSelected("479", queryItem.SearchValue)>韶关</option>
+                <option value="480" @CommonUtil.SetComboxSelected("480", queryItem.SearchValue)>梅州</option>
+                <option value="481" @CommonUtil.SetComboxSelected("481", queryItem.SearchValue)>河源</option>
+                <option value="482" @CommonUtil.SetComboxSelected("482", queryItem.SearchValue)>惠州</option>
+                <option value="483" @CommonUtil.SetComboxSelected("483", queryItem.SearchValue)>汕尾</option>
+                <option value="484" @CommonUtil.SetComboxSelected("484", queryItem.SearchValue)>中山</option>
+                <option value="485" @CommonUtil.SetComboxSelected("485", queryItem.SearchValue)>云浮</option>
+                <option value="486" @CommonUtil.SetComboxSelected("486", queryItem.SearchValue)>江门</option>
+                <option value="487" @CommonUtil.SetComboxSelected("487", queryItem.SearchValue)>茂名</option>
+                <option value="488" @CommonUtil.SetComboxSelected("488", queryItem.SearchValue)>清远</option>
+                <option value="489" @CommonUtil.SetComboxSelected("489", queryItem.SearchValue)>潮州</option>
+                <option value="490" @CommonUtil.SetComboxSelected("490", queryItem.SearchValue)>汕头</option>
+                <option value="491" @CommonUtil.SetComboxSelected("491", queryItem.SearchValue)>揭阳</option>
+            </select>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("carriers") ? QueryCollection["carriers"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_carriers"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_carriers" />
+            </div><span>运营商：</span>
+            <select name="op_carriers">
+                <option value="equal">等于</option>
+            </select>
+            <select name="carriers" style="width: 120px;">
+                @{
+                    if (Carriers != null && Carriers.ValueList != null)
+                    {
+                        foreach (CustomDataValueDomainModel item in Carriers.ValueList.Values)
+                        {
+                            @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, queryItem.SearchValue))>@item.DataValue</option>
+                        }
+                    }
+                }
+            </select>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("using_phone_brand") ? QueryCollection["using_phone_brand"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_using_phone_brand"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_using_phone_brand" />
+            </div><span>在用品牌：</span>
+            <select name="op_using_phone_brand">
+                <option value="equal">等于</option>
+            </select>
+            <select name="using_phone_brand" style="width: 120px;">
+                @{
+                     if (PhoneBrand != null && PhoneBrand.ValueList != null)
+                        {
+                            foreach (CustomDataValueDomainModel item in PhoneBrand.ValueList.Values)
+                            {
+                                @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, queryItem.SearchValue)) >@item.DataValue</option>
+                            }
+                        }
+                    }
+            </select>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("using_phone_type") ? QueryCollection["using_phone_type"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_using_phone_type"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_using_phone_type" />
+            </div><span>在用型号：</span>
+            <select name="op_using_phone_type">
+                <option value="contain" @CommonUtil.SetComboxSelected("contain", queryItem.Operation)>包含</option>
+                <option value="equal"   @CommonUtil.SetComboxSelected("equal", queryItem.Operation)>等于</option>
+            </select>
+            <input type="text" name="using_phone_type" value="@queryItem.SearchValue"/>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("communication_consumer") ? QueryCollection["communication_consumer"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_consumer"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_communication_consumer" />
+            </div><span>通讯消费：</span>
+            <select name="op_communication_consumer">
+                <option value="equal">等于</option>
+            </select>
+            <select name="communication_consumer"  style="width: 120px;">
+                @{
+                    if (Consumer != null && Consumer.ValueList != null)
+                    {
+                        foreach (CustomDataValueDomainModel item in Consumer.ValueList.Values)
+                        {
+                            @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, queryItem.SearchValue))>@item.DataValue</option>
+                        }
+                    }
+                }
+            </select>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("preferred_phone_brand") ? QueryCollection["preferred_phone_brand"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_preferred_phone_brand"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_preferred_phone_brand" />
+            </div><span>优选品牌：</span>
+            <select name="op_preferred_phone_brand">
+                <option value="equal">等于</option>
+            </select>
+            <select name="preferred_phone_brand" style="width: 120px;">
+                 @{
+             if (PhoneBrand != null && PhoneBrand.ValueList != null)
+                {
+                    foreach (CustomDataValueDomainModel item in PhoneBrand.ValueList.Values)
+                    {
+                        @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, queryItem.SearchValue)) >@item.DataValue</option>
+                    }
+                }
+            }
+            </select>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("using_smartphone") ? QueryCollection["using_smartphone"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_using_smartphone"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_using_smartphone" />
+            </div><span>是否智能机：</span>
+            <select name="op_using_smartphone">
+                <option value="equal">等于</option>
+            </select>
+            <select name="using_smartphone" style="width: 120px;">
+                <option value="0" @CommonUtil.SetComboxSelected("contain", queryItem.SearchValue)>是</option>
+                <option value="1" @CommonUtil.SetComboxSelected("contain", queryItem.SearchValue)>否</option>
+            </select>
+        </li>
+        <li>
+            @{queryItem = QueryCollection.ContainsKey("mobile_phone_price") ? QueryCollection["mobile_phone_price"] : new QueryItemDomainModel();}
+            <div chk="select" name="chk_mobile_phone_price"  class="@((queryItem.FieldType != null) ? "chooseico02" : "chooseico")">
+                <input type="hidden" value="@((queryItem.FieldType != null) ? "1" : "0")" name="sel_mobile_phone_price" />
+            </div><span>手机价位：</span>
+            <select name="op_mobile_phone_price">
+                <option value="equal">等于</option>
+            </select>
+            <select name="mobile_phone_price" style="width: 120px;">
+                @{
+                    if (MobilePhonePrice != null && MobilePhonePrice.ValueList != null)
+                    {
+                        foreach (CustomDataValueDomainModel item in MobilePhonePrice.ValueList.Values)
+                        {
+                            @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, queryItem.SearchValue))>@item.DataValue</option>
+                        }
+                    }
+                }
+            </select>
+        </li>
+    </ul>
+</div>
+

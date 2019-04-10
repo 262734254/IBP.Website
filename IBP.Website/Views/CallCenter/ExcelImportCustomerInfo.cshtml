@@ -1,0 +1,26 @@
+﻿
+@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+}
+
+
+<div class="pageContent">
+<form method="post" action="CallCenter/Import" class="pageForm required-validate" enctype="multipart/form-data" onsubmit="return iframeCallback(this);">
+ <div style="float:left; margin:10px">
+	<div id="fileQueue" class="fileQueue"></div>
+	<input id="testFileInput2" type="file" name="image2" 
+		uploader="uploadify/scripts/uploadify.swf"
+		cancelImg="uploadify/cancel.png" 
+		script="CallCenter/Import" 
+		fileQueue="fileQueue" 
+        folder="/uploads"
+        fileExt="*.xlsx;"
+		fileDesc="*.xlsx;"/>
+        </div>
+  </form>
+  </div>
+        
+

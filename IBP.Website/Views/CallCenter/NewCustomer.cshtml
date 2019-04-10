@@ -1,0 +1,37 @@
+﻿@{
+    Layout = "";
+}
+
+<div class="panelBar">
+		<ul class="toolBar">
+			<li style=" float:right;"><a class="edit" href="/UserMgr/EditUser?uid={sid_user}" target="navTab" warn="请选择一个用户"><span>修改</span></a></li>
+            <li style=" float:right;"><a class="icon" href="/UserMgr/ExportUser" target="dwzExport" targetType="navTab" title="确定要保存资料吗？"><span>保存</span></a></li>
+			<li class="line" style=" float:right;">line</li>
+            <li style=" float:right;"><a class="add" href="/UserMgr/AddUser" target="navTab"><span>Callback</span></a></li>
+            <li><a class="add" href="/CallCenter/NewCustomerMemo"target="dialog" maxable="false"rel="dlg_page11" mask="true"><span>新增备注</span></a></li>
+			<li><a class="add" href="/CallCenter/AddContactRecord"target="dialog" maxable="false"rel="dlg_page11" mask="true" width="840"><span>添加记录</span></a></li>
+			<li><a class="add" href="/CallCenter/NewPhoneSaleOrder" target="dialog" maxable="false"rel="dlg_page11" mask="true"width="800"><span>新增订单</span></a></li>
+            <li><a class="add" href="/CallCenter/NewWorkOrder" target="dialog" maxable="false" rel="dlg_page11" mask="true"><span>新增工单</span></a></li>
+		</ul>
+</div>
+<div>@Html.Partial("CustomerBasicInfo")</div>
+
+<div class="tabs" currentIndex="0" eventType="click">
+		<div class="tabsHeader">
+			<div class="tabsHeaderContent">
+				<ul>
+					<li><a href="javascript:;"><span>联系记录</span></a></li>
+					<li><a href="javascript:;"><span>订单记录</span></a></li>
+                    <li><a href="javascript:;"><span>工作记录</span></a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="tabsContent"layoutH="56">
+			<div> @Html.Partial("RelContactRecord")</div>
+            <div> @Html.Partial("RelPhoneSaleOrder")</div>
+            <div> @Html.Partial("RelWorkOrder")</div>
+		</div>
+		<div class="tabsFooter">
+			<div class="tabsFooterContent"></div>
+		</div>
+	</div>

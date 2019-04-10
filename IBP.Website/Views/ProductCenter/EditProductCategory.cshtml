@@ -1,0 +1,134 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    ProductCategoryInfoModel categoryInfo = (Request.QueryString["catid"] == null) ? null : ProductCategoryInfoService.Instance.Retrieve(Request.QueryString["catid"].ToString());
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+    Dictionary<string, ProductCategoryGroupInfoModel> groupList = ProductCategoryGroupInfoService.Instance.GetProductCategoryGroupList(false);
+    if (categoryInfo == null)
+    {
+        throw new Exception("获取产品类型信息异常，参数未传递");
+    }
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/ProductCenter/DoUpdateProductCategory" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+            <input type="hidden" name="categoryId" value="@categoryInfo.ProductCategoryId" />
+            <input type="hidden" name="sortOrder" value="@categoryInfo.SortOrder" />
+            <input type="hidden" name="tableName" value="@categoryInfo.TableName" />
+            <div class="information02">
+                <h2>新建产品类型信息</h2>
+            <div class="New_box02">
+            <dl>
+                <span>
+			        <dt>销售城市：</dt>
+			        <dd>
+                    <select name="saleCity">
+                        @{
+                            <option value="">所有</option>
+                            if (SaleCity != null)
+                            {
+                                foreach(CustomDataValueDomainModel item in SaleCity.ValueList.Values)
+                                {
+                                    <option value="@item.ValueId" @CommonUtil.SetComboxSelected(item.ValueId, categoryInfo.SaleCity) >@item.DataValue</option>
+                                }
+                            }
+                        }
+                    </select>
+                    </dd>
+                </span>
+                <span>
+                    <dt>分组名称：</dt>
+                    <dd>
+                        <select name="groupName">
+                            @{                    
+                                if(groupList != null)
+                                {
+                                    foreach(ProductCategoryGroupInfoModel item in groupList.Values)
+                                    {
+                                        @:<option value="@item.ProductCategoryGroupId" @CommonUtil.SetComboxSelected(item.ProductCategoryGroupId, categoryInfo.GroupName) >@item.GroupName</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </dd>
+                </span>
+                <span>
+                    <dt>类型名称：</dt>
+                    <dd><input name="categoryName" class="required" type="text" size="30" value="@categoryInfo.CategoryName" alt="请输入产品类型名称"/></dd>
+                </span>
+                <span>
+                    <dt>类型编码：</dt>
+                    <dd><input name="categoryCode" class="required" type="text" size="30" value="@categoryInfo.CategoryCode"/></dd>
+                </span>
+                
+            </dl>  
+            <dl style="height:50px;">
+                <span>
+                    <dt>销售价格：</dt>
+                    <dd><input name="itemPrice" class="number required" type="text" size="30" value="@categoryInfo.ItemPrice"/></dd>
+                </span>
+                <span>
+                    <dt style="width:50px;">状态：</dt>
+                    <dd style="width:140px; text-align:left;">
+                        <input style="width:20px;" type="radio" value="0"  @((categoryInfo.Status == 0) ? "checked" : "") name="Status" />启用
+                        <input style="width:20px;" type="radio" value="1"  @((categoryInfo.Status == 1) ? "checked" : "") name="Status" />禁用
+                    </dd>
+                </span>
+                <span  style="width:420px; height:40px;margin-bottom:5px;">
+                    <dt>备注信息：</dt>
+                    <dd style="width:310px; height:40px; "><textarea name="remark" cols="42" rows="2" >@categoryInfo.Remark</textarea></dd>
+                </span>
+            </dl>
+            </div> 
+        </div>  
+        <div class="unit">
+             <div class="tabs" currentIndex="0" eventType="click">
+	            <div class="tabsHeader">
+		            <div class="tabsHeaderContent">
+			            <ul>
+                            <li><a href="javascript:;"><span>产品详细介绍</span></a></li>
+				            <li><a href="javascript:;"><span>营销话术指引</span></a></li>
+			            </ul>
+		            </div>
+	            </div>
+	            <div class="tabsContent">
+                    <div style="height:300px;">
+                    <textarea class="editor" name="description" style="height:295px; width:100%;"
+								upLinkUrl="upload.php" upLinkExt="zip,rar,txt" 
+								upImgUrl="upload.php" upImgExt="jpg,jpeg,gif,png" 
+								upFlashUrl="upload.php" upFlashExt="swf"
+								upMediaUrl="upload.php" upMediaExt:"avi">
+                                @categoryInfo.Description
+							</textarea>
+                    </div>
+		            <div style="height:300px;">
+                    <textarea class="editor" name="salesGuide" style="height:270px; width:100%;"
+								upLinkUrl="upload.php" upLinkExt="zip,rar,txt" 
+								upImgUrl="upload.php" upImgExt="jpg,jpeg,gif,png" 
+								upFlashUrl="upload.php" upFlashExt="swf"
+								upMediaUrl="upload.php" upMediaExt:"avi">
+                                @categoryInfo.SalesGuide
+							</textarea>
+                    </div>
+	            </div>
+	            <div class="tabsFooter">
+		            <div class="tabsFooterContent"></div>
+	            </div>
+            </div>
+        </div>   
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+

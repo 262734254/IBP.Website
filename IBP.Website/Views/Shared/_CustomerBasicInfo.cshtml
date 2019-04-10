@@ -1,0 +1,195 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+    CustomDataDomainModel CustomerComeFrom = ViewBag.CustomerComeFrom as CustomDataDomainModel;
+    CustomDataDomainModel CustomerLevel = ViewBag.CustomerLevel as CustomDataDomainModel;
+    CustomDataDomainModel Carriers = ViewBag.Carriers  as CustomDataDomainModel;
+    CustomDataDomainModel PhoneBrand = ViewBag.PhoneBrand as CustomDataDomainModel;
+    CustomDataDomainModel Consumer = ViewBag.Consumer as CustomDataDomainModel;
+    CustomDataDomainModel MobilePhonePrice = ViewBag.MobilePhonePrice as CustomDataDomainModel;
+}
+
+<div class="New_box02">
+   <dl>
+   <span>
+     <dd>客户姓名：</dd>
+     <dt><input @CommonUtil.SetReadOnly(ViewBag.Readonly, "text") name="customerName" class="text" type="text" size="12" value="@Customer.BasicInfo.CustomerName" /></dt>
+   </span>
+     <span>
+     <dd>性别：</dd>
+     <dt>
+       <select name="sex"  @CommonUtil.SetReadOnly(ViewBag.Readonly, "select") >
+         <option value="0" @(CommonUtil.SetComboxSelected("0", Customer.BasicInfo.Sex)) >先生</option>
+         <option value="1" @(CommonUtil.SetComboxSelected("1", Customer.BasicInfo.Sex)) >女士</option>
+         <option value="2" @(CommonUtil.SetComboxSelected("2", Customer.BasicInfo.Sex)) >未知</option>
+       </select>
+     </dt>
+     </span>
+     <span>
+     <dd>客户来源：</dd>
+     <dt>
+       <select name="salesFrom" @CommonUtil.SetReadOnly(ViewBag.Readonly, "select") >
+            @{
+                if (CustomerComeFrom != null && CustomerComeFrom.ValueList != null)
+                {
+                    foreach (CustomDataValueDomainModel item in CustomerComeFrom.ValueList.Values)
+                    {
+                        if(item.Status == 1)
+                        {
+                            continue;
+                        }
+                        @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, Customer.BasicInfo.SalesFrom)) >@item.DataValue</option>
+                    }
+                }
+            }
+       </select>
+     </dt>
+     </span>
+     <span>
+     <dd>客户等级：</dd>
+     <dt>
+       <select name="level" @CommonUtil.SetReadOnly(ViewBag.Readonly, "select") >
+         @{
+             if (CustomerLevel != null && CustomerLevel.ValueList != null)
+             {
+                 foreach (CustomDataValueDomainModel item in CustomerLevel.ValueList.Values)
+                 {
+                        @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, Customer.BasicInfo.Level)) >@item.DataValue</option>
+                    }
+             }
+            }
+       </select>
+     </dt>
+     </span>
+     <span>     
+     <dd>归属地：</dd>
+     <dt><input @CommonUtil.SetReadOnly(ViewBag.Readonly, "text")  custjs="@((ViewBag.Readonly == true) ? "" : "flowcontrol")" id="btnLocation" name="comefrom" locname="@ViewBag.LocationBoxName" class="text" value="@Customer.BasicInfo.ComeFrom" type="text" size="12" /></dt>
+     </span>
+     <span>
+     <dd>手机号码：</dd>
+     <dt><input @CommonUtil.SetReadOnly(ViewBag.Readonly, "text")  name="mobilePhone" type="text" class="phone" value="@Customer.BasicInfo.MobilePhone" size="12" /></dt>
+     </span>
+     <span>
+     <dd>固定电话：</dd>
+     <dt><input @CommonUtil.SetReadOnly(ViewBag.Readonly, "text")  name="homePhone" type="text" class="phone" value="@Customer.BasicInfo.HomePhone" size="12" /></dt>
+     </span>
+     <span>
+     <dd>其他号码：</dd>
+     <dt><input @CommonUtil.SetReadOnly(ViewBag.Readonly, "text")  name="otherPhone" type="text" value="@Customer.BasicInfo.OtherPhone" size="12" /></dt>
+     </span>
+    @* <span>
+     <dd>合约号码1：</dd>
+     <dt><input @CommonUtil.SetReadOnly(ViewBag.Readonly, "text")  name="businessPhone1" type="text" class="phone" value="@((Customer.PhoneNumberList != null && Customer.PhoneNumberList.Count > 1) ? Customer.PhoneNumberList.First().Value.PhoneNumber : "")" size="12" /></dt>
+     </span>
+     <span>
+     <dd>合约号码2：</dd>
+     <dt><input @CommonUtil.SetReadOnly(ViewBag.Readonly, "text")  name="businessPhone2" type="text" class="phone" value="@((Customer.PhoneNumberList != null && Customer.PhoneNumberList.Count > 2) ? Customer.PhoneNumberList.ElementAt(1).Value.PhoneNumber : "")" size="12" /></dt>
+     </span>*@
+     <span>       
+     <dd>运营商：</dd>
+     <dt>
+       <select name="carriers" @CommonUtil.SetReadOnly(ViewBag.Readonly, "select") >
+         @{
+             if (Carriers != null && Carriers.ValueList != null)
+                {
+                    foreach (CustomDataValueDomainModel item in Carriers.ValueList.Values)
+                    {
+                        @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, Customer.BasicInfo.Carriers)) >@item.DataValue</option>
+                    }
+                }
+            }
+       </select>
+     </dt>
+     </span>
+     <span>
+     <dd>在用品牌：</dd>
+     <dt>
+       <select name="phoneBrand" @CommonUtil.SetReadOnly(ViewBag.Readonly, "select") >
+         @{
+             if (PhoneBrand != null && PhoneBrand.ValueList != null)
+                {
+                    foreach (CustomDataValueDomainModel item in PhoneBrand.ValueList.Values)
+                    {
+                        @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, Customer.BasicInfo.UsingPhoneBrand)) >@item.DataValue</option>
+                    }
+                }
+            }
+       </select>
+     </dt>
+     </span>
+     <span>
+     <dd>在用型号：</dd>
+     <dt><input @CommonUtil.SetReadOnly(ViewBag.Readonly, "text")  type="text" name="phoneType" class="text" value="@Customer.BasicInfo.UsingPhoneType" size="12"/></dt>
+     </span>
+     <span>
+     <dd>通讯消费：</dd>
+     <dt>
+       <select name="consumer" @CommonUtil.SetReadOnly(ViewBag.Readonly, "select") >
+         @{
+             if (Consumer != null && Consumer.ValueList != null)
+                {
+                    foreach (CustomDataValueDomainModel item in Consumer.ValueList.Values)
+                    {
+                        @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, Customer.BasicInfo.CommunicationConsumer)) >@item.DataValue</option>
+                    }
+                }
+            }
+       </select>
+     </dt>
+     </span>
+     <span>
+     <dd>优选品牌：</dd>
+     <dt>
+       <select name="prePhoneBrand" @CommonUtil.SetReadOnly(ViewBag.Readonly, "select") >
+         @{
+             if (PhoneBrand != null && PhoneBrand.ValueList != null)
+                {
+                    foreach (CustomDataValueDomainModel item in PhoneBrand.ValueList.Values)
+                    {
+                        @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, Customer.BasicInfo.PreferredPhoneBrand)) >@item.DataValue</option>
+                    }
+                }
+            }
+       </select>
+     </dt>
+     </span>
+     <span>
+     <dd>是否智能机：</dd>
+     <dt>
+       <select name="isSmartphone" @CommonUtil.SetReadOnly(ViewBag.Readonly, "select") >
+         <option value="1" @(CommonUtil.SetComboxSelected("1", Customer.BasicInfo.UsingSmartphone))>是</option>
+         <option value="2" @(CommonUtil.SetComboxSelected("2", Customer.BasicInfo.UsingSmartphone))>否</option>
+         <option value="3" @(CommonUtil.SetComboxSelected("3", Customer.BasicInfo.UsingSmartphone))>未知</option>
+       </select>
+     </dt>
+     </span>
+     <span>
+     <dd>手机价位：</dd>
+        <dt>
+       <select name="mobilePhonePrice" @CommonUtil.SetReadOnly(ViewBag.Readonly, "select") >
+         @{
+             if (MobilePhonePrice != null && MobilePhonePrice.ValueList != null)
+                {
+                    foreach (CustomDataValueDomainModel item in MobilePhonePrice.ValueList.Values)
+                    {
+                        @:<option value="@item.ValueId" @(CommonUtil.SetComboxSelected(item.ValueId, Customer.BasicInfo.MobilePhonePrice)) >@item.DataValue</option>
+                    }
+                }
+            }
+       </select>
+     </dt>
+     </span>
+     <span>
+        <dd>客户生日：</dd>
+        <dt><input readonly="readonly" type="text" name="birthday" class="text" value="@((Customer.BasicInfo.Birthday == null) ? "" : Convert.ToDateTime(Customer.BasicInfo.Birthday).ToString("****年MM月dd日"))" size="12"/></dt>
+     </span>
+     <span>
+        <dd>建档日期：</dd>
+        <dt><input readonly="readonly" type="text" name="createdOn" class="text" value="@Customer.BasicInfo.CreatedOn" size="12"/></dt>
+     </span>
+    </dl>
+    </div>

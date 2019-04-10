@@ -1,0 +1,120 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@using  IBP.Models.DomainModels;
+
+@{
+    Layout = "";
+
+    List<string> UserInfoList = ViewBag.UserInfoList as List<string>;
+    ViewBag.QueryPlane = Guid.NewGuid().ToString();
+    UserDomainModel userInfo = null;
+    DepartmentDomainModel departmentInfo = null;
+    Dictionary<string, QueryItemDomainModel> QueryCollection = ViewBag.QueryCollection as Dictionary<string, QueryItemDomainModel>;
+    CustomDataDomainModel CustomList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("工作状态", false);
+  
+
+}
+
+<form id="pagerForm" method="post" action="/UserMgr/UserList">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+<div class="pageHeader">	
+    <form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/UserMgr/UserList" method="post">
+	<div class="searchBar">
+		<div class="searbg">
+            <dl><dd>用户状态：</dd><dt>
+            <select name="work_status" >
+                    <option value="working" selected="selected">在职</option>
+				@{
+                        if (CustomList != null)
+                        {
+                            foreach (CustomDataValueDomainModel customValue in CustomList.ValueList.Values)
+                            {
+                                <option value="@customValue.ValueId" @CommonUtil.SetComboxSelected(customValue.ValueId, ViewBag.WorkStatus) >@customValue.DataValue</option>
+                            }
+                        }
+                    }
+				</select>
+                    </dt></dl>
+                <dl><dd>姓名：</dd><dt><input type="text" id="cn_name" name="cn_name" value="@(QueryCollection.ContainsKey("cn_name") ? QueryCollection["cn_name"].SearchValue : "")" /></dt></dl>
+                <dl><dd>工号：</dd><dt><input type="text" id="work_id" name="work_id" value="@(QueryCollection.ContainsKey("work_id") ? QueryCollection["work_id"].SearchValue : "")" /></dt></dl> 
+          <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button name="querysubmit" type="submit">查询</button></div></div></div>
+
+        </div>
+    	</div>
+	</form>
+</div>
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+           <li>
+            <a  target="dialog" maxable="false" mask="true" width="580" height="580" title="新建用户" rel="UserMgr_UserList" class="add" href="/UserMgr/AddUser" mask="true"> <span>新建</span></a></li>
+			<li><a class="edit" href="/UserMgr/EditUser?uid={sid_user}" width="500" height="580" target="dialog" maxable="false" rel="UserMgr_UserList" mask="true"><span>编辑</span></a></li>
+            <li><a title="确实要删除这些记录吗?" target="selectedTodo" rel="ids" href="/UserMgr/DoDelUserInfo" class="delete"><span>删除</span></a></li>         
+			<li class="line">line</li>
+            <li><a class="add" href="/UserMgr/UpdateUserInfoStatus?uid=" relids="ids" target="dialogWithIds" rel="UserMgr_UserList" mask="true" height="380"><span>批量操作</span></a></li>
+			<li class="line">line</li>
+			<li><a class="icon" href="/UserMgr/ExportUser" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+		</ul>
+	</div>
+	<table class="table" layoutH="115">
+		<thead>
+			<tr>
+				<th width="22"><input type="checkbox" group="ids" class="checkboxCtrl"></th>
+				<th width="80"@CommonUtil.SetSortOrder("work_id", ViewBag.OrderField, ViewBag.OrderDirection) class="asc">工号</th>
+				<th width="120"@CommonUtil.SetSortOrder("en_name", ViewBag.OrderField, ViewBag.OrderDirection) >英文名</th>
+				<th width="80" @CommonUtil.SetSortOrder("cn_name", ViewBag.OrderField, ViewBag.OrderDirection)>姓名</th>
+				<th width="90" @CommonUtil.SetSortOrder("post_name", ViewBag.OrderField, ViewBag.OrderDirection)>职务</th>
+				<th width="90" @CommonUtil.SetSortOrder("team_name", ViewBag.OrderField, ViewBag.OrderDirection)>团队</th>
+				<th width="90" @CommonUtil.SetSortOrder("department_id", ViewBag.OrderField, ViewBag.OrderDirection)>部门</th>
+				<th width="70" @CommonUtil.SetSortOrder("work_status", ViewBag.OrderField, ViewBag.OrderDirection)>状态</th>
+				<th width="90" @CommonUtil.SetSortOrder("entry_date", ViewBag.OrderField, ViewBag.OrderDirection)>入职日期</th>
+			</tr>
+		</thead>
+		<tbody>
+
+         @{
+             if (UserInfoList != null)
+             {
+                 
+                 foreach (string customerId in UserInfoList)
+                 {
+                     userInfo = UserInfoService.Instance.GetUserDomainModelById(customerId, false);
+                     departmentInfo = DepartmentInfoService.Instance.GetDepartmentDomainInfoById(userInfo.BasicInfo.DepartmentId);
+                   
+                        <tr target="sid_user" rel="@customerId">
+                            <td><input name="ids" value="@customerId" type="checkbox"></td>
+                            <td>@userInfo.WorkId</td>
+                            <td>@userInfo.BasicInfo.EnName</td>
+                            <td>@userInfo.BasicInfo.CnName</td>
+                            <td>@userInfo.BasicInfo.PostName</td>
+                            <td>@userInfo.BasicInfo.TeamName</td>
+                            <td>@departmentInfo.DepartmentName</td>                   
+                            <td>@CustomList.ValueList[userInfo.BasicInfo.WorkStatus].DataValue </td>                      
+                            <td>@userInfo.BasicInfo.EntryDate</td>
+      
+                      
+                        </tr>
+                 }
+             }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				<option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				<option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.UsersTotal 条</span>
+		</div>
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.UsersTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+	</div>
+</div>

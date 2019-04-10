@@ -1,0 +1,98 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@using Framework.Utilities;
+@{
+    Layout = "";
+    CustomDataDomainModel CustomeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("工作状态", false);
+    Dictionary<string, RoleDomainModel> roleDict = RoleInfoService.Instance.GetRoleDomainList(false);
+    string userId = Request.QueryString["uid"];   
+}
+
+
+   <div class="pageContent">
+   <div class="pageFormContent" layoutH="56">
+	<form method="post" action="/UserMgr/DoUpdateUserInfoStatus" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+     <input type="hidden" value="@userId" name="userId" />
+      <input type="hidden" value="roleId" name="roleType" />		
+        <div class="information02">
+            <div class="New_box02">
+            	<dl>
+              <dd>用户角色：</dd>
+              <dt><select name="roleid" class="required">
+					<option value="">请选择</option>
+				                     	
+                     @{
+                             if(roleDict != null)
+                             {
+                                 foreach(RoleDomainModel role in roleDict.Values)
+                                 {
+                                      <option value="@role.RoleId">@role.RoleName</option>
+                                 
+                                 }
+                             }
+                         }
+				</select></dt>
+                  <div class="button" style=" margin-left:20px;"><div class="buttonContent"><button name="querysubmit" type="submit"   >修改</button></div></div>
+                 </dl>
+			
+		
+         </div>
+         </div>
+    </form>
+  
+    <form method="post" action="/UserMgr/DoUpdateUserInfoStatus" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+	    <input type="hidden" value="@userId" name="userId" />
+        <input type="hidden" value="work" name="workType" />
+        <div class="information02">
+            <div class="New_box02">
+              <dl>
+              <dd>用户状态：</dd>
+            <dt>
+                <select name="work_status" >
+					<option value="">请选择</option>
+				@{
+                    if (CustomeList != null)
+                        {
+                            foreach (CustomDataValueDomainModel customValue in CustomeList.ValueList.Values)
+                            {
+                                <option value="@customValue.ValueId">@customValue.DataValue</option>
+                            }
+                        }
+                    }
+                </select></dt>
+                 <div class="button" style=" margin-left:20px;"><div class="buttonContent"><button name="querysubmit" type="submit">修改</button></div></div>
+            </dl>
+             </div>
+             </div>   	
+            </form>
+    <form method="post" action="/UserMgr/DoUpdateUserInfoStatus" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+			<input type="hidden" value="status" name="statusType" />
+             <input type="hidden" value="@userId" name="userId" />
+        <div class="information02">
+            <div class="New_box02">
+              <dl>
+              <dd>账号状态：</dd>
+            <p style="width:110px;">
+                <input type="radio" value="0" name="Status"  />启用
+                <input type="radio" value="1" name="Status" />禁用</p>
+                <div class="button"><div class="buttonContent"><button name="querysubmit" type="submit" >修改</button></div></div>
+			
+            </dl>
+             </div>
+             </div>
+            </form>
+			
+	</div>
+        <div class="formBar">
+			<ul>
+				
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+    </div>
+
+
+

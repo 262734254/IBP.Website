@@ -1,0 +1,131 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string customerId = Request.QueryString["cid"];
+    string pageName = Request.QueryString["page"];
+    string infoType = Request.QueryString["infotype"];
+    string callBackJsFunction = (pageName == "newPhoneSaleOrder") ? "AddCustomerCreditCardDone" : "dialogAjaxDone";
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+    CustomDataDomainModel CardBank = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel CardCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡城市", false);
+    CustomDataDomainModel IdCardType = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("证件类型", false);
+
+    ViewBag.LocationBoxName = Guid.NewGuid().ToString();
+    ViewBag.TimeTag = customerId + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff");
+}
+
+<div class="pageContent">
+    <form method="post" action="/CallCenter/DoNewCreditCardInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, @callBackJsFunction);">
+    <div class="pageFormContent" layouth="66">
+        <div class="information02">
+            <input type="hidden" name="customerId" value="@customerId" />
+            <input type="hidden" name="infoType" value="@infoType" />
+            <input type="hidden" name="timeTag" value="@ViewBag.TimeTag" />
+            <div name="locationDiv" locname="@ViewBag.LocationBoxName" levelRegion="city" class="location">
+                <input type="hidden" name="chinaId" class="chinaIdBox" value="@Customer.BasicInfo.ChinaId" />
+                @Html.Partial("_LocationPanel")
+            </div>
+            @{
+            @:        <h2>新建目标客户【@Customer.BasicInfo.CustomerName】持卡信息</h2>
+            @:        <div class="New_box02">
+            @:            <dl>
+            @:                <span>
+            @:                    <dd>开卡行：</dd>
+            @:                    <dt>
+            @:                        <select name="openbank">
+                                        if (CardBank != null && CardBank.ValueList.Count > 0)
+                                        {
+                                            foreach (CustomDataValueDomainModel item in CardBank.ValueList.Values)
+                                            {
+                                                @:<option value="@item.ValueId">@item.DataValue</option>
+                                            }
+                                        }
+            @:                        </select>
+            @:                    </dt>
+            @:                </span>
+            @:                <span>
+            @:                    <dd>开户城市：</dd>
+            @:                    <dt>
+            @:                        <select name="openAddress">
+                                        if (CardCity != null && CardCity.ValueList.Count > 0)
+                                        {
+                                            foreach (CustomDataValueDomainModel item in CardCity.ValueList.Values)
+                                            {
+                                                @:<option value="@item.ValueId">@item.DataValue</option>
+                                            }
+                                        }
+            @:                        </select>
+            @:                    </dt>
+            @:                </span>
+            @:            </dl>
+            @:            <dl>
+            @:                <dd>持卡号码：</dd>
+            @:                <dt style="width: 200px;">
+            @:                    <input name="creditCardNumber" txtcustomerid="@("CreditCard_" + ViewBag.TimeTag)"  class="text" value="" readonly='readonly' style="width:150px;"  type="text" size="12" />
+            @:                    <input name="btnGetCreditCardNumber"  style="width:40px;" value="获取" type="button" onclick="GetCreditCardNumber(this, '@ViewBag.TimeTag')"  customerid="@ViewBag.TimeTag" />
+            @:                </dt>
+            @:                <dd>
+            @:                    安全码：</dd>
+            @:                <dt style="width: 120px;">
+            @:                    <input name="securityCode" txtcustomerid="@("SecurityCode_" + ViewBag.TimeTag)" readonly='readonly' class="text" value="" type="text" size="12" />
+            @:                    <input name="btnGetSecurityCode" value="获取" style="width:40px;" type="button" onclick="GetSecurityCode(this, '@ViewBag.TimeTag')"  customerid="@ViewBag.TimeTag" />
+            @:                </dt>
+            @:                <dd>
+            @:                    有效期：</dd>
+            @:                <dt style="width: 120px;">
+            @:                    <input name="periodCode"  txtcustomerid="@("PeriodCode_" + ViewBag.TimeTag)" readonly='readonly' class="text" value="" type="text" size="12" />
+            @:                    <input name="btnGetPeriodCode" value="获取" style="width:40px;" type="button"  onclick="GetPeriodCode(this, '@ViewBag.TimeTag')" customerid="@ViewBag.TimeTag" />
+            @:                </dt>
+            @:            </dl>
+            @:            <dl>
+            @:                <span>
+            @:                    <dd>持卡人姓名：</dd>
+            @:                    <dt><input name="cardUsername" class="text required" value="" type="text" size="12" /></dt></span>
+            @:                <span>
+            @:                    <dd>证件类型：</dd>
+            @:                    <dt>
+            @:                        <select name="idcardType">
+                                           if (IdCardType != null && IdCardType.ValueList.Count > 0)
+                                           {
+                                               foreach (CustomDataValueDomainModel item in IdCardType.ValueList.Values)
+                                               {
+                                                    <option value="@item.ValueId">@item.DataValue</option>
+                                               }
+                                           }
+            @:                        </select>
+            @:                    </dt>
+            @:                </span>
+            @:                <span style="width: 330px;">
+            @:                    <dd>证件号码：</dd>
+            @:                    <dt style="width: 220px;">
+            @:                        <input name="idCardNumber" txtcustomerid="@("IdCard_" + ViewBag.TimeTag)" readonly='readonly' class="text" value="" style="width:170px;"  type="text" size="12" />
+            @:                        <input name="btnGetIdCardNumber" style="width:40px;" value="获取" type="button"  onclick="GetIdCardNumber(this, '@ViewBag.TimeTag')" customerid="@ViewBag.TimeTag"  />
+            @:                    </dt>
+            @:                </span>
+            @:             </dl>
+            @:        </div>
+            }
+        </div>
+    </div>
+    <div class="formBar">
+        <ul>
+            <li>
+                <div class="buttonActive">
+                    <div class="buttonContent">
+                        <button type="submit">
+                            提交</button></div>
+                </div>
+            </li>
+            <li>
+                <div class="button">
+                    <div class="buttonContent">
+                        <button type="button" class="close">
+                            取消</button></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    </form>
+</div>

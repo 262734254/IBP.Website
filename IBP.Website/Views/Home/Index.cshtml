@@ -1,0 +1,55 @@
+﻿@using Framework.Utilities;
+
+@{
+}
+<div class="navTab-panel tabsPageContent layoutBox">
+    <div class="page unitBox">
+        <div class="accountInfo">
+            <div class="alertInfo">
+                <h2><a>今天是 2011年11月29日 星期二</a></h2>
+                本日倒计：<span id="countdown" style="color: red; margin-right:20px; font-weight:bolder;">07:43:12</span>
+                <a>时间在流逝，你达到目标了吗？</a>
+            </div>
+            <div class="right">
+               
+            </div>
+            <p>
+                <span>亲爱的 <span style="color: red">@SessionUtil.Current.CnName</span> ，欢迎您回来！</span></p>
+            <p>在此显示最新的一条广播信息！~在此显示最新的一条广播信息！~</p>
+        </div>
+        <div class="pageFormContent" style="margin-right: 230px">
+
+	        <div class="tabs" currentIndex="0" eventType="click" style="margin-right:10px;">
+		        <div class="tabsHeader">
+			        <div class="tabsHeaderContent">
+				        <ul>
+					        <li><a href="javascript:;"><span>我的客户</span></a></li>
+					        <li><a href="javascript:;"><span>我的订单</span></a></li>
+                            <li><a href="javascript:;"><span>我的工单</span></a></li>
+				        </ul>
+			        </div>
+		        </div>
+		        <div class="tabsContent">
+			        <div>
+                        
+			        </div>
+			        <div>
+                         
+			        </div>
+                     <div>
+                         
+			        </div>
+		        </div>
+		        <div class="tabsFooter">
+			        <div class="tabsFooterContent"></div>
+		        </div>
+	        </div>             
+             
+        </div>
+        <div style="width: 230px; position: absolute; top: 70px; right: 6px;">
+            @Html.Partial("OrderRank")
+        </div>
+    </div>
+</div>
+
+

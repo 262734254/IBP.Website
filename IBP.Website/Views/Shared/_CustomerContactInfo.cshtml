@@ -1,0 +1,47 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+    CustomDataDomainModel ContactPurposeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("联系记录(联系目的)", false);
+    CustomDataDomainModel ContactResultList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("联系记录(联系结果)", false);
+    string DataTag = Customer.BasicInfo.CustomerId + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff");
+}
+
+<table class="table" width="100%" layoutH="295" minH="290">
+	<thead>
+		<tr>
+            <th width="80">操作</th>            
+			<th width="90">联系号码</th>
+            <th width="60">联系方向</th>
+            <th width="60">联系目的</th>
+            <th width="60">联系结果</th>
+            <th width="500">联系记录</th>
+			<th width="90">创建人</th>
+            <th width="90">工号</th>
+			<th width="120">创建时间</th>
+		</tr>
+	</thead>
+	<tbody>
+        @{            
+            UserDomainModel user = null;
+            foreach(CustomerContactInfoModel item in Customer.ContactList.Values)
+            {
+                user = UserInfoService.Instance.GetUserDomainModelById(item.CreatedBy, false);
+                <tr>
+                    <td><a class="button" href="#" custjs="softcti" name="btnOutCall" customerid="@DataTag" callnumber="@CustomerContactInfoService.Instance.GetOutCallNumber(item)"><span>外呼</span></a></td>
+                    <td>@item.CustomerPhone</td>
+                    <td>@((item.Directions == 0) ? "呼入" : "呼出")</td>
+                    <td>@ContactPurposeList.GetCustomDataValueByValueId(item.Purpose)</td>
+                    <td>@ContactResultList.GetCustomDataValueByValueId(item.Results)</td>
+                    <td title="@item.Description">@item.Description</td>
+			        <td>@((user == null) ? "" : user.BasicInfo.CnName)</td>
+                    <td>@((user == null) ? "" : user.WorkId)</td>
+                    <td>@item.CreatedOn</td>
+		        </tr>
+            }           
+        }
+        </tbody>
+</table>

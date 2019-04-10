@@ -1,0 +1,82 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+}
+<div class="pageContent">
+	
+	<form method="post" action="/CallCenter/DoNewAutoDialerTask" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+			<div class="unit">
+				<label>自动外呼任务名称：</label>
+				<input type="text" name="taskName" size="30" minlength="3" maxlength="20" class="required" value="" />
+			</div>
+            <div class="unit">
+				<label>任务描述：</label>
+				<textarea name="taskDesc" cols="45" rows="2"></textarea>
+			</div>
+            <div class="divider"></div>
+            <div class="unit">                
+				<label>外呼时间：</label>
+                <table><tr><td>
+                <input type="text" name="beginTime" readonly="readonly" class="date required" format="yyyy-MM-dd"/>  
+                </td><td style="padding:0px 5px 0px 5px;">
+                <span class="limit">-</span></td>
+                <td>           
+				<input type="text" name="endTime" readonly="readonly" class="date required" format="yyyy-MM-dd"/>
+                </td></tr></table>				
+			</div>
+            <div class="unit">                
+				<label>外呼时段：</label>
+                <table>
+                    <tr>
+                        <td><input type="text" name="startTime1" readonly="readonly" class="date required" format="HH:mm"/></td>
+                        <td style="padding:0px 5px 0px 5px;"><span class="limit">-</span></td>
+                        <td><input type="text" name="stopTime1" readonly="readonly" class="date required" format="HH:mm"/></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="startTime2" readonly="readonly" class="date" format="HH:mm"/></td>
+                        <td style="padding:0px 5px 0px 5px;"><span class="limit">-</span></td>
+                        <td><input type="text" name="stopTime2" readonly="readonly" class="date" format="HH:mm"/></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="startTime3" readonly="readonly" class="date" format="HH:mm"/></td>
+                        <td style="padding:0px 5px 0px 5px;"><span class="limit">-</span></td>
+                        <td><input type="text" name="stopTime3" readonly="readonly" class="date" format="HH:mm"/></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="startTime4" readonly="readonly" class="date" format="HH:mm"/></td>
+                        <td style="padding:0px 5px 0px 5px;"><span class="limit">-</span></td>
+                        <td><input type="text" name="stopTime4" readonly="readonly" class="date" format="HH:mm"/></td>
+                    </tr>
+                </table>				
+			</div>
+            <div class="divider"></div>
+            <div class="unit">
+				<label>外呼间隔时间：</label>
+				<input type="text" name="Interval" size="30" class="digits required" value="" />&nbsp;&nbsp;分钟
+			</div>
+            <div class="unit">
+				<label>失败重呼次数：</label>
+				<input type="text" name="tryCount" size="30" class="digits required" value="" />
+			</div>
+            <div class="unit">
+				<label>优先级别：</label>
+				<select class="combox" name="priority">
+                    <option value="1">低</option>
+                    <option value="2">中</option>
+					<option value="3">高</option>
+                    <option value="4">紧急</option>
+					</select>
+			</div>
+			
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

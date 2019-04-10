@@ -1,0 +1,226 @@
+﻿
+@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    CustomDataDomainModel CustomerComeFrom = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("客户来源", false);
+    CustomDataDomainModel Customerlevel = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("客户等级", false);
+    CustomDataDomainModel Carriers = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("运营商", false);
+    CustomDataDomainModel CustomPhonebrand = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("优选品牌", false);
+    CustomDataDomainModel Communication = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("通讯消费", false);
+    CustomDataDomainModel CustomMobilePrice = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("手机价位", false);
+      
+      Dictionary<string, QueryItemDomainModel> QueryCollection = ViewBag.QueryCollection as Dictionary<string, QueryItemDomainModel>;
+   
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/CallCenter/DoAddCustomerInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		   <div custjs="flowcontrol" locname="@ViewBag.LocationBoxName" name="locationDiv" levelRegion="city" class="location">
+            <input type="hidden" name="chinaId" class="chinaIdBox" value="" />
+            @Html.Partial("_LocationPanel")
+        </div>
+        <div class="pageFormContent" layoutH="62">
+        <div class="information02">
+            <h2>新建客户信息</h2>
+            <br />
+            <div class="New_box02">
+            <dl>
+                   <span> <dd>客户姓名：</dd>
+                    <dt><input name="customer_name"   type="text" size="30" value="" class="required" alt="请输入客户姓名"/></dt></span>
+                    <span>
+                    <dd>性    别：</dd>
+                    <dt><select name="sex" >
+               <option value="2">未知</option>
+               <option value="0">先生</option>
+               <option value="1">女士</option> 
+               </select></dt>
+               </span>
+               <span>
+               <dd>客户来源：</dd>
+               <dt><select name="salesFrom" class="required">
+                  <option value="">请选择</option>
+				  @{
+                      if (CustomerComeFrom != null)
+                      {
+                          foreach (CustomDataValueDomainModel customValue in CustomerComeFrom.ValueList.Values)
+                          {
+                              if (customValue.Status == 1)
+                              {
+                                  continue;
+                              }
+                                <option value="@customValue.ValueId">@customValue.DataValue</option>
+                          }
+                      }
+                    }
+               </select>
+               </dt>
+               </span>
+                </dl>
+                <dl>
+                   <span> <dd>客户等级：</dd>
+                    <dt> <select name="level" class="required">
+                  <option value="">请选择</option>
+				  @{
+                      if (Customerlevel != null)
+                      {
+                          foreach (CustomDataValueDomainModel customValue in Customerlevel.ValueList.Values)
+                          {
+                                <option value="@customValue.ValueId">@customValue.DataValue</option>
+                          }
+                      }
+                    }
+               </select></dt></span>
+                    <span>
+                    <dd>归属地：</dd>
+                    <dt> <input  custjs="@("flowcontrol")" id="btnLocation" name="comefrom"  locname="@ViewBag.LocationBoxName" class="text" value="" type="text" size="12" /></dt>
+               </span>
+               <span>
+               <dd>手机号码：</dd>
+               <dt><input name="mobile_phone"    class="phone" type="text" size="30" value="" alt="请输入手机号码"/>
+               </dt>
+               </span>
+                </dl>
+            </div>
+			
+		
+			
+		</div>
+        <div class="information02">
+        <br />
+            <h2></h2> 
+            <br /> 
+             <div class="New_box02">
+             <dl>
+              <span>
+                <dd>固定电话：</dd>
+                <dt><input name="home_phone"    class="phone" type="text" size="30" value="" alt="请输入固定电话"/></dt>
+              </span>
+              <span>
+                <dd>其他号码：</dd>
+                <dt><input name="other_phone"   class="phone" type="text" size="30" value="" alt="请输入其他号码"/></dt>
+              </span>
+              <span>
+                <dd>运营商：</dd>
+                <dt><select name="carriers" >
+					<option value="">请选择</option>
+				                     	
+                     @{
+                         if (Carriers != null)
+                         {
+                             foreach (CustomDataValueDomainModel custom in Carriers.ValueList.Values)
+                             {
+                                      <option value="@custom.ValueId">@custom.DataValue</option>
+                                 
+                             }
+                         }
+                         }
+				</select></dt>
+              </span>
+             </dl>
+             <dl>
+              <span>
+                <dd>在用品牌：</dd>
+                <dt><select name="using_phone_brand" >
+					<option value="">请选择</option>
+				                     	
+                      @{
+                          if (CustomPhonebrand != null)
+                          {
+                              foreach (CustomDataValueDomainModel custom in CustomPhonebrand.ValueList.Values)
+                              {
+                                      <option value="@custom.ValueId">@custom.DataValue</option>
+                              }
+                          }
+                         }
+				</select></dt>
+              </span>
+              <span>
+                <dd>手机型号：</dd>
+                <dt><input name="using_phone_type"  type="text" size="30" value="" alt="请输入手机型号"/></dt>
+              </span>
+              <span>
+                <dd>通讯消费：</dd>
+                <dt><select name="communication_consumer" >
+					<option value="">请选择</option>
+				                     	
+                     @{
+                         if (Communication != null)
+                         {
+                             foreach (CustomDataValueDomainModel custom in Communication.ValueList.Values)
+                             {
+                                      <option value="@custom.ValueId">@custom.DataValue</option>
+                                 
+                             }
+                         }
+                         }
+				</select></dt>
+              </span>
+             </dl>
+              <dl>
+              <span>
+                <dd>优选品牌：</dd>
+                <dt><select name="preferred_phone_brand" >
+					<option value="">请选择</option>
+				     @{
+                         if (CustomPhonebrand != null)
+                         {
+                             foreach (CustomDataValueDomainModel custom in CustomPhonebrand.ValueList.Values)
+                             {
+                                      <option value="@custom.ValueId">@custom.DataValue</option>
+                                 
+                             }
+                         }
+                         }
+				</select>
+				</select></dt>
+              </span>
+              <span>
+                <dd>是否智能机：</dd>
+                <dt> <select name="using_smartphone" >
+               <option value="3">未知</option>
+               <option value="1">是</option>
+               <option value="2">否</option>               
+               </select></dt>
+              </span>
+              <span>
+                <dd>手机价位：</dd>
+                <dt><select name="mobile_phone_price" >
+                    <option value="">请选择</option>
+                     @{
+                         if (CustomMobilePrice != null)
+                         {
+                             foreach (CustomDataValueDomainModel CustoModel in CustomMobilePrice.ValueList.Values)
+                             {
+                                      <option value="@CustoModel.ValueId">@CustoModel.DataValue</option>
+                                 
+                                 }
+                             }
+                         }
+               </select></dt>
+              </span>
+             </dl>
+             <dl>
+              <span>
+                <dd>客户生日：</dd>
+                <dt><input name="birthday"  class="date" yearstart="-80" yearend="5" readonly="true" type="text" size="30" value="" /></dt>
+              </span>
+             </dl>
+             </div>        
+
+			
+		</div>
+        </div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">新建客户信息</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+

@@ -1,0 +1,95 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    string inComeNumber = Request.QueryString["icnum"];
+    string customerId =  Request.QueryString["cid"];
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+    ViewBag.Customer = Customer;
+    ViewBag.Readonly = false;
+    ViewBag.LocationBoxName = Guid.NewGuid().ToString();
+  
+    CustomDataDomainModel CustomerComeFrom = ViewBag.CustomerComeFrom as CustomDataDomainModel;
+    CustomDataDomainModel CustomerLevel = ViewBag.CustomerLevel as CustomDataDomainModel;
+    CustomDataDomainModel Carriers = ViewBag.Carriers as CustomDataDomainModel;
+    CustomDataDomainModel PhoneBrand = ViewBag.PhoneBrand as CustomDataDomainModel;
+    CustomDataDomainModel Consumer = ViewBag.Consumer as CustomDataDomainModel;
+    CustomDataDomainModel MobilePhonePrice = ViewBag.MobilePhonePrice as CustomDataDomainModel;
+}
+
+<div class="pageHeader">
+	<form name="customerbasicInfoForm" method="post" action="/CallCenter/DoUpdateCustomerBasicInfo" class="pageForm required-validate">
+        <div class="panelBar">
+	        <ul class="toolBar">
+		        <li style=" float:right;"><a id="btnUpdateCustomerBasic" class="edit" href="#" custjs="customermgr" title="确认提交当前客户信息修改吗?"><span>更新客户信息</span></a></li>
+                @{
+                    if(Customer != null)
+                    {
+                        if(Customer.BasicInfo.CallStatus == 0)
+                        {
+		                    <li style=" float:right;"><a class="edit" href="/CallCenter/DoChangeCustomerCallBack?op=1&cid=@Customer.BasicInfo.CustomerId" target="ajaxTodo" title="确定取消当前客户CallBack任务吗?"><span>取消CallBack</span></a></li>
+                        }
+                        else
+                        {
+		                    <li style=" float:right;"><a class="edit" href="/CallCenter/DoChangeCustomerCallBack?op=0&cid=@Customer.BasicInfo.CustomerId" target="ajaxTodo" title="确定添加当前客户CallBack任务吗?"><span>添加CallBack</span></a></li>
+                        }
+                    }
+                }
+		        <li class="line" style=" float:right;">line</li>
+                <li><a class="add" href="/CallCenter/NewCustomerMemo?cid=@Customer.BasicInfo.CustomerId" target="dialog" maxable="false"rel="@Customer.BasicInfo.CustomerId" mask="true"><span>新增备注</span></a></li>
+		        <li><a class="add" href="/CallCenter/NewCustomerContact?cid=@Customer.BasicInfo.CustomerId"target="dialog" maxable="false"rel="@Customer.BasicInfo.CustomerId" mask="true" width="495"  height="430"><span>新增联系记录</span></a></li>
+		        <li><a class="add" href="/CallCenter/NewPhoneSaleOrder?page=customerdetail&cid=@Customer.BasicInfo.CustomerId"target="dialog" maxable="false"rel="@Customer.BasicInfo.CustomerId" mask="true" width="1000" height="550"><span>新增订单</span></a></li>
+                <li><a class="add" href="/CallCenter/NewWorkOrder?cid=@Customer.BasicInfo.CustomerId" target="dialog" maxable="false"rel="@Customer.BasicInfo.CustomerId" mask="true" width="700" height="470"><span>新增工单</span></a></li>
+                <li><a class="add" href="/CallCenter/NewCreditCardInfo?cid=@Customer.BasicInfo.CustomerId" target="dialog" maxable="false"rel="@Customer.BasicInfo.CustomerId" mask="true" width="800" height="280"><span>新增持卡</span></a></li>
+                <li><a class="add" href="/CallCenter/NewDeliveryInfo?cid=@Customer.BasicInfo.CustomerId" target="dialog" maxable="false"rel="@Customer.BasicInfo.CustomerId" mask="true" width="800" height="350"><span>新增配送</span></a></li>
+	        </ul>
+        </div>
+
+        <div custjs="flowcontrol" locname="@ViewBag.LocationBoxName" name="locationDiv" levelRegion="city" class="location">
+            <input type="hidden" name="chinaId" class="chinaIdBox" value="@Customer.BasicInfo.ChinaId" />
+            @Html.Partial("_LocationPanel")
+        </div>
+
+        <div class="wrap">
+            <div class="information02">
+                <input type="hidden" name="customerId" value="@customerId" />                
+
+                <h2>客户【@Customer.BasicInfo.CustomerName】的基本信息</h2>
+                 @Html.Partial("_CustomerBasicInfo")
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="pageContent" minH="290">
+    <div class="tabs" currentIndex="0" eventType="click">
+	    <div class="tabsHeader">
+		    <div class="tabsHeaderContent">
+			    <ul>
+                    <li><a href="javascript:;"><span>客户备注（@Customer.MemoList.Count）</span></a></li>
+				    <li><a href="javascript:;"><span>号码列表（@Customer.PhoneNumberList.Count）</span></a></li>
+				    <li><a href="javascript:;"><span>联系记录（@Customer.ContactList.Count）</span></a></li>
+				    <li><a href="javascript:;"><span>订单记录（@Customer.SalesOrderList.Count）</span></a></li>
+                    <li><a href="javascript:;"><span>工单记录（@Customer.WorkorderList.Count）</span></a></li>
+                    <li><a href="javascript:;"><span>持卡信息（@Customer.CreditCardList.Count）</span></a></li>
+                    <li><a href="javascript:;"><span>配送信息（@Customer.DeliveryList.Count）</span></a></li>
+			    </ul>
+		    </div>
+	    </div>
+	    <div class="tabsContent">
+           
+          <div> @Html.Partial("CustomerMemoInfo")</div>
+ 		    <div> @Html.Partial("_CustomerPhoneInfo")</div>
+		    <div> @Html.Partial("_CustomerContactInfo")</div>
+            <div> @Html.Partial("_CustomerSalesOrderInfo")</div>
+            <div> @Html.Partial("CustomerWorkorderInfo")</div>
+            <div> @Html.Partial("_CustomerCreditCardInfo")</div>
+            <div> @Html.Partial("_CustomerDeliveryInfo")</div>
+	    </div>
+	    <div class="tabsFooter">
+		    <div class="tabsFooterContent"></div>
+	    </div>
+    </div>
+</div>

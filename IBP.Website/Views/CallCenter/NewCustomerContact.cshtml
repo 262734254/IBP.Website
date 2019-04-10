@@ -1,0 +1,117 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@using Framework.Utilities;
+@{
+    Layout = "";
+    string customerId = Request.QueryString["cid"];
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+    CustomDataDomainModel ContactPurposeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("联系记录(联系目的)", false);
+    CustomDataDomainModel ContactResultList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("联系记录(联系结果)", false);
+    string DataTag = Customer.BasicInfo.CustomerId + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff");
+}
+<div class="pageContent">
+    <form method="post" action="/CallCenter/DoNewCustomerContactInfo" class="pageForm required-validate"
+    onsubmit="return validateCallback(this, dialogAjaxDone)">
+    <input type="hidden" name="customerId" value="@Customer.BasicInfo.CustomerId" />
+    <div class="pageFormContent" layouth="58">
+        <div class="information02">
+        <h2>新建目标客户【@Customer.BasicInfo.CustomerName】联系记录</h2>
+            <div class="New_box02">
+                <dl>
+                    <dd>客户名称：</dd>
+                    <dt>@Customer.BasicInfo.CustomerName</dt>
+                    <dd>创建人：</dd>
+                    <dt>@SessionUtil.Current.CnName</dt>
+                </dl>
+                <dl>
+                    <dd>
+                        联系方向：</dd>
+                    <p>
+                        <input type="radio" value="1" checked name="direction" />呼入
+                        <input type="radio" value="2" name="direction" />呼出</p>
+                </dl>
+                <dl>
+                    <dd>联系电话：</dd>
+                    <dt>
+                        <select class="contactPhone" name="contactPhone">
+                            @{
+                                if(Customer.PhoneNumberList != null)
+                                {
+                                    foreach (CustomerPhoneInfoModel item in Customer.PhoneNumberList.Values)
+                                    {
+                                         <option value="@item.PhoneNumber" callvalue="@CustomerPhoneInfoService.Instance.GetOutCallNumber(item)">@item.PhoneNumber</option>
+                                      
+                                    }
+                                }
+                            } 
+                        </select>
+                     </dt>
+                     <dd>其他号码：</dd>
+                     <dt><input type="text" style="width:80px;" class="customPhone" name="otherNumber" /></dt>
+                     <dd>
+                        <a class="button" href="#" custjs="softcti" name="btnOutCallSelector" customerid="@DataTag" callnumber=""><button class="buttonContent">外呼</button></a> 
+                     </dd>
+                </dl>
+                <dl>
+                    <dd>联系目的：</dd>
+                    <dt>
+                        <select id="ddlpurpose" name="purpose">
+                            @{
+                                if (ContactPurposeList != null && ContactPurposeList.ValueList != null)
+                                {
+                                    foreach (CustomDataValueDomainModel item in ContactPurposeList.ValueList.Values)
+                                    {
+                                            @:<option value="@item.ValueId">@item.DataValue</option>
+                                     }
+                                }
+                            }
+                        </select>
+                    </dt>
+                    <dd>
+                        联系结果：</dd>
+                    <dt>
+                        <select id="ddlresults" name="results">
+                            @{
+                                if (ContactResultList != null && ContactResultList.ValueList != null)
+                                {
+                                    foreach (CustomDataValueDomainModel item in ContactResultList.ValueList.Values)
+                                    {
+                                        if (item.Status == 1)
+                                        {
+                                            continue;
+                                        }
+                                            @:<option value="@item.ValueId">@item.DataValue</option>
+                                     }
+                                }
+                            }
+                        </select>
+                    </dt>
+                </dl>
+                <dl style="height: 120px;">
+                    <dd>描述：</dd>
+                    <dt><textarea name="contactDesc" cols="50" rows="6"></textarea></dt>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="formBar">
+        <ul>
+            <li>
+                <div class="buttonActive">
+                    <div class="buttonContent">
+                        <button type="submit">
+                            创建联系记录</button></div>
+                </div>
+            </li>
+            <li>
+                <div class="button">
+                    <div class="buttonContent">
+                        <button type="button" class="close">
+                            取消</button></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    </form>
+</div>

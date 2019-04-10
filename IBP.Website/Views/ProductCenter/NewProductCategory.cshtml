@@ -1,0 +1,128 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+    Dictionary<string, ProductCategoryGroupInfoModel> groupList = ProductCategoryGroupInfoService.Instance.GetProductCategoryGroupList(false);
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/ProductCenter/DoAddProductCategory" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+        <div class="information02">
+            <h2>新建产品类型信息</h2>
+            <div class="New_box02">
+            <dl>
+                <span>
+			        <dd>销售城市：</dd>
+			        <dt>
+                    <select name="saleCity">
+                        @{
+                            <option value="">所有</option>
+                            if (SaleCity != null)
+                            {
+                                foreach(CustomDataValueDomainModel item in SaleCity.ValueList.Values)
+                                {
+                                    <option value="@item.ValueId">@item.DataValue</option>
+                                }
+                            }
+                        }
+                    </select>
+                    </dt>
+                </span>
+                <span>
+                    <dd>分组名称：</dd>
+                    <dt>
+                        <select name="groupName">
+                            @{                    
+                                if(groupList != null)
+                                {
+                                    foreach(ProductCategoryGroupInfoModel item in groupList.Values)
+                                    {
+                                        @:<option value="@item.ProductCategoryGroupId">@item.GroupName</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </dt>
+                </span>
+                <span>
+                    <dd>类型名称：</dd>
+                    <dt><input name="categoryName" class="required" type="text" size="30" value=""/></dt>
+                </span>
+                <span>
+                    <dd>类型编码：</dd>
+                    <dt><input name="categoryCode" class="required" type="text" size="30" value=""/></dt>
+                </span>
+                
+            </dl>  
+            <dl style="height:50px;">
+                <span>
+                    <dd>销售价格：</dd>
+                    <dt><input name="itemPrice" class="number required" type="text" size="30" value=""/></dt>
+                </span>
+                <span>
+                    <dd style="width:50px;">状态：</dd>
+                    <dt style="width:140px; text-align:left;">
+                        <input style="width:20px;" type="radio" value="0" name="Status" checked />启用
+                        <input style="width:20px;" type="radio" value="1" name="Status" />禁用
+                    </dt>
+                </span>
+                <span style="width:410px;">
+                    <dd>备注信息：</dd>
+                    <dt style="width:300px;"><textarea name="remark" style="height:30px;width:300px;" cols="42" rows="2" ></textarea></dt>
+                </span>
+            </dl>
+ 
+            </div> 
+        </div>  
+        <div class="unit">
+             <div class="tabs" currentIndex="0" eventType="click">
+	            <div class="tabsHeader">
+		            <div class="tabsHeaderContent">
+			            <ul>
+                            <li><a href="javascript:;"><span>产品详细介绍</span></a></li>
+				            <li><a href="javascript:;"><span>营销话术指引</span></a></li>
+			            </ul>
+		            </div>
+	            </div>
+	            <div class="tabsContent">
+                    <div style="height:300px;">
+                    <textarea class="editor" name="description" style="height:295px; width:100%;"
+								upLinkUrl="upload.php" upLinkExt="zip,rar,txt" 
+								upImgUrl="upload.php" upImgExt="jpg,jpeg,gif,png" 
+								upFlashUrl="upload.php" upFlashExt="swf"
+								upMediaUrl="upload.php" upMediaExt:"avi">
+                                <strong>请在此输入本产品类型的详细描述信息</strong><br/>
+							</textarea>
+                    </div>
+		            <div style="height:300px;">
+                    <textarea class="editor" name="salesGuide" style="height:270px; width:100%;"
+								upLinkUrl="upload.php" upLinkExt="zip,rar,txt" 
+								upImgUrl="upload.php" upImgExt="jpg,jpeg,gif,png" 
+								upFlashUrl="upload.php" upFlashExt="swf"
+								upMediaUrl="upload.php" upMediaExt:"avi">
+                                <strong>请在此输入本产品类型的营销话术指引信息</strong><br/>
+							</textarea>
+                    </div>
+	            </div>
+	            <div class="tabsFooter">
+		            <div class="tabsFooterContent"></div>
+	            </div>
+            </div>
+        </div>   
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">新建产品类型</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+

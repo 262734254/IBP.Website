@@ -1,0 +1,204 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    Dictionary<string, QueryItemDomainModel> QueryCollection = ViewBag.QueryCollection as Dictionary<string, QueryItemDomainModel>;
+    Dictionary<string, WorkorderTypeInfoModel> typeList = WorkorderTypeInfoService.Instance.GetWorkOrderDictionary(false);
+    CustomDataDomainModel ContactResultList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("联系记录(联系结果)", false);
+    CustomDataDomainModel orderLevel = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("工单级别", false);
+    Dictionary<string, string> statusDict = WorkorderTypeInfoService.Instance.GetWorkorderStatusNameList(false);
+    Dictionary<string, string> resultDict = WorkorderTypeInfoService.Instance.GetWorkorderResultNameList(false);
+    List<string> WorkorderIdList = ViewBag.WorkorderIdList as List<string>;
+
+    WorkOrderTypeDomainModel typeDomainModel = (QueryCollection.ContainsKey("workorder_type")) ? WorkorderTypeInfoService.Instance.GetTypeDomainModelById(QueryCollection["workorder_type"].SearchValue,false) : null;
+    ViewBag.TypeSelectorDivId = Guid.NewGuid().ToString().Replace("-", "");
+    ViewBag.QueryPlane = Guid.NewGuid().ToString();
+    WorkOrderDomainModel WorkOrder = null;
+    CustomerDomainModel Customer = null;
+    UserDomainModel User = null;
+    WorkOrderTypeTreeDomainModel workorderTypeTree = WorkorderTypeInfoService.Instance.GetWorkOrderTypeTree(false);
+    
+}
+
+<form id="pagerForm" method="post" action="/WorkOrderCenter/WorkOrderApprovalMgr">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+   <div class="workTypeSelectorBox hideClass" id="@ViewBag.TypeSelectorDivId">
+    @Html.Partial("_WorkOrderTypeSelector")
+</div>  	
+    
+<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/WorkOrderCenter/WorkOrderApprovalMgr" method="post">
+    <div name="queryPanel" locname="@ViewBag.QueryPlane" class="location">
+        @Html.Partial("_WorkOrderQuerySelector")
+    </div>
+<div id="workorderApprovalBox" class="pageHeader">
+	<div class="searchBar">
+		<div class="searbg">
+            <dl style="width:220px;"><dd>工单类型：</dd>
+            <dt>  @{
+                 if (workorderTypeTree.ChildTypeList != null)
+                        {
+                            string multClass = "boxfieldset";
+                            @:<select custjs="workordermgr" id="ddlWorkorderType" name="workorderType" style="width:150px;">
+                                @:<option value="All">所有</option>
+                                @:<option value="root">=================</option>
+                            foreach (WorkOrderTypeTreeDomainModel item in workorderTypeTree.ChildTypeList.Values)
+                            {
+                                multClass = (item.ChildTypeList != null && item.ChildTypeList.Count > 8) ? "boxfieldset02" : "boxfieldset";
+                                 
+                                <option value="root">@item.BasicInfo.TypeName</option>
+                                                if (item.ChildTypeList != null)
+                                                {
+                                                    foreach (WorkOrderTypeTreeDomainModel item2 in item.ChildTypeList.Values)
+                                                    {
+                                     @:<option value="@item2.BasicInfo.WorkorderTypeId" @CommonUtil.SetComboxSelected(item2.BasicInfo.WorkorderTypeId, (QueryCollection.ContainsKey("workorder_type")) ? QueryCollection["workorder_type"].SearchValue : ""))>&nbsp;&nbsp;&nbsp;&nbsp;@item2.BasicInfo.TypeName</option>
+                                     
+                                                    }
+                                                }
+                                @:<option value="">---------------------------------</option>
+                            }
+                                @:</select>        
+                        }
+                    }
+                    </dt>
+                    </dl>
+                <dl>
+                <dd>工单级别：</dd>
+                <dt><select name="workorderLevel">
+                    <option value="All">所有</option>
+                    @{
+                        if (orderLevel != null && orderLevel.ValueList.Count > 0)
+                        {
+                            foreach (CustomDataValueDomainModel item in orderLevel.ValueList.Values)
+                            {
+                                @:<option value="@item.ValueId" @CommonUtil.SetComboxSelected(item.ValueId, (QueryCollection.ContainsKey("workorder_info.level")) ? QueryCollection["workorder_info.level"].SearchValue : "")) >@item.DataValue</option>
+                            }
+                        }
+                    }
+               </select>
+               </dt>
+               </dl> 
+                <dl><dd>处理结果：</dd>
+                <dt>
+                <select class="workorder_nowresult"  name="nowResult">
+                   <option value="All">所有</option>
+                   @{
+                       if (typeDomainModel != null)
+                       {
+                           foreach (WorkorderResultInfoModel item in typeDomainModel.ResultList.Values)
+                           {
+                               if (item.Status == 1)
+                               {
+                                   continue;
+                               }
+                                @:<option value="@item.WorkorderResultId" @CommonUtil.SetComboxSelected(item.WorkorderResultId, (QueryCollection.ContainsKey("now_result_id")) ? QueryCollection["now_result_id"].SearchValue : "")) >@item.ResultName</option>
+                            }
+                       }
+                    }
+               </select>
+                    </dt>
+                    </dl>            
+
+          <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button locname="@ViewBag.QueryPlane" custjs="flowcontrol" id="btnCustomerQueryPanel" type="button">更多查询条件</button></div></div></div>
+         <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button name="querysubmit" type="submit">查询</button></div></div></div>
+
+        </div>
+	</div>	
+</div>
+</form>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+@*		    <li><a class="add" href="/WorkOrderCenter/WorkOrderAssignment?page=manager&oid=" relids="ids" target="dialogWithIds" rel="WorkOrderCenter_WorkOrderManager" mask="true" height="380"><span>转交他人处理</span></a></li>
+			<li class="line">line</li>*@
+            @{
+                if (WorkorderInfoService.Instance.HasSubmitQualityCheckWorkOrderPremission())
+                {
+                <li><a class="edit" href="/WorkOrderCenter/DoSubmitQualityCheckedWorkOrder?page=process" rel="ids" target="selectedTodo"><span>提交质检</span></a></li>
+               <li class="line">line</li>                 
+                }
+                if (WorkorderInfoService.Instance.HasCloseWorkOrderPremission())
+                {
+                <li><a class="edit" href="/WorkOrderCenter/DoCloseWorkOrder?page=process" rel="ids" target="selectedTodo"><span>关闭工单</span></a></li>
+                <li class="line">line</li>
+                }
+            }
+			<li><a class="icon" href="/System/ExportBankCardInfo" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+		</ul>
+	</div>
+	<table class="table" layoutH="115" width="1600">
+		<thead>
+			<tr>
+				<th width="22"><input type="checkbox" group="ids" class="checkboxCtrl"></th>
+				<th width="100" @CommonUtil.SetSortOrder("workorder_code", ViewBag.OrderField, ViewBag.OrderDirection)>工单编号</th>
+				<th width="80" @CommonUtil.SetSortOrder("workorder_type", ViewBag.OrderField, ViewBag.OrderDirection)>类型</th>
+				<th width="80" @CommonUtil.SetSortOrder("level", ViewBag.OrderField, ViewBag.OrderDirection)>级别</th>
+				<th width="80" @CommonUtil.SetSortOrder("now_status_id", ViewBag.OrderField, ViewBag.OrderDirection)>流转状态</th>
+				<th width="80" @CommonUtil.SetSortOrder("now_result_id", ViewBag.OrderField, ViewBag.OrderDirection)>处理结果</th>
+                <th width="100" @CommonUtil.SetSortOrder("customer_name", ViewBag.OrderField, ViewBag.OrderDirection)>客户名称</th>
+                <th width="100" @CommonUtil.SetSortOrder("come_from", ViewBag.OrderField, ViewBag.OrderDirection)>归属城市</th>
+				<th width="250" @CommonUtil.SetSortOrder("description", ViewBag.OrderField, ViewBag.OrderDirection)>工单描述</th>
+				<th width="120" @CommonUtil.SetSortOrder("created_by", ViewBag.OrderField, ViewBag.OrderDirection)>创建人</th>
+				<th width="120" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection)>创建时间</th>
+				<th width="120" @CommonUtil.SetSortOrder("first_process_time", ViewBag.OrderField, ViewBag.OrderDirection)>开始处理时间</th>
+				<th width="120" @CommonUtil.SetSortOrder("modified_on", ViewBag.OrderField, ViewBag.OrderDirection)>最后处理时间</th>
+				<th width="120" @CommonUtil.SetSortOrder("modified_by", ViewBag.OrderField, ViewBag.OrderDirection)>最后处理人</th>
+                <th width="120" @CommonUtil.SetSortOrder("advance_time", ViewBag.OrderField, ViewBag.OrderDirection)>预约时间</th>
+                <th width="120" @CommonUtil.SetSortOrder("expired_time", ViewBag.OrderField, ViewBag.OrderDirection)>过期时间</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (WorkorderIdList != null)
+                {
+                    foreach (string workOrderId in WorkorderIdList)
+                    {
+                        WorkOrder = WorkorderInfoService.Instance.GetWorkorderDomainModelById(workOrderId, false);
+                        Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(WorkOrder.BasicInfo.RelCustomerId, false);
+                        User = (WorkOrder.BasicInfo.CreatedBy == null) ? null : UserInfoService.Instance.GetUserDomainModelById(WorkOrder.BasicInfo.CreatedBy, false);
+                        <tr target="sid_user" rel="@workOrderId">
+                            <td><input name="ids" value="@workOrderId" type="checkbox"></td>
+                            <td><a href="/WorkOrderCenter/WorkOrderDetail?oid=@workOrderId" target="navTab" rel="@workOrderId" title="【@Customer.BasicInfo.CustomerName】工单信息" fresh="false">@WorkOrder.BasicInfo.WorkorderCode</a></td>
+                            <td>@((typeList.ContainsKey(WorkOrder.BasicInfo.WorkorderType.ToUpper())) ? typeList[WorkOrder.BasicInfo.WorkorderType.ToUpper()].TypeName : "")</td>
+                            <td>@orderLevel.GetCustomDataValueByValueId(WorkOrder.BasicInfo.Level)</td>
+                            <td>@statusDict[WorkOrder.BasicInfo.NowStatusId]</td>
+                            <td>@resultDict[WorkOrder.BasicInfo.NowResultId]</td>
+                            <td><a href="/CallCenter/CustomerInfo?cid=@Customer.BasicInfo.CustomerId" target="navTab" rel="@Customer.BasicInfo.CustomerId" title="【@Customer.BasicInfo.CustomerName】客户信息" fresh="false">@Customer.BasicInfo.CustomerName</a></td>
+                            <td>@Customer.BasicInfo.ComeFrom</td>
+                            <td title="@WorkOrder.BasicInfo.Description">@WorkOrder.BasicInfo.Description</td>
+                            <td>@((User == null) ? "" : "【" + User.WorkId + "】" + User.BasicInfo.CnName)</td>
+                            <td>@WorkOrder.BasicInfo.CreatedOn</td>
+                            <td>@WorkOrder.BasicInfo.FirstProcessTime</td>
+                            <td>@WorkOrder.BasicInfo.ModifiedOn</td>
+                           @{User = (WorkOrder.BasicInfo.ModifiedBy == null) ? null : UserInfoService.Instance.GetUserDomainModelById(WorkOrder.BasicInfo.ModifiedBy, false);}
+                            <td>@((User == null) ? "" : "【" + User.WorkId + "】" + User.BasicInfo.CnName)</td>
+                            <td>@WorkOrder.BasicInfo.AdvanceTime</td>
+                            <td>@WorkOrder.BasicInfo.ExpiredTime</td>
+                        </tr>
+                    }
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				<option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				<option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.WorkorderTotal 条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.WorkorderTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+
+	</div>
+</div>

@@ -1,0 +1,79 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    CustomDataDomainModel openCardBankList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel cardFunctionList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("银行卡功能鉴别", false);
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/System/DoAddBankCardInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+			<p>
+				<label>开 卡 行：</label>
+				<select name="openBankId" class="required combox">
+					<option value="">请选择</option>
+					@{
+                        if(openCardBankList != null)
+                        {
+                            foreach (CustomDataValueDomainModel customValue in openCardBankList.ValueList.Values)
+                            {
+                                <option value="@customValue.ValueId">@customValue.DataValue</option>
+                            }
+                        }
+                    }
+				</select>
+			</p>
+			<p>
+				<label>BIN号：</label>
+				<input name="card_bin_code" class="required" type="text" size="30" value="" alt="请输入BIN号"/>
+			</p>
+			<p>
+				<label>卡类：</label>
+                <input name="card_type" class="required" type="text" size="30" value="" alt="请输入卡类型"/>
+			</p>
+			<p>
+				<label>卡片性质：</label>
+				<input name="card_nav" class="required" type="text" size="30" value="" alt="请输入卡片性质"/>
+			</p>
+			<p>
+				<label>品   牌：</label>
+				<input name="card_brand" class="required" type="text" size="30" value="" alt="请输入品牌"/>
+			</p>
+            <p>
+				<label>币   种：</label>
+				<input name="card_curreny" class="required" type="text" size="30" value="" alt="请输入币种"/>
+			</p>
+            <p>
+				<label>卡片级别：</label>
+				<input name="card_level" class="required" type="text" size="30" value="" alt="请输入卡片级别"/>
+			</p>
+			<p>
+				<label>卡片功能鉴别：</label>
+				<select name="card_fun" class="required combox">
+					<option value="">请选择</option>
+					@{
+                        if (cardFunctionList != null)
+                        {
+                            foreach (CustomDataValueDomainModel fun in cardFunctionList.ValueList.Values)
+                            {
+                                <option value="@fun.ValueId">@fun.DataValue</option>
+                            }
+                        }
+                    }
+				</select>
+			</p>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+

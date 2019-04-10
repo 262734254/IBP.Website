@@ -1,0 +1,49 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@{
+   Layout = "";
+    string typeid = Request.QueryString["typeid"];
+    string resultid = Request.QueryString["resultid"];
+    if (string.IsNullOrEmpty(typeid))
+    {
+        throw new Exception("编辑工单类型状态异常，未获取到工单类型ID");
+    }
+   
+    WorkOrderTypeDomainModel typeModel = WorkorderTypeInfoService.Instance.GetTypeDomainModelById(typeid, true);
+    WorkorderResultInfoModel domain = (typeModel != null) ? ((typeModel.ResultList.ContainsKey(resultid)) ? typeModel.ResultList[resultid] : null) : null;
+}
+
+<div class="pageContent">
+	
+	<form method="post" action="/WorkOrderCenter/DoEditWorkOrderTypeResult" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+            <input type="hidden" name="workOrderTypeId" value="@typeid" />
+            <input type="hidden" name="workResultId" value="@resultid" />
+			<div class="unit">
+				<label>结果名称：</label>
+				<input type="text" name="resultName" size="30" minlength="3" maxlength="10" value="@domain.ResultName" class="required" />
+			</div>
+            <div class="unit">
+				<label>状态：</label>
+                <input type="radio" value="0"  name="status"  @((domain.Status == 0) ? "checked" : "")/>启用
+		        <input type="radio" value="1" name="status"  @((domain.Status == 1) ? "checked" : "")/>禁用
+			</div>
+            <div class="unit">
+				<label>是否开始：</label>
+                <input type="radio" value="0"  name="isbegin"  @((domain.IsBegin == 0) ? "checked" : "")/>是
+		        <input type="radio" value="1" name="isbegin"  @((domain.IsBegin == 1) ? "checked" : "")/>否
+			</div>
+			<div class="unit">
+				<label>描述：</label>
+				<textarea name="resultDesc" cols="60" rows="5" value="@domain.Description">@domain.Description</textarea>
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

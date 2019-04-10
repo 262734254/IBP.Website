@@ -1,0 +1,48 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string dataId = (Request.QueryString["id"] == null) ? "" : Request.QueryString["id"].ToString().Split('|')[0];
+    string valueId = (Request.QueryString["id"] == null) ? "" : Request.QueryString["id"].ToString().Split('|')[1];
+    CustomDataDomainModel dataInfo = CustomDataInfoService.Instance.GetCustomDataDomainModelById(dataId, false);
+    CustomDataValueDomainModel valueInfo = (dataInfo.ValueList.ContainsKey(valueId)) ? dataInfo.ValueList[valueId] : null;
+    if(valueInfo == null)
+    {
+        throw new Exception(string.Format("编辑自定义枚举值信息异常，未找到ID为【{0}】的枚举值", valueId));
+    }
+}
+
+<div class="pageContent">
+	
+	<form method="post" action="/System/DoUpdateCustomValue" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+            <input type="hidden" name="dataId" value="@dataId" />
+            <input type="hidden" name="valueId" value="@valueId" />
+            <input type="hidden" name="sortOrder" value="@valueInfo.SortOrder" />
+            <div class="unit">
+				<label>枚举名称：</label>
+				@dataInfo.DataName
+			</div>
+			<div class="unit">
+				<label>枚举值：</label>
+				<input type="text" name="dataValue" size="30" minlength="2" maxlength="10" class="required" value="@valueInfo.DataValue" />
+			</div>
+			<div class="unit">
+				<label>值编码：</label>
+                <input type="text" name="valueCode" size="30" minlength="2" maxlength="10" class="required" value="@valueInfo.DataValueCode" />
+			</div>
+            <div class="unit">
+				<label>值状态：</label>
+				<input type="radio" value="0" @((valueInfo.Status == 0) ? "checked" : "") name="valueStatus" />启用
+                <input type="radio" value="1" @((valueInfo.Status == 1) ? "checked" : "") name="valueStatus" />禁用
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

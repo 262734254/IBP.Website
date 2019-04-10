@@ -1,0 +1,78 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    string dataId = (Request.QueryString["cid"] == null) ? "NULL" : Request.QueryString["cid"].ToString();
+
+    CustomDataDomainModel customDataInfo = CustomDataInfoService.Instance.GetCustomDataDomainModelById(dataId, false);
+}
+<div class="pageHeader" style="border-left:1px #B8D0D6 solid">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>
+				<td>
+                    @{
+                        if (customDataInfo == null)
+                        {
+                            @:<input type="hidden" id="hidSelectedDataId" value="" />
+                            @:请从左侧列表中选择一个自定义枚举名称
+                        }
+                        else
+                        {
+                            @:<input type="hidden" id="hidSelectedDataId" value="@customDataInfo.DataId" />
+                            @:【@customDataInfo.DataName】 - 自定义枚举值信息管理
+                        }
+                    }
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div class="pageContent" style="border-left:1px #B8D0D6 solid;">
+<div class="panelBar">
+		<ul class="toolBar">
+			<li><a custjs="customdata" id="btnAddCustomValue" class="add" href="/System/AddCustomDataValue" rel="customValueBox" title="添加自定义枚举值成员" mask="true" width="550" height="250"><span>添加</span></a></li>
+			<li><a target="dialog" maxable="false" class="edit" href="/System/EditCustomDataValue?id={sid_obj}" rel="customValueBox" title="编辑自定义枚举值成员" mask="true" width="550" height="250"><span>编辑</span></a></li>
+			<li><a class="delete" href="/System/DoRemoveCustomValue?id={sid_obj}" target="ajax" title="确定要删除选中枚举值成员吗?"><span>删除</span></a></li>
+			<li class="line">line</li>
+			<li><a class="edit" href="/System/DoMoveUpCustomValue?id={sid_obj}" target="ajaxTodo" title="确定要上移选中枚举值成员吗?"><span>上移</span></a></li>
+			<li><a class="edit" href="/System/DoMoveDownCustomValue?id={sid_obj}" target="ajaxTodo" title="确定要下移选中枚举值成员吗?"><span>下移</span></a></li>
+		</ul>
+	</div>
+	<table class="table" width="99%" layoutH="105">
+		<thead>
+			<tr>
+                @*<th style="width:220px;">操作</th>*@
+				<th>序号</th>
+				<th>枚举值</th>
+                <th>编号</th>
+                <th>状态</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (customDataInfo != null && customDataInfo.ValueList.Count > 0)
+                {
+                    foreach (CustomDataValueDomainModel item in customDataInfo.ValueList.Values)
+                    {
+                        @:<tr target="sid_obj" rel="@(item.DataId + "|" + item.ValueId)">
+@*				            @:<td><a class="button" href="/System/EditCustomDataValue?id=@(item.DataId + "|" + item.ValueId)" target="dialog" maxable="false" mask="true" width="550" height="250"><span>编辑</span></a> 
+				            @:<a class="button" href="/System/DoRemoveCustomValue?id=@(item.DataId + "|" + item.ValueId)" target="ajaxTodo" title="确定删除该自定义枚举值成员吗?"><span>删除</span></a> 
+				            @:<a class="button" style="margin-left:10px;" href="/System/DoMoveUpCustomValue?id=@(item.DataId + "|" + item.ValueId)" target="ajaxTodo" title="确定上移该自定义枚举值成员吗?"><span>上移</span></a> 
+				            @:<a class="button" href="/System/DoMoveDownCustomValue?id=@(item.DataId + "|" + item.ValueId)" target="ajaxTodo" title="确定下移该自定义枚举值成员吗?"><span>下移</span></a></td>
+*@                            @:<td>@item.SortOrder</td>
+                            @:<td>@item.DataValue</td>
+                            @:<td>@item.DataValueCode</td>
+                            @:<td>@((item.Status == 0) ? "启用" : "禁用")</td>
+                        @:</tr>
+                    }                   
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+
+	</div>
+</div>

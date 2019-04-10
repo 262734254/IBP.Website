@@ -1,0 +1,102 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    string pageName = Request.QueryString["page"];
+    string callBackJsFunction = (pageName == "newPhoneSaleOrder") ? "AddCustomerDeliveryDone" : "dialogAjaxDone";
+    string customerId = Request.QueryString["cid"];
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+    ViewBag.LocationBoxName = Guid.NewGuid().ToString();
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/CallCenter/DoNewDeliveryInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, @callBackJsFunction);">
+		<div class="pageFormContent" layoutH="58">
+            <div class="information02">
+                <input type="hidden" name="customerId" value="@customerId" />
+                <div name="locationDiv" locname="@ViewBag.LocationBoxName" levelRegion="county" class="location">
+                    <input type="hidden" name="chinaId" class="chinaIdBox" value="@Customer.BasicInfo.ChinaId" />   
+                    @Html.Partial("_LocationPanel")
+                </div>
+                <h2>新建目标客户【@Customer.BasicInfo.CustomerName】配送信息</h2>
+                <div class="New_box02">
+                   <dl>
+                         <span>
+                             <dd>配送属性：</dd>
+                             <dt>
+                                <select name="deliveryType">
+                                    <option value="0" selected>公司</option> 
+                                    <option value="1">家里</option> 
+                                    <option value="2">其他</option> 
+                                </select>
+                             </dt>
+                         </span>
+                         <span>
+                             <dd>配送地区：</dd>
+                             <dt><input custjs="flowcontrol" id="btnLocation" name="deliveryChinaId" locname="@ViewBag.LocationBoxName" class="text required" value="" type="text" size="12" /></dt>
+                         </span>  
+                    </dl>
+                    <dl>
+                        <dd>详细地址：</dd>
+                        <dt style="width:500px; height:50px;"><textarea name="deliveryAddress" class="required" cols="88" rows="2"></textarea></dt>
+                    </dl>
+                    <dl> 
+                            <dd>收货人：</dd>
+                            <dt><input name="consignee" class="text required"  type="text" size="12" value="@(Customer.BasicInfo.CustomerName)" /></dt>
+                       
+                            <dd>收货电话：</dd>
+                            <dt style="width:480px;">
+                        <table style="background-color:White; width:460px; ">
+                            <tr>
+                                @{
+                                    if (!string.IsNullOrEmpty(Customer.BasicInfo.MobilePhone))
+                                    {
+                                        <td style="padding-right:10px;"><input type="radio" style="width:15px;"  value="@Customer.BasicInfo.MobilePhone" checked name="contactPhone" />@Customer.BasicInfo.MobilePhone</td>
+                                    }
+                                    if (!string.IsNullOrEmpty(Customer.BasicInfo.HomePhone))
+                                    {
+                                        <td style="padding-right:10px;"><input type="radio" style="width:15px;"  value="@Customer.BasicInfo.HomePhone" name="contactPhone" />@Customer.BasicInfo.HomePhone </td>
+                                    }
+                                    if (!string.IsNullOrEmpty(Customer.BasicInfo.OtherPhone))
+                                    {
+                                        <td style="padding-right:10px;"><input type="radio" style="width:15px;"  value="@Customer.BasicInfo.OtherPhone" name="contactPhone" />@Customer.BasicInfo.OtherPhone</td>
+                                    }
+                                }
+                                <td style="width:50px;"><input type="radio" style="width:15px;"  value="OtherNumber" name="contactPhone" />其他 </td>
+                                <td><input type="text" style="width:80px;" class="phone" name="otherNumber" /></td>
+                            </tr>
+                        </table>
+                        </dt>
+                        
+                    </dl>
+                   <dl>
+
+                     <dd>发票信息：</dd><dt>
+                    <select name="needBill" id="needBill" custjs="exceptionMgr" >
+                     
+                        <option value="0" >无需发票</option>
+                        <option value="1" >需要发票</option>
+                      
+                    </select>
+                   </dt>
+                        <div id="DiveTitle"  class="hideClass">
+                        <dd>发票Title：</dd>
+                        <dt style="width:100px; height:40px;"><textarea name="billTitle" cols="59" rows="1"></textarea></dt>  
+                        </div>
+                   </dl>   
+                </div>
+		    </div>
+        </div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">新增配送信息</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>

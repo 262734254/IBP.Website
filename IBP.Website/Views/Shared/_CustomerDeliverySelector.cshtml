@@ -1,0 +1,122 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    string customerId = Request.QueryString["cid"];
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+
+    ProductShoppingCartDomainModel ShoppingCartInfo = ViewBag.ShoppingCartInfo as ProductShoppingCartDomainModel;
+}
+
+<div id="divOrderDeliveryInfo">
+ <input type="hidden" id="hidOrderDeliveryId" name="hidOrderDeliveryId" value="@((ShoppingCartInfo != null) ? ShoppingCartInfo.OrderDeliveryInfoId : "")" />
+   <div id="divSelectedDeliveryInfo" class="showClass">
+        <fieldset style="padding-left:10px; margin-bottom:15px;">
+	        <legend>客户选择的订单配送信息</legend>
+            @{
+                if (ShoppingCartInfo == null || string.IsNullOrEmpty(ShoppingCartInfo.OrderDeliveryInfoId))
+                {
+                    ShoppingCartInfo = new ProductShoppingCartDomainModel();
+                    if (Customer!= null && Customer.DeliveryList != null && Customer.DeliveryList.Count > 0)
+                    {
+                        ShoppingCartInfo.OrderDeliveryInfoId = Customer.DeliveryList.Values.First().DeliveryId;
+                    }
+                    else
+                    {
+                        <br />
+                        <span>请点击下列按钮创建该客户的订单配送信息。</span>
+                        <div style="width:800px; height: 35px; margin-top:20px;">
+                            <div class="button"><div class="buttonContent"><button custjs="phoneordermgr"  href="/CallCenter/NewDeliveryInfo?page=newPhoneSaleOrder&cid=@Customer.BasicInfo.CustomerId"  rel="@Customer.BasicInfo.CustomerId" target="dialog" maxable="false" mask="true" width="800" height="410" id="btnNewPhoneSaleOrderNewDelivery" close="NewPhoneSaleOrderSubDialogClose" type="button">新增客户配送信息</button></div></div>
+                        </div>
+                    }
+                }
+
+                if (ShoppingCartInfo != null && string.IsNullOrEmpty(ShoppingCartInfo.OrderDeliveryInfoId) == false && Customer.DeliveryList.ContainsKey(ShoppingCartInfo.OrderDeliveryInfoId))
+                {
+                    CustomerDeliveryInfoModel deliveryInfo = Customer.DeliveryList[ShoppingCartInfo.OrderDeliveryInfoId];
+                    ChinaInfoModel chinaInfo = (deliveryInfo.DeliveryRegionId != null) ? ChinaInfoService.Instance.GetChinaInfo(deliveryInfo.DeliveryRegionId.ToString()) : null;
+                    <fieldset style="padding-left:10px; margin:15px 0px 15px 0px;">
+	                    <legend>订单配送信息</legend>
+                        <table class="list" width="99%">
+                            <thead>
+                                <tr>
+                                    <th width="80">配送属性</th>
+                                    <th width="100">收货人</th>
+                                    <th width="120">收货人电话</th>
+                                    <th>发票信息</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>@((deliveryInfo.DeliveryType == 2 || deliveryInfo.DeliveryType == null) ? "其他" : ((deliveryInfo.DeliveryType == 0) ? "公司" : "家庭"))</td>
+                                    <td>@deliveryInfo.Consignee</td>
+                                    <td>@deliveryInfo.ConsigneePhone</td>
+                                    <td>@((deliveryInfo.NeedBills == 1) ? deliveryInfo.BillTitle : "不需要")</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="list" width="99%">
+                            <thead>
+                                <tr>
+                                    <th>配送地址</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>@((chinaInfo != null) ? chinaInfo.ProvinceName + " " + chinaInfo.CityName + " " + chinaInfo.CountyName : "") @deliveryInfo.DeliveryAddress</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </fieldset> 
+                    <div style="width:800px; height: 35px;">
+                        <div class="button"><div class="buttonContent"><button custjs="phoneordermgr" name="btnChangeDeliveryInfo" type="button">变更当前订单配送信息</button></div></div>
+                    </div>
+                }
+            }
+        </fieldset>
+    </div>    
+
+    <div id="divCustomerDeliverySelector" class="hideClass">
+        <fieldset style="padding-left:10px; margin-bottom:15px;">
+	        <legend>客户配送信息选择</legend>
+            <table class="list" width="99%">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th width="120">收货人</th>
+                    <th>收货人电话</th>
+                    <th>配送地址</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+    @{
+
+        if (Customer.DeliveryList != null)
+        {
+            int deliveryCounter = 1;
+            ChinaInfoModel chinaInfo = null;
+            foreach (CustomerDeliveryInfoModel deliveryInfo in Customer.DeliveryList.Values)
+            {
+                chinaInfo = (deliveryInfo.DeliveryRegionId != null) ? ChinaInfoService.Instance.GetChinaInfo(deliveryInfo.DeliveryRegionId.ToString()) : null;
+                    <tr>
+                        <td>@deliveryCounter</td>
+                        <td>@deliveryInfo.Consignee</td>
+                        <td>@deliveryInfo.ConsigneePhone</td>
+                        <td>@((chinaInfo != null) ? chinaInfo.ProvinceName + " " + chinaInfo.CityName + " " + chinaInfo.CountyName : "") @deliveryInfo.DeliveryAddress</td>
+                        <td><div class="button"><div class="buttonContent"><button type="button" deliveryid="@deliveryInfo.DeliveryId" name="btnSelectOrderDelivery" custjs="phoneordermgr">选择</button></div></div></td>
+                    </tr>
+                deliveryCounter++;
+            }
+        }
+    }
+            </tbody>
+        </table>
+        <div style="width:800px; height: 35px; margin-top:20px;">
+             <div class="button"><div class="buttonContent"><button custjs="phoneordermgr"  href="/CallCenter/NewDeliveryInfo?page=newPhoneSaleOrder&cid=@Customer.BasicInfo.CustomerId" target="dialog" maxable="false" rel="@Customer.BasicInfo.CustomerId" mask="true" width="800" height="410" id="btnNewPhoneSaleOrderNewDelivery" close="NewPhoneSaleOrderSubDialogClose" type="button">新增客户配送信息</button></div></div>
+        </div>
+        </fieldset>
+    </div>
+</div>

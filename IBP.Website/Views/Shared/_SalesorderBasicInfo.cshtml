@@ -1,0 +1,58 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    SalesOrderDomainModel SalesOrder = ViewBag.SalesOrder as SalesOrderDomainModel;
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+    UserDomainModel User = (SalesOrder == null) ? null : UserInfoService.Instance.GetUserDomainModelById(SalesOrder.BasicInfo.CreatedBy, false);
+    CustomDataDomainModel OrderComeFrom = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("订单来源", false);
+}
+@{
+    if(SalesOrder != null && SalesOrder.BasicInfo != null)
+    {
+                <div class="New_box03">
+                   <dl>
+                       <span>
+                            <dd>订单来源：</dd>                                                      
+                            <dt><input class="text" readonly="order_source" type="text" value=" @OrderComeFrom.GetCustomDataValueByValueId(SalesOrder.BasicInfo.OrderSource)"/></dt>
+                        </span>
+                        <span>
+                            <dd>支付方式：</dd>
+                            <dt><input class="text" readonly="readonly" type="text" value="@SalesOrder.OrderPaytypeName"/></dt>
+                        </span>
+                        <span>
+                            <dd>订单总额：</dd>
+                            <dt><input class="text" readonly="readonly" type="text" value="@SalesOrder.BasicInfo.PayPrice"/></dt>
+                        </span>
+                        <span>
+                            <dd>当前状态：</dd>
+                            <dt><input class="text" readonly="readonly" type="text" value="@((SalesOrder.IsException) ? "异常" : SalesOrder.OrderStatusName)"/></dt>
+                        </span>
+                    </dl>
+                    <dl>
+                        <span>
+                            <dd>创建人：</dd>
+                            <dt><input class="text" readonly="readonly" type="text" value="@((User == null) ? "" : User.BasicInfo.CnName)"/></dt>
+                        </span>
+                        <span>
+                            <dd>创建时间：</dd>
+                            <dt><input class="text" readonly="readonly" type="text" value="@SalesOrder.BasicInfo.CreatedOn"/></dt>
+                        </span>
+                          <span>
+                            <dd>预约时间：</dd>
+                            <dt><input class="text" readonly="readonly" type="text" value="@SalesOrder.BasicInfo.FollowTime"/></dt>
+                        </span>
+                        <span>
+                            <dd>最后处理时间：</dd>
+                            <dt><input class="text" readonly="readonly" type="text" value="@SalesOrder.BasicInfo.ModifiedOn"/></dt>
+                        </span>
+                   </dl>
+                   <dl style="height:40px;">
+                        <dd>订单描述：</dd>
+                        <dt><p><textarea class="text" readonly="readonly" size="12"rows="1" style="width:910px;height:25px;">@SalesOrder.BasicInfo.Remark</textarea></p></dt>
+                    </dl>
+                </div>
+    }
+}

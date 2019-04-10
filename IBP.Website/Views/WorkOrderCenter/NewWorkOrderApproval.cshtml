@@ -1,0 +1,116 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@using Framework.Utilities;
+@{
+    Layout = "";
+    string workOrderIdList = Request.QueryString["oid"];
+    string page = Request.QueryString["page"];
+    WorkOrderDomainModel WorkOrder = WorkorderInfoService.Instance.GetWorkorderDomainModelById(workOrderIdList, false);
+    WorkOrderTypeDomainModel typeModel = WorkorderTypeInfoService.Instance.GetTypeDomainModelById(WorkOrder.BasicInfo.WorkorderType, false);
+
+    Dictionary<string, UserGroupInfoModel> groupList = UserGroupInfoService.Instance.GetUserGroupList(false);
+    UserDomainModel user = UserInfoService.Instance.GetUserDomainModelById(SessionUtil.Current.UserId, false);
+}
+<div class="pageContent">
+    <form method="post" action="/WorkOrderCenter/DoWorkOrderApproval" class="pageForm required-validate"
+    onsubmit="return validateCallback(this, dialogAjaxDone);">
+    <div class="pageFormContent" layouth="56">
+        <input type="hidden" value="@workOrderIdList" name="workOrderIdList" />
+        <input type="hidden" value="@page" name="pageName" />
+        <div class="information02">
+            <h2>
+                工单审批</h2>
+            <div class="New_box02">
+                <dl>
+                    <span style="width: 800px;">
+                        <dd>审批结果：</dd>
+                        <dt style="width: 650px;">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <input style="width: 20px;" type="radio" value="assignment" checked name="approvalAction" />审批不通过，转交处理
+                                    </td>
+@*                                    @{
+                                        if(typeModel.QuilityCheckedStatusInfo != null)
+                                        {
+                                             <td>
+                                                <input style="width: 20px; margin-left:20px;" type="radio" value="qualitychecked" name="approvalAction" />审批通过，并提交质检
+                                            </td>
+                                        }
+                                    }*@
+                                    <td>
+                                        <input style="width: 20px;margin-left:20px;" type="radio" value="closeworkorder" name="approvalAction" />审批通过，并关闭工单
+                                    </td>
+                                </tr>
+                            </table>
+                        </dt>
+                    </span>
+                </dl>
+                <dl>
+                    <span style="width: 800px; height: 50px;">
+                        <dd>
+                            审批意见：</dd>
+                        <dt style="width: 500px; height: 50px;">
+                            <textarea name="approvalDesc" cols="88" rows="2"></textarea></dt>
+                    </span>
+                </dl>
+
+                <dl>
+                    <dd>
+                        转交工单：</dd>
+                    <dt style="width: 660px; height: 120px;">
+                        <table width="650px">
+                            <tr>
+                                <td style="padding: 5px;">
+                                    分派给用户组:
+                                </td>
+                                <td style="padding: 5px;">
+                                    分派给指定用户：
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-right: 40px;">
+                                    <select custjs="customermgr" class="request" id="lstUserGroupList" name="userGroupList"
+                                        multiple="multiple" style="height: 100px; width: 270px">
+                                        @{
+                                            if (groupList != null)
+                                            {
+                                                foreach (UserGroupInfoModel item in groupList.Values)
+                                                {
+                                            <option value="@item.UserGroupId">@item.GroupName</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="lstGroupUserList" name="groupUserList" multiple="multiple" style="height: 100px;
+                                        width: 270px">
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </dt>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="formBar">
+        <ul>
+            <li>
+                <div class="buttonActive">
+                    <div class="buttonContent"><button type="submit">保存</button></div>
+                </div>
+            </li>
+            <li>
+                <div class="button">
+                    <div class="buttonContent">
+                        <button type="button" class="close">
+                            取消</button></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    </form>
+</div>

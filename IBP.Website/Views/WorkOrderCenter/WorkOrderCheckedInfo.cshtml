@@ -1,0 +1,42 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+    WorkOrderDomainModel WorkOrder = ViewBag.WorkOrder as WorkOrderDomainModel;
+    UserDomainModel User = null;
+
+}
+
+<table class="table" layoutH="295" width="100%">
+	<thead>
+		<tr>
+			<th width="120">质检时间</th>
+			<th width="90">质检人</th>
+            <th width="90">质检结果</th>
+            <th width="90">质检评分</th>
+			<th width="500">工单质检描述</th>
+		</tr>
+	</thead>
+	<tbody>
+        @{
+            if (WorkOrder != null && WorkOrder.CheckList != null)
+            {
+                foreach (WorkorderChecksInfoModel item in WorkOrder.CheckList.Values)
+                {
+                    User = UserInfoService.Instance.GetUserDomainModelById(item.CreatedBy, false);
+                    <tr>
+                        <td>@item.CreatedOn</td>
+			            <td>@((User == null) ? "" : "【" + User.WorkId + "】" + User.BasicInfo.CnName)</td>
+                        <td>@((item.CheckStatus == 0) ? "合格" : "不合格")</td>
+                        <td>@item.CheckResult</td>
+			            <td title="@item.CheckDescription">@item.CheckDescription</td> 
+		            </tr>
+                }
+            }
+        }
+        </tbody>
+</table>
+

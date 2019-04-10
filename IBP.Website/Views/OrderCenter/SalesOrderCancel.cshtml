@@ -1,0 +1,53 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@using Framework.Utilities;
+
+@{
+    Layout = "";
+    string orderId = Request.QueryString["sid"];
+    string pagename = Request.QueryString["page"];
+    
+    SalesOrderDomainModel Salesorder = SalesOrderInfoService.Instance.GetSalesorderDomainModelById(orderId, false);
+    CustomDataDomainModel CancelType = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("订单撤消原因", false);
+}
+<div class="pageContent">
+    <form method="post" action="/OrderCenter/DoCancelSalesOrder" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+        <input type="hidden" name="orderId" value="@orderId" />
+        <input type="hidden" name="page" value="@pagename" />
+        <div class="pageFormContent" layouth="58">
+            <div class="information02">
+                <h2>撤消销售订单【@Salesorder.SalesorderCode】操作</h2>
+                <div class="New_box02">
+                    <dl>
+                        <dd>撤消原因：</dd>
+                        <dt>
+                            <select name="ddlOpType">
+                                <option value="">请选择</option>
+                                @{
+                                    if(CancelType != null && CancelType.ValueList.Count > 0)
+                                    {
+                                        foreach (CustomDataValueDomainModel item in CancelType.ValueList.Values)
+                                        {
+                                            @:<option value="@item.ValueId">@item.DataValue</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </dt>
+                    </dl>
+                    <dl style="height: 120px;">
+                        <dd>原因描述：</dd>
+                        <dt><textarea name="opDesc" cols="50" rows="6"></textarea></dt>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="formBar">
+            <ul>
+                <li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+                <li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+            </ul>
+        </div>
+    </form>
+</div>

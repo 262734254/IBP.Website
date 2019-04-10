@@ -1,0 +1,40 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string groupid = Request.QueryString["id"].ToString();
+    CustomerAttributeGroupInfoModel groupInfo = (Request.QueryString["id"] == null) ? null : CustomerAttributeGroupInfoService.Instance.GetGroupInfoById(Request.QueryString["id"].ToString(), true);
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/CallCenter/DoUpdateCustomerAttributeGrouInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+              <input type="hidden" value="@groupid" name="groupid" />
+
+            <div class="unit">
+				<label>所属分组名称：</label>
+				<input name="groupName" type="text" size="30" value="@groupInfo.GroupName" />
+			</div>
+            <div class="divider"></div>           
+            <div class="unit">
+				<label>状态：</label>
+	
+                <input type="radio" value="0" name="Status" @((groupInfo.Status == 0) ? "checked" : "")  />启用
+                <input type="radio" value="1" name="Status"  @((groupInfo.Status == 1) ? "checked" : "") />禁用
+			</div>
+          
+
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+

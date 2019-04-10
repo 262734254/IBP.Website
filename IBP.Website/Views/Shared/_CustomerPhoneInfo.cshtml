@@ -1,0 +1,51 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+    CustomDataDomainModel CallStatusList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("号码状态", false);
+    CustomDataDomainModel CallTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("号码类型", false);
+    string DataTag = Customer.BasicInfo.CustomerId + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff");
+}
+
+
+<table class="table" layoutH="295"  width="100%">
+	<thead>
+		<tr>
+            <th width="60">操作</th>
+			<th width="90">联系号码</th>
+			<th width="100">号码类型</th>
+            <th width="100">号码状态</th>
+            <th width="80">归属城市</th>
+            <th width="80">备注描述</th>
+            <th width="120">创建时间</th>
+		</tr>
+	</thead>
+	<tbody>
+        @{
+            if(Customer.PhoneNumberList != null)
+            {
+                ChinaInfoModel chinaInfo = null;
+                UserDomainModel user = null;
+
+                foreach (CustomerPhoneInfoModel item in Customer.PhoneNumberList.Values)
+                {
+                    user = UserInfoService.Instance.GetUserDomainModelById(item.CreatedBy, false);
+                    chinaInfo = (item.FromCityId != null) ? ChinaInfoService.Instance.GetChinaInfo(item.FromCityId.ToString()) : null;
+                    <tr>
+                        <td><a class="button" href="#" custjs="softcti" name="btnOutCall" customerid="@DataTag" callnumber="@CustomerPhoneInfoService.Instance.GetOutCallNumber(item)"><span>外呼</span></a></td>
+                        <td>@item.PhoneNumber</td>                        
+                        <td>@CallTypeList.ValueList[item.PhoneType].DataValue</td>
+                        <td>@CallStatusList.ValueList[item.CallStatus].DataValue</td>
+                        <td>@((chinaInfo == null) ? "" : chinaInfo.CityName)</td>
+                        <td>@item.Description</td>
+                        <td>@item.CreatedOn</td>
+		            </tr>
+                }
+            }
+        }
+        </tbody>
+</table>
+

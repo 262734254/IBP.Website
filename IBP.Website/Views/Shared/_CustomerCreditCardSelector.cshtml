@@ -1,0 +1,197 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    string customerId = Request.QueryString["cid"];
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+    Dictionary<string, ProductCategoryInfoModel> CatList = ProductCategoryInfoService.Instance.GetProductCategoryList(false);
+    CustomDataDomainModel CardTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel IdTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("证件类型", false);
+    CustomDataDomainModel CardCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡城市", false);
+
+    ProductShoppingCartDomainModel ShoppingCartInfo = ViewBag.ShoppingCartInfo as ProductShoppingCartDomainModel;
+    if (ShoppingCartInfo == null || ShoppingCartInfo.PayInfo == null)
+    {
+        ShoppingCartInfo = new ProductShoppingCartDomainModel();
+        ShoppingCartInfo.PayInfo = new OrderPaymentInfo();
+        if (Customer != null && Customer.CreditCardList != null && Customer.CreditCardList.Count > 0)
+        {
+            ShoppingCartInfo.PayInfo.PayAccountInfo = Customer.CreditCardList.Values.First();
+        }
+    }
+}
+
+<div id="divOrderCreditInfo">
+<input type="hidden" name="hidSelectCreditCardId" value="@((ShoppingCartInfo != null && ShoppingCartInfo.PayInfo != null && ShoppingCartInfo.PayInfo.PayAccountInfo != null) ? ShoppingCartInfo.PayInfo.PayAccountInfo.CreditcardId : ((Customer.CreditCardList != null && Customer.CreditCardList.Count > 0) ? Customer.CreditCardList.First().Value.CreditcardId : ""))" />
+
+    <div id="divSelectedCreditCardInfo" class="showClass">
+        <fieldset style="padding-left:10px; margin-bottom:15px;">
+	        <legend>订单支付类型</legend>
+             
+            <div class="searbg">
+               <dl>
+               <dd style="width:100px;">请选择支付方式：</dd>
+               <dt style=" padding:3px;">
+               <select name="ddlPayType" id="ddlPayType" custjs="phoneordermgr">
+                <option value="" @((ShoppingCartInfo.PayInfo.PayType == null) ? "selected" : "")>--请选择--</option>                
+                <option value="">无卡POS全额</option>
+                <option value="1" @CommonUtil.SetComboxSelected("1", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >建行</option>
+                <option value="2" @CommonUtil.SetComboxSelected("2", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >工行</option>
+                <option value="3" @CommonUtil.SetComboxSelected("3", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >农行</option>
+                <option value="4" @CommonUtil.SetComboxSelected("4", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >中行</option>
+                <option value="">无卡POS分期</option>
+                <option value="5" @CommonUtil.SetComboxSelected("5", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >建行</option>
+                <option value="6" @CommonUtil.SetComboxSelected("6", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >工行</option>
+                <option value="7" @CommonUtil.SetComboxSelected("7", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >农行</option>
+                <option value="8" @CommonUtil.SetComboxSelected("8", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >中行</option>
+                <option value="">货到刷卡全额</option>
+                <option value="9" @CommonUtil.SetComboxSelected("9", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >建行</option>
+                <option value="10" @CommonUtil.SetComboxSelected("10", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >工行</option>
+                <option value="11" @CommonUtil.SetComboxSelected("10", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >农行</option>
+                <option value="12" @CommonUtil.SetComboxSelected("12", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >中行</option>
+                <option value="">货到刷卡分期</option>
+                <option value="13" @CommonUtil.SetComboxSelected("13", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >建行</option>
+                <option value="14" @CommonUtil.SetComboxSelected("14", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >工行</option>
+                <option value="15" @CommonUtil.SetComboxSelected("15", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >农行</option>
+                <option value="16" @CommonUtil.SetComboxSelected("16", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >中行</option>
+                <option value="17" @CommonUtil.SetComboxSelected("17", Convert.ToInt32(ShoppingCartInfo.PayInfo.PayType).ToString()) >货到付现</option>
+            </select>
+               </dt>
+               </dl>
+            </div>
+            
+        </fieldset>
+        
+            @{
+                if(ShoppingCartInfo.PayInfo.PayAccountInfo == null)
+                {
+                    <fieldset style="padding-left:10px; margin-bottom:15px;" id="fdsCreditSelector">
+	                    <legend>订单支付银卡</legend>
+                        <span>请点击下列按钮创建该客户的订单支付信息。</span>
+                        <div style="width:800px; height: 35px; margin-top:20px;">
+                            <div class="button"><div class="buttonContent"><button custjs="phoneordermgr"  href="/CallCenter/NewCreditCardInfo?page=newPhoneSaleOrder&cid=@Customer.BasicInfo.CustomerId" target="dialog" maxable="false" rel="@Customer.BasicInfo.CustomerId" mask="true" width="800" height="370" id="btnNewPhoneSaleOrderNewCreditCard" close="NewPhoneSaleOrderSubDialogClose" type="button">新增客户持卡信息</button></div></div>
+                        </div>
+                    </fieldset>
+                }
+                else
+                {
+                    if (ShoppingCartInfo != null && ShoppingCartInfo.PayInfo != null)
+                    {
+                        OrderPaymentInfo payInfo = ShoppingCartInfo.PayInfo;
+                        ChinaInfoModel chinaInfo = (payInfo.PayAccountInfo == null) ? null : ((payInfo.PayAccountInfo.BillChinaId != null) ? ChinaInfoService.Instance.GetChinaInfo(payInfo.PayAccountInfo.BillChinaId.ToString()) : null);
+                        string showCredit = (Convert.ToInt32(payInfo.PayType) > 8 || payInfo.PayType == 0) ? "hideClass" : "showClass";
+                        <fieldset style="padding-left:10px; margin-bottom:15px;" id="fdsCreditSelector" class="@showCredit">
+	                        <legend>订单支付银卡</legend>
+                            <table class="list" width="99%">
+                                <thead>
+                                    <tr>
+                                        <th>开户城市</th>
+                                        <th>开户行</th>
+                                        <th>持卡号码</th>
+                                        <th>有效期</th>
+                                        <th>安全码</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>@((payInfo.PayAccountInfo == null) ? "" : CardCity.GetCustomDataValueByValueId(payInfo.PayAccountInfo.OpeningAddress))</td>
+                                        <td>@((payInfo.PayAccountInfo == null) ? "" : CardTypeList.GetCustomDataValueByValueId(payInfo.PayAccountInfo.Bank))</td>
+                                        <td>@((payInfo.PayAccountInfo == null) ? "" : CommonUtil.MarkCreditCard(payInfo.PayAccountInfo.CreditcardNumber))</td>
+                                        <td>@((payInfo.PayAccountInfo == null) ? "" : payInfo.PayAccountInfo.Period)</td>
+                                        <td>@((payInfo.PayAccountInfo == null) ? "" : "***")</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="list" width="99%">
+                                <thead>
+                                    <tr>
+                                        <th width="120">持卡人姓名</th>
+                                        <th>证件类型</th>
+                                        <th>证件号码</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>@((payInfo.PayAccountInfo == null) ? "" : payInfo.PayAccountInfo.CardUsername)</td>
+                                        <td>@((payInfo.PayAccountInfo == null) ? "" : IdTypeList.GetCustomDataValueByValueId(payInfo.PayAccountInfo.IdcardType))</td>
+                                        <td>@((payInfo.PayAccountInfo == null) ? "" : CommonUtil.MarkIdCard(payInfo.PayAccountInfo.IdcardNumber))</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="list" width="99%">
+                                <thead>
+                                    <tr>
+                                        <th>发票信息</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>@((chinaInfo != null) ? chinaInfo.ProvinceName + " " + chinaInfo.CityName + " " + chinaInfo.CountyName : "") @((payInfo.PayAccountInfo == null) ? "" : payInfo.PayAccountInfo.BillAddress)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        <div style="width:800px; height: 35px; margin-top:20px;">
+                            <div class="button"><div class="buttonContent"><button custjs="phoneordermgr" name="btnChangePayInfo" type="button">变更当前订单支付信息</button></div></div>
+                        </div>
+                        </fieldset>
+                    }
+                }
+            }
+        
+    </div>
+
+    <div id="divCustomerCreditCardSelector" class="hideClass">
+
+        <fieldset style="padding-left:10px; margin-bottom:15px;">
+	        <legend>客户支付渠道选择</legend>
+            <table class="list" width="99%">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th width="120">持卡人姓名</th>
+                    <th>证件类型</th>
+                    <th>证件号码</th>
+                    <th>持卡号码</th>
+                    <th>有效期</th>
+                    <th>安全码</th>
+                    <th>开户城市</th>
+                    <th>开户行</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+    @{
+
+        if (Customer.CreditCardList != null)
+        {
+            int creditCounter = 1;
+            ChinaInfoModel chinaInfo = null;
+            foreach (CustomerCreditcardInfoModel creditInfo in Customer.CreditCardList.Values)
+            {
+                chinaInfo = (creditInfo.BillChinaId != null) ? ChinaInfoService.Instance.GetChinaInfo(creditInfo.BillChinaId.ToString()) : null;
+                    <tr>
+                        <td>@creditCounter</td>
+                        <td>@creditInfo.CardUsername</td>
+                        <td>@IdTypeList.GetCustomDataValueByValueId(creditInfo.IdcardType)</td>
+                        <td>@CommonUtil.MarkIdCard(creditInfo.IdcardNumber)</td>
+                        <td>@CommonUtil.MarkCreditCard(creditInfo.CreditcardNumber)</td>
+                        <td>@creditInfo.Period</td>
+                        <td>@creditInfo.SecurityCode</td>
+                        <td>@CardCity.GetCustomDataValueByValueId(creditInfo.OpeningAddress)</td>
+                        <td>@CardTypeList.GetCustomDataValueByValueId(creditInfo.Bank)</td>
+                        <td><div class="button"><div class="buttonContent"><button type="button" creditid="@creditInfo.CreditcardId" name="btnSelectOrderCreditCard" custjs="phoneordermgr">选择</button></div></div></td>
+                    </tr>
+                        creditCounter++;
+            }
+        }
+    }
+            </tbody>
+        </table>
+        <div style="width:800px; height: 35px; margin-top:20px;">
+            <div class="button"><div class="buttonContent"><button custjs="phoneordermgr"  href="/CallCenter/NewCreditCardInfo?page=newPhoneSaleOrder&cid=@Customer.BasicInfo.CustomerId" target="dialog" maxable="false" rel="@Customer.BasicInfo.CustomerId" mask="true" width="800" height="370" id="btnNewPhoneSaleOrderNewCreditCard" close="NewPhoneSaleOrderSubDialogClose" type="button">新增客户持卡信息</button></div></div>
+        </div>
+        </fieldset>
+    </div>
+</div>

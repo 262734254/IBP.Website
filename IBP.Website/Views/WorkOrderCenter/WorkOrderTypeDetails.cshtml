@@ -1,0 +1,140 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    WorkOrderTypeDomainModel typeModel = WorkorderTypeInfoService.Instance.GetTypeDomainModelById(Request.QueryString["id"], true);
+}
+
+        <div class="pageHeader" style="border: 1px #B8D0D6 solid">            
+            <div class="searchBar">
+                <table class="searchContent">
+                    <tr>
+                        <td>
+                            @{
+                                if (typeModel != null)
+                                {
+                                    @:【@typeModel.TypeInfo.TypeName】 详细信息
+                                }
+                                else
+                                {
+                                    @:请从左侧选择一个工单类型名称
+                                }
+                            }                            
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+<div class="panelBar">
+	<ul class="toolBar">
+        @{
+            if (typeModel != null)
+            {
+		        <li><a target="dialog" maxable="false" class="add" href="/WorkOrderCenter/AddWorkOrderTypeStatus?tid=@typeModel.TypeInfo.WorkorderTypeId" rel="workorderDetailBox" title="新建工单类型状态" mask="true" width="600" height="330"><span>新建工单类型状态</span></a></li>
+		        <li class="line">line</li>
+		        <li><a target="dialog" maxable="false" class="add" href="/WorkOrderCenter/AddWorkOrderTypeResult?tid=@typeModel.TypeInfo.WorkorderTypeId" rel="workorderDetailBox" title="新建工单类型处理结果" mask="true" width="600" height="330"><span>新建工单类型处理结果</span></a></li>
+            }
+            else
+            {
+		        <li><a onclick="alertMsg.warn('请从左侧选择一个工单类型名称')" class="add" href="#" title="新建工单类型状态" mask="true" width="550" height="250"><span>新建工单类型状态</span></a></li>
+		        <li class="line">line</li>
+		        <li><a class="add"  onclick="alertMsg.warn('请从左侧选择一个工单类型名称')" href="#" title="新建工单类型处理结果" mask="true" width="550" height="250"><span>新建工单类型处理结果</span></a></li>
+            }
+        }
+	</ul>
+</div>
+<div style="padding:0px 1px 0px 0px;">
+	
+	<div class="tabs">
+		<div class="tabsHeader">
+			<div class="tabsHeaderContent">
+				<ul>
+					<li class="selected"><a href="javascript:;"><span>工单状态列表</span></a></li>
+					<li><a href="javascript:;"><span>处理结果列表</span></a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="tabsContent" layoutH="100">
+			<div>
+	            <table class="table" width="99%" layoutH="135">
+		            <thead>
+			            <tr>
+                            <th style="width:220px;">操作</th>
+				            <th>序号</th>
+				            <th>流转名称</th>
+                            <th>处理标识</th>
+                            <th>特定标识</th>
+                            <th>描述</th>
+                            <th>状态</th>
+			            </tr>
+		            </thead>
+		            <tbody>
+                        @{
+                            if (typeModel != null && typeModel.StatusList != null && typeModel.StatusList.Count > 0)
+                            {
+                                foreach (WorkorderStatusInfoModel item in typeModel.StatusList.Values)
+                                {
+                                    @:<tr>
+				                        @:<td><a class="button" href="/WorkOrderCenter/EditWorkOrderTypeStatus?typeid=@(item.WorkorderTypeId)&&statusid=@(item.WorkorderStatusId)" target="dialog" maxable="false" mask="true" width="600" height="350"><span>编辑</span></a> 
+				                        @:<a class="button" href="/WorkOrderCenter/DoDeleteWorkOrderTypeStatus?id=@(item.WorkorderTypeId + "|" + item.WorkorderStatusId)" target="ajaxTodo" title="确定删除该成员吗?"><span>删除</span></a> 
+				                        @:<a class="button" style="margin-left:10px;" href="/WorkOrderCenter/DoMoveUpWorkOrderTypeStatus?id=@(item.WorkorderTypeId + "|" + item.WorkorderStatusId)" target="ajaxTodo" title="确定上移该成员吗?"><span>上移</span></a> 
+				                        @:<a class="button" href="/WorkOrderCenter/DoMoveDownWorkOrderTypeStatus?id=@(item.WorkorderTypeId + "|" + item.WorkorderStatusId)" target="ajaxTodo" title="确定下移该成员吗?"><span>下移</span></a></td>
+                                        @:<td>@item.SortOrder</td>
+                                        @:<td>@item.StatusName</td>
+                                        @:<td>@((item.StatusTag == 0) ? "未处理" : (item.StatusTag == 1) ? "处理中" : "已关闭")</td>
+                                        @:<td>@item.CustomStatus</td>
+                                        @:<td>@item.Description</td>
+                                        @:<td>@((item.Status == 0) ? "启用" : "禁用")</td>
+                                    @:</tr>
+                                }
+                            }
+                        }
+		            </tbody>
+	            </table>
+			</div>
+			
+			<div>
+	            <table class="table" width="99%" layoutH="135">
+		            <thead>
+			            <tr>
+                            <th style="width:220px;">操作</th>
+				            <th>序号</th>
+				            <th>处理结果名称</th>
+                            <th>描述</th>
+                            <th>是否开始</th>
+                            <th>状态</th>
+			            </tr>
+		            </thead>
+		            <tbody>
+                        @{
+                            if (typeModel != null && typeModel.ResultList != null && typeModel.ResultList.Count > 0)
+                            {
+                                foreach (WorkorderResultInfoModel item in typeModel.ResultList.Values)
+                                {
+                                    @:<tr target="sid_obj" rel="@(item.WorkorderTypeId + "|" + item.WorkorderResultId)">
+				                        @:<td><a class="button" href="/WorkOrderCenter/EditWorkOrderTypeResult?typeid=@(item.WorkorderTypeId)&&resultid=@(item.WorkorderResultId)" target="dialog" maxable="false" mask="true" width="600" height="350"><span>编辑</span></a> 
+				                        @:<a class="button" href="/WorkOrderCenter/DoDeleteWorkOrderTypeResult?id=@(item.WorkorderTypeId + "|" + item.WorkorderResultId)" target="ajaxTodo" title="确定删除该成员吗?"><span>删除</span></a> 
+				                        @:<a class="button" style="margin-left:10px;" href="/WorkOrderCenter/DoMoveUpWorkOrderTypeResult?id=@(item.WorkorderTypeId + "|" + item.WorkorderResultId)" target="ajaxTodo" title="确定上移该成员吗?"><span>上移</span></a> 
+				                        @:<a class="button" href="/WorkOrderCenter/DoMoveDownWorkOrderTypeResult?id=@(item.WorkorderTypeId + "|" + item.WorkorderResultId)" target="ajaxTodo" title="确定下移该成员吗?"><span>下移</span></a></td>
+                                        @:<td>@item.SortOrder</td>
+                                        @:<td>@item.ResultName</td>
+                                        @:<td>@item.Description</td>
+                                        @:<td>@((item.IsBegin == 0) ? "是" : (item.IsBegin == 1) ? "否" : "")</td>
+                                        @:<td>@((item.Status == 0) ? "启用" : "禁用")</td>
+                                    @:</tr>
+                                }
+                            }
+                         }
+		            </tbody>
+	            </table>
+			</div>
+		</div>
+		<div class="tabsFooter">
+			<div class="tabsFooterContent"></div>
+		</div>
+	</div>
+
+</div>
+

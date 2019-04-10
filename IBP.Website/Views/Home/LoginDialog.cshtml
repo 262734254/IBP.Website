@@ -1,0 +1,39 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+}
+
+<div class="pageContent">
+	
+	<form method="post" action="/Home/DoLoginDialog" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+            <div class="unit">
+				<label>登录名称：</label>
+				<input type="text" name="LoginInput" size="30" minlength="3" maxlength="10" class="required" />
+			</div>
+			<div class="unit">
+				<label>登录密码：</label>
+				<input type="password" name="LoginPwd" size="30" minlength="3" maxlength="10" class="password required" />
+			</div>
+			<div class="unit">
+				<label>温馨提示：</label>
+                <table>
+                    <tr>
+                        <td><span style="font-weight:bold; color:Red;">1、会话超时。</span><br />因为长时间没有任何操作，系统自动登出了系统，您只需要重新登录即可。</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:10px;"><span style="font-weight:bold; color:Red;">2、没有该模块或操作的权限。</span><br />此时您需要跟管理员确认你是否拥有该模块或操作的权限，如果没有您只需要关闭当前弹出窗口即可。同时您可选择使用一个拥有该权限的账号登录。</td>
+                    </tr>
+                </table>
+            </div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

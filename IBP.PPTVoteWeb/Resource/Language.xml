@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<languages>
+  <language name="fx_can_not_be_empty">
+    <zh-cn>不能为空。</zh-cn>
+    <zh-tw>不能為空。</zh-tw>
+    <en>Can’t be empty！</en>
+  </language>
+  <language name="oc_no_permission">
+    <zh-cn>对不起，您没有权限！</zh-cn>
+    <zh-tw>對不起，您沒有權限！</zh-tw>
+    <en>Sorry, you do not have permissions！</en>
+  </language>
+  <language name="bc_network_exception">
+    <zh-cn>由于网络原因操作失败，请与管理员联系！</zh-cn>
+    <zh-tw></zh-tw>
+    <en></en>
+  </language>
+</languages>

@@ -1,0 +1,185 @@
+﻿@{
+    Layout = "";
+}
+
+<form id="pagerForm" method="post" action="demo_page1.html">
+	<input type="hidden" name="status" value="${param.status}">
+	<input type="hidden" name="keywords" value="${param.keywords}" />
+	<input type="hidden" name="pageNum" value="1" />
+	<input type="hidden" name="numPerPage" value="${model.numPerPage}" />
+	<input type="hidden" name="orderField" value="${param.orderField}" />
+</form>
+
+
+<div class="pageHeader">
+	<form onsubmit="return navTabSearch(this);" action="/UserMgr/UserList" method="post">
+	<div class="searchBar">
+		
+        <div class="searbg">
+            <dl><dd>订单编号：</dd><dt>
+            <select class="combox" name="keytype">
+						<option value="全部">全部</option>
+						<option value="移动">移动</option>
+                        <option value="联通">联通</option>
+                        <option value="电信">电信</option>
+					</select></dt></dl>
+                <dl><dd> 业务名称：</dd><dt><input type="text" alt="" class="textInput" maxlength="20" size="10" name="name"/></dt></dl> 
+                <dl><dd>套餐：</dd><dt><input type="text" alt="" class="phone textInput" size="10" name="phone"/></dt></dl>            
+            <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button type="submit">添加</button></div></div></div>
+          <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div>
+
+        </div>
+	</div>
+	</form>
+</div>
+
+<div style="border:1px #B8D0D6 solid" class="pageContent j-resizeGrid">
+<div class="pageContent">
+	<table class="table" layoutH="138">
+		<thead>
+			<tr>           
+                <th width="200">操作</th>
+				<th width="150" orderField="workId">业务名称</th>
+				<th width="100" orderField="enName">运营商</th>
+				<th width="120" orderField="userStatus">所选套餐</th>
+				<th width="120" orderField="entryDate">套餐说明</th>
+				<th width="160" orderField="postName">所选终端</th>
+				<th width="180" orderField="cnName">终端说明</th>
+				<th width="220" orderField="departmentName">业务总额</th>
+				<th width="220" orderField="positiveDate">预存话费</th>
+                <th width="120" orderField="entryDate">购机额</th>
+				<th width="160" orderField="postName">添加工号</th>
+				<th width="180" orderField="cnName">添加人</th>
+				<th width="220" orderField="departmentName">添加日期</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>暂停</span></a>
+				</td>                
+				<td>（惠）酷派E230A-59(聊）</td>
+				<td>电信</td>
+				<td>59元乐享套餐（聊天版）</td>
+				<td>下载说明</td>
+				<td>酷派E230A</td> 
+                <td>下载说明</td>
+                <td>792</td>
+				<td>792</td>
+                <td>0</td>
+                <td>1015</td> 
+                <td>李庆武</td>
+                <td>2011-10-30</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>启用</span></a>
+				</td>                
+				<td>（惠）酷派E230A-59(聊）</td>
+				<td>电信</td>
+				<td>59元乐享套餐（聊天版）</td>
+				<td>下载说明</td>
+				<td>酷派E230A</td> 
+                <td>下载说明</td>
+                <td>792</td>
+				<td>792</td>
+                <td>0</td>
+                <td>1015</td> 
+                <td>李庆武</td>
+                <td>2011-10-30</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>暂停</span></a>
+				</td>                
+				<td>（惠）酷派E230A-59(聊）</td>
+				<td>电信</td>
+				<td>59元乐享套餐（聊天版）</td>
+				<td>下载说明</td>
+				<td>酷派E230A</td> 
+                <td>下载说明</td>
+                <td>792</td>
+				<td>792</td>
+                <td>0</td>
+                <td>1015</td> 
+                <td>李庆武</td>
+                <td>2011-10-30</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>暂停</span></a>
+				</td>                
+				<td>（惠）酷派E230A-59(聊）</td>
+				<td>电信</td>
+				<td>59元乐享套餐（聊天版）</td>
+				<td>下载说明</td>
+				<td>酷派E230A</td> 
+                <td>下载说明</td>
+                <td>792</td>
+				<td>792</td>
+                <td>0</td>
+                <td>1015</td> 
+                <td>李庆武</td>
+                <td>2011-10-30</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>暂停</span></a>
+				</td>                
+				<td>（惠）酷派E230A-59(聊）</td>
+				<td>电信</td>
+				<td>59元乐享套餐（聊天版）</td>
+				<td>下载说明</td>
+				<td>酷派E230A</td> 
+                <td>下载说明</td>
+                <td>792</td>
+				<td>792</td>
+                <td>0</td>
+                <td>1015</td> 
+                <td>李庆武</td>
+                <td>2011-10-30</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>暂停</span></a>
+				</td>                
+				<td>（惠）酷派E230A-59(聊）</td>
+				<td>电信</td>
+				<td>59元乐享套餐（聊天版）</td>
+				<td>下载说明</td>
+				<td>酷派E230A</td> 
+                <td>下载说明</td>
+                <td>792</td>
+				<td>792</td>
+                <td>0</td>
+                <td>1015</td> 
+                <td>李庆武</td>
+                <td>2011-10-30</td>
+			</tr>
+         </tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20">20</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+			</select>
+			<span>条，共${totalCount}条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="200" numPerPage="20" pageNumShown="10" currentPage="1"></div>
+
+	</div>
+</div>
+
+
+</div>

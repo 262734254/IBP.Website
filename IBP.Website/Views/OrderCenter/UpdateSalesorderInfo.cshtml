@@ -1,0 +1,205 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string customerId = Request.QueryString["cid"];
+    string pagename = Request.QueryString["page"];
+    SalesOrderDomainModel Salesorder = ViewBag.Salesorder as SalesOrderDomainModel;
+    ProductShoppingCartDomainModel ShoppingCart = ViewBag.ShoppingCartInfo as ProductShoppingCartDomainModel;
+
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+    Dictionary<string, ProductCategoryInfoModel> CatList = ProductCategoryInfoService.Instance.GetProductCategoryList(false);
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+    CustomDataDomainModel CardTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel IdTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("证件类型", false);
+    CustomDataDomainModel OrderSource = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("订单来源", false);
+    Dictionary<string, ProductCategoryInfoModel> GroupChildCatList = null;
+    Dictionary<string, ProductCategoryGroupInfoModel> categoryGroupList = ProductCategoryGroupInfoService.Instance.GetProductCategoryGroupList(false);
+}
+<div class="pageContent">
+    <form method="post" name="salesorderUpdateForm" action="/OrderCenter/DoUpdateSalesorderInfo?page=@pagename" page="@pagename" class="pageForm" onsubmit="return validateCallback(this, dialogAjaxDone);">
+    <div class="pageFormContent" layouth="60">
+        <div id="maskDiv" style="z-index: 900; position: absolute; bottom: 0px; filter: alpha(opacity=65);
+            background-color: #fff;">
+        </div>
+        <div style="z-index: 900; position: absolute; bottom: 0px; width: 100%; height: 500px;
+            background-color: #ababab; display: none;" id="divProductSelector">
+        </div>
+        <div class="information02">
+            <input type="hidden" id="hidCustomerId" name="hidCustomerId" value="@customerId" />
+            <input type="hidden" name="hidSalesorderId" value="@Salesorder.SalesorderId" />
+            <input type="hidden" name="orderType" value="0" />
+            <h2>
+                更新销售订单【@((Salesorder == null) ? "" : Salesorder.SalesorderCode)】信息</h2>
+            <div class="New_box02">
+                <dl>
+                    <span>
+                        <dd>
+                            订单来源：</dd>
+                        <dt>
+                            <select name="orderSource">
+                                @{
+                                    if (OrderSource != null)
+                                    {
+                                        foreach (CustomDataValueDomainModel item in OrderSource.ValueList.Values)
+                                        {
+                                            if (item.Status == 1)
+                                            {
+                                                continue;
+                                            }
+                                    <option value="@item.ValueId" @CommonUtil.SetComboxSelected(item.ValueId, ShoppingCart.SalesOrderSource) >@item.DataValue</option>
+                                        }
+                                    }
+                                }
+                            </select></dt>
+                    </span><span>
+                        <dd>
+                            销售城市：</dd>
+                        <dt>
+                            <select name="city" id="ddlSaleCity">
+                                @{
+                                    <option value="">所有</option>
+                                    if (SaleCity != null)
+                                    {
+                                        foreach (CustomDataValueDomainModel item in SaleCity.ValueList.Values)
+                                        {
+                                    <option value="@item.ValueId" @CommonUtil.SetComboxSelected(item.ValueId, Salesorder.BasicInfo.SalesCityId) >@item.DataValue</option>
+                                        }
+                                    }
+                                }
+                            </select></dt>
+                    </span>
+                    <span>
+                        <dd>
+                            订单预约跟进</dd>
+                        <dt>
+                            <input format="yyyy-MM-dd HH:mm:ss" value="" type="text" name="followTime"
+                                class="date" readonly="true" /></dt>
+                    </span>
+                </dl>
+            </div>
+        </div>
+        <div class="unit">
+            <div class="tabs" currentindex="0" eventtype="click">
+                <div class="tabsHeader">
+                    <div class="tabsHeaderContent">
+                        <ul>
+                            <li><a href="javascript:;"><span>产品选择</span></a></li>
+                            <li><a href="javascript:;"><span>电信开户</span></a></li>
+                            <li><a href="javascript:;"><span>支付信息</span></a></li>
+                            <li><a href="javascript:;"><span>物流配送</span></a></li>
+                            <li><a href="javascript:;"><span>附加备注</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tabsContent" style="background-color: White; height: 320px;">
+                    <div style="background-color: White;">
+                        <fieldset class="fieldsetleft">
+                            <legend>候选产品</legend>
+                            <select name="customerSelectProductList" custjs="phoneordermgr" id="ddlProductPackageSelector"
+                                multiple="multiple" style="height: 290px; width: 175px">
+                                <option itemprice="1" value="salePackage">组合产品包</option>
+                                <option>====================</option>
+                                @{
+                                    if (categoryGroupList != null)
+                                    {
+                                        foreach (ProductCategoryGroupInfoModel item in categoryGroupList.Values)
+                                        {
+                                            if (item.IsItemPrice == 0)
+                                            {
+                                                GroupChildCatList = ProductCategoryInfoService.Instance.GetProductCategoryListByGroupId(item.ProductCategoryGroupId);
+                                                if (GroupChildCatList != null)
+                                                {
+                                                    foreach (ProductCategoryInfoModel catInfo in GroupChildCatList.Values)
+                                                    {
+                                    <option itemprice="0" value="@catInfo.ProductCategoryId">@catInfo.CategoryName</option>
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                    <option itemprice="1" value="@item.ProductCategoryGroupId">@item.GroupName</option>
+                                            }
+                                        }
+                                    }
+                                }
+                            </select>
+                        </fieldset>
+                        <fieldset class="fieldsetleft02" style="width: 750px; height: 305px;">
+                            <legend>购物车</legend>
+                            @Html.Partial("_ShoppingCartInfo")
+                        </fieldset>
+                    </div>
+                    <div layouth="195">
+                        @Html.Partial("_CommunicationOpenAccountInfo")
+                    </div>
+                    <div layouth="195">
+                        @Html.Partial("_CustomerCreditCardSelector")
+                    </div>
+                    <div layouth="195">
+                        @Html.Partial("_CustomerDeliverySelector")
+                    </div>
+                    <div layouth="200">
+                        <fieldset style="padding: 0 0 10px 10px; margin-bottom: 15px;">
+                            <legend>订单备注信息</legend>
+                            <textarea name="orderRemark" cols="131" rows="4">@((ShoppingCart != null) ? ShoppingCart.OrderRemark : "")</textarea>
+                        </fieldset>
+                        @*  <fieldset style="padding-left:10px;">
+	                        <legend>订单预约跟进</legend>
+                            <div class="New_box02" style=" margin-bottom:10px;">
+                               <dl>
+                                 <dd style="width:85px;">预约跟进时间：</dd>
+                                 <dt><input format="yyyy-MM-dd HH:mm:ss" value="@((ShoppingCart != null) ? ShoppingCart.FollowTime.ToString() : "")" style="width: 120px;" type="text" name="followTime"class="date" readonly="true" /></dt>
+                               </dl>
+                             </div>
+                            <textarea name="followRemark" cols="131" rows="4">@((ShoppingCart != null) ? ShoppingCart.FollowRemark : "")</textarea>
+                        </fieldset>*@
+                    </div>
+                </div>
+                <div class="tabsFooter">
+                    <div class="tabsFooterContent">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="formBar">
+        <ul id="btnlistMain">
+            <li>
+                <div class="buttonActive">
+                    <div class="buttonContent">
+                        <button custjs="phoneordermgr" name="submitUpdateOrder">
+                            提交更新</button></div>
+                </div>
+            </li>
+            <li>
+                <div class="button">
+                    <div class="buttonContent">
+                        <button type="button" class="close">
+                            取消</button></div>
+                </div>
+            </li>
+        </ul>
+        <ul id="btnlistSelectProduct" style="display: none;">
+            <li>数量：<input type="text" class="number required" value="1" size="5" id="selectedProductCount"
+                name="selectedProductCount" />
+            </li>
+            <li>
+                <div class="buttonActive">
+                    <div class="buttonContent">
+                        <button custjs="phoneordermgr" id="btnAddToShoppingCart" style="width: 150px;">
+                            添加选中产品至购物车</button></div>
+                </div>
+            </li>
+            <li>
+                <div class="button">
+                    <div class="buttonContent">
+                        <button custjs="phoneordermgr" id="btnCancelProductSelect" type="button">
+                            放弃</button></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    </form>
+</div>

@@ -1,0 +1,49 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+
+}
+
+<table class="table" width="100%" layoutH="295" >
+	<thead>
+		<tr>
+			<th width="90">订单编号</th>
+            <th width="90">订购产品列表</th>
+			<th width="90">订单总额</th>
+            <th width="90">支付方式</th>
+			<th width="90">订单状态</th>
+            <th width="60">订单状态描述</th>
+            <th width="60">创建者</th>
+            <th width="60">创建时间</th>
+           
+		</tr>
+	</thead>
+	<tbody>
+        @{
+            UserDomainModel user = null;
+            SalesOrderDomainModel item = null;
+            
+            foreach (string salesorderId in Customer.SalesOrderList)
+            {
+                
+                item = SalesOrderInfoService.Instance.GetSalesorderDomainModelById(salesorderId, false);
+                user = UserInfoService.Instance.GetUserDomainModelById(item.BasicInfo.CreatedBy, false);
+         @:       <tr>
+         @:<td><a href="/OrderCenter/SalesOrderDetail?sid=@item.BasicInfo.SalesorderId" target="navTab" rel="@item.BasicInfo.SalesorderId" title="【@Customer.BasicInfo.CustomerName】销售订单信息" fresh="false">@item.BasicInfo.SalesorderCode</td>
+         @:<td>  @item.ProductNameList</td>
+
+         @:            <td>@item.BasicInfo.PayPrice</td>
+         @:<td>@item.OrderPaytypeName</td>
+         @:            <td>@item.OrderStatusName</td>
+         @:            <td>@item.BasicInfo.NowStatusDescription</td>
+         @:             <td>@((user == null) ? "" : user.BasicInfo.CnName)</td>
+         @:             <td>@item.BasicInfo.CreatedOn</td>
+		 @:       </tr>
+            }
+        }
+        </tbody>
+</table>

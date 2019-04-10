@@ -1,0 +1,89 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    List<ProductCategoryInfoModel> ProductCategoryList = ViewBag.ProductCategoryList as List<ProductCategoryInfoModel>;
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+    Dictionary<string, ProductCategoryGroupInfoModel> categoryGroupList = ProductCategoryGroupInfoService.Instance.GetProductCategoryGroupList(false);
+}
+
+<div class="tabsPage">
+<div class="navTab-panel tabsPageContent layoutBox" style="height:470px; padding-top:49px;">
+<div class="page unitBox">
+    <form id="pagerForm" method="post" action="/OrderCenter/PhoneSaleOrderProductSelector">
+	    <input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	    <input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	    <input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+        <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+	    <input type="hidden" name="itemPrice" value="@ViewBag.ItemPrice" />
+        <input type="hidden" name="saleCityId" value="@ViewBag.SaleCity" />
+        <input type="hidden" name="groupId" value="@ViewBag.ProductGroupName" />
+    </form>
+
+    <div class="pageHeader">
+	    <form rel="pagerForm" onsubmit="return divSearch(this,'divProductSelector');" action="/OrderCenter/PhoneSaleOrderProductSelector" method="post">
+	    <input type="hidden" name="itemPrice" value="@ViewBag.ItemPrice" />
+        <input type="hidden" name="saleCityId" value="@ViewBag.SaleCity" />
+        <input type="hidden" name="groupId" value="@ViewBag.ProductGroupName" />
+           <div  class="searbg">
+             <dl><dd style="width:100px;">产品类型名称：</dd><dt style="width:90px; padding-top:3px;"><input type="text" name="categoryName" value="@ViewBag.CategoryName" /></dt><div class="buttonActive" style=" float:left;"><div class="buttonContent"><button type="submit">查询</button></div></div></dl>
+             
+           </div>   	
+	 
+	    </form>
+    </div>
+
+    <div class="pageContent">
+        <input type="hidden" name="selectedProductCategoryId" id="selectedProductCategoryId" producttype="ProductCategory" />
+	    <table class="table" targetType="dialog" rel="divProductSelector" layoutH="300">
+		    <thead>
+			    <tr>
+				    <th width="60" @CommonUtil.SetSortOrder("sort_order", ViewBag.OrderField, ViewBag.OrderDirection) >序号</th>
+                    <th width="160" @CommonUtil.SetSortOrder("group_name", ViewBag.OrderField, ViewBag.OrderDirection) >所属分组名称</th>
+				    <th width="160" @CommonUtil.SetSortOrder("category_name", ViewBag.OrderField, ViewBag.OrderDirection) >产品类别名称</th>  
+                    <th width="100" @CommonUtil.SetSortOrder("item_price", ViewBag.OrderField, ViewBag.OrderDirection) >销售价格</th>              
+                    <th width="100" @CommonUtil.SetSortOrder("sale_city", ViewBag.OrderField, ViewBag.OrderDirection) >产品销售城市</th>
+				    <th width="260" >类别描述信息</th>
+			    </tr>
+		    </thead>
+		    <tbody>
+                @{
+                    if (ProductCategoryList != null)
+                    {
+                        foreach (ProductCategoryInfoModel item in ProductCategoryList)
+                        {
+			                <tr ptid="productcategory" rel="@item.ProductCategoryId"  name="btnLoadProductGuide" pcid="@item.ProductCategoryId" custjs="phoneordermgr">                        
+				                <td>@item.SortOrder</td>
+                                <td>@(string.IsNullOrEmpty(item.GroupName) ? "" : (categoryGroupList.ContainsKey(item.GroupName) ? categoryGroupList[item.GroupName].GroupName : ""))</td>
+				                <td>@item.CategoryName</td>
+                                <td>@item.ItemPrice</td>
+                                <td>@SaleCity.GetCustomDataValueByValueId(item.SaleCity,"所有")</td>
+				                <td>@item.Remark</td>
+			                </tr>                        
+                        }
+                    }
+                }
+		    </tbody>
+	    </table>
+	    <div class="panelBar">
+		    <div class="pages">
+			    <span>显示</span>
+			    <select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				    <option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				    <option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				    <option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				    <option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			    </select>
+			    <span>条，共 @ViewBag.ProductCategoryTotal 条</span>
+		    </div>		
+		    <div class="pagination" targetType="dialog" rel="divProductSelector" totalCount="@ViewBag.ProductCategoryTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+	    </div>
+    </div>
+    <div id="divProductSalesGuide">
+        @Html.Partial("_ProductSalesGuideInfo")
+    </div>
+</div>
+</div>
+</div>

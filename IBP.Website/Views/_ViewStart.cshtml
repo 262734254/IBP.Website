@@ -1,0 +1,11 @@
+﻿@using Framework.Utilities;
+@{
+    if(SessionUtil.Current.IsLogin)
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_GuestLayout.cshtml";
+    }
+}

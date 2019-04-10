@@ -1,0 +1,86 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+
+    List<string> attribute = ViewBag.Attribute as List<string>;
+    CustomerExtAttributesModel Info = null;
+    Dictionary<string, QueryItemDomainModel> QueryCollection = ViewBag.QueryCollection as Dictionary<string, QueryItemDomainModel>;
+    CustomerAttributeGroupInfoModel GroupInfoModel = null;
+    
+}
+
+<form id="pagerForm" method="post" action="/CallCenter/CustomerAttributeMgr">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+<div class="pageContent" style="border-left:1px #B8D0D6 solid;border-right:1px #B8D0D6 solid">
+          <div class="panelBar">
+		    <ul class="toolBar">
+            @{
+			        <li><a target="dialog" maxable="false" class="add" href="/CallCenter/NewCustomerAttributes" rel="CallCenter_CustomerAttributeMgr" title="添加客户属性" mask="true" width="600" height="450"><span>添加</span></a></li>
+			        <li><a target="dialog" maxable="false"class="edit" href="/CallCenter/EditCustomerAttributes?id={sid_obj}" rel="CallCenter_CustomerAttributeMgr" title="编辑客户属性" mask="true" width="600" height="450"><span>编辑</span></a></li>
+			        <li><a class="delete" href="/CallCenter/DeleteCustomerAttribute?id={sid_obj}" target="ajaxTodo" title="确定删除吗?"><span>删除</span></a></li>
+               }
+            
+               </ul>
+	       </div>
+	<table class="table" width="99%" layoutH="73">
+		<thead>
+			<tr>
+				
+				<th>属性名称</th>
+                <th>所属组名称</th>
+                <th>字段类型</th>
+                <th>长度</th>
+                <th>是否显示</th>
+                <th>状态</th>
+                <th>创建时间</th>
+                <th>描述</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (attribute != null)
+                {
+
+                    foreach (string attributeId in attribute)
+                    {
+                        Info = CustomerExtAttributesInfoService.Instance.GetCustomerAttributeById(attributeId, true);
+                        GroupInfoModel = CustomerAttributeGroupInfoService.Instance.GetCustomerGroupFromDatabase(Info.GroupId);
+                   
+                           @:<tr target="sid_obj" rel="@(Info.ExtAttributeId)">
+                          
+                            @:<td>@Info.AttributeName</td>
+                              @:<td>@GroupInfoModel.GroupName </td>          
+                            @:<td>@CommonUtil.GetFieldTypeName(Info.FieldType)</td>
+                            @:<td>@((Info.FieldType == "custom" || Info.FieldType == "datetime" || Info.FieldType == "text") ? "" : Info.FieldMinLength.ToString() + ((Info.FieldMaxLength <= 0 || Info.FieldMaxLength == null) ? "" : " , ") + Info.FieldMaxLength.ToString())</td>
+                            @:<td>@((Info.IsDisplay == 0) ? "是" : "否")</td>
+                            @:<td>@((Info.Status == 0) ? "启用" : "禁用")</td>
+                            @:<td>@Info.CreatedOn</td>
+                            @:<td>@Info.Description</td>
+                          @:</tr>
+                     
+                    }
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				<option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				<option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.AttributeTotal 条</span>
+		</div>
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.AttributeTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+	</div>
+</div>

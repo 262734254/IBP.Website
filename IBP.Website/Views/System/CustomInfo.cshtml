@@ -1,0 +1,58 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    Dictionary<string, CustomDataDomainModel> Dict = CustomDataInfoService.Instance.GetCustomDataDomainModelList(false);
+}
+
+<div class="pageContent">
+    <div id="customdataBox" class="unitBox" style="float: left; display: block; overflow: auto;
+        width: 284px;">
+        <div class="pageHeader" style="border-right: 1px #B8D0D6 solid">            
+            <div class="searchBar">
+                <table class="searchContent">
+                    <tr>
+                        <td>
+                            自定义枚举列表
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="pageContent" style=" border-right: 1px #B8D0D6 solid">
+            	<table class="table" width="99%" layoutH="84">
+		            <thead>
+			            <tr>
+				            <th width="80">自定义枚举名称</th>
+			            </tr>
+		            </thead>
+		            <tbody>
+                         @{
+                             if (Dict != null)
+                             {
+                                 foreach (CustomDataDomainModel item in Dict.Values)
+                                 {
+                                      @:<tr target="data_id" rel="@item.DataId">
+                                         @:<td style="padding-left:20px;">
+                                                @:<a href="/System/CustomValueList?cid=@item.DataId" target="ajax" rel="customValueBox">@item.DataName</a>
+                                         @:</td>
+                                      @:</tr>
+                                 }
+                             }
+                         }
+		            </tbody>
+	            </table>
+
+            <div class="panelBar">
+                <div class="pages">
+                     
+                </div>
+                 
+            </div>
+        </div>
+    </div>
+    <div id="customValueBox" class="unitBox" style="margin-left: 288px;">
+        @Html.Partial("CustomValueList")
+    </div>
+</div>

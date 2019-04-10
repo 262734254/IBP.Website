@@ -1,0 +1,71 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    CustomDataDomainModel CustomerComeFrom = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("客户来源", false);
+    CustomDataDomainModel Customerlevel = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("客户等级", false);
+}
+
+<div class="pageContent">
+	<form method="post" action="/CallCenter/DoBatchAddCustomerInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		   <div custjs="flowcontrol" locname="@ViewBag.LocationBoxName" name="locationDiv" levelRegion="city" class="location">
+            <input type="hidden" name="chinaId" class="chinaIdBox" value="" />
+            @Html.Partial("_LocationPanel")
+        </div>
+        <div class="pageFormContent" layoutH="64">
+        <div class="information02">
+           <h2>批量创建客户</h2>
+           <br />
+           <div class="lefttxt">
+           <p>
+               <label>客户来源：</label>
+                 <select name="salesFrom" class="required">
+                  <option value="">请选择</option>
+				  @{
+                      if (CustomerComeFrom != null)
+                        {
+                            foreach (CustomDataValueDomainModel customValue in CustomerComeFrom.ValueList.Values)
+                            {
+                                if (customValue.Status == 1)
+                                {
+                                    continue;
+                                }
+                                <option value="@customValue.ValueId">@customValue.DataValue</option>
+                            }
+                        }
+                    }
+               </select>
+			</p>
+            <p>
+				<label>客户等级：</label>
+			 <select name="level" class="required">
+                  <option value="">请选择</option>
+				  @{
+                      if (Customerlevel != null)
+                        {
+                            foreach (CustomDataValueDomainModel customValue in Customerlevel.ValueList.Values)
+                            {
+                                <option value="@customValue.ValueId">@customValue.DataValue</option>
+                            }
+                        }
+                    }
+               </select>
+			</p>
+
+           </div>
+            <textarea name="phone_number" style="width:380px;" rows="20"></textarea>
+        
+           
+		</div>
+        </div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>

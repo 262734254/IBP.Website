@@ -1,0 +1,59 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@using IBP.Common;
+@{
+    Layout = "";
+    string salesOrderId = Request.QueryString["sid"];
+
+    if (string.IsNullOrEmpty(salesOrderId))
+    {
+        throw new Exception("未获取到类型ID");
+    }
+   
+   SalesOrderDomainModel   SalesorModel = SalesOrderInfoService.Instance.GetSalesorderDomainModelById(salesOrderId, false);
+   CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(SalesorModel.BasicInfo.CustomerId, false);
+
+    }
+<div class="pageContent">
+	
+	<form method="post" action="/OrderCenter/DoRefundconfirmation" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+           <input type="hidden" name="workStatusId" value="@salesOrderId" />
+    
+
+           
+			<div class="unit">
+				<label>订单编号：</label>
+				<input  type="text" name="CustomerName"  readonly="readonly" value="@Customer.BasicInfo.CustomerName"  class="required" />
+			</div>
+            <div class="unit">
+				<label>收获人：</label>
+				<input type="text" name="DeliveryReceiveCustomerName" readonly="readonly" value="@SalesorModel.BasicInfo.DeliveryReceiveCustomerName"  class="required" />
+		       
+			</div>
+            <div class="unit">
+				<label>收获人电话：</label>
+				<input type="text" name="DeliveryReceivePhonenumber" readonly="readonly"  value="@SalesorModel.BasicInfo.DeliveryReceivePhonenumber"  class="required" />
+
+			</div>
+            <div class="unit">
+				<label>配送地址：</label>
+              <textarea name="DeliveryAddress" readonly="readonly" cols="50" rows="5">@SalesorModel.BasicInfo.DeliveryAddress</textarea>
+
+     
+			</div>
+		   <div class="unit">
+				<label>请选择：</label>
+				<input type="radio" value="0" checked name="status" />回收成功
+		        <input type="radio" value="1" name="status" />回收异常
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

@@ -1,0 +1,64 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+    CustomDataDomainModel WorkOrderProimary = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("工单级别", false);
+}
+
+<div style="width:100%; height:100%;">
+<table class="table" layoutH="295" minH="295" width="1600">
+	<thead>
+		<tr>
+			<th width="120">工单编号</th>
+            <th width="120">创建时间</th>
+			<th width="90">类型</th>
+            <th width="90">优先级</th>
+			<th width="90">所属用户组</th>
+            <th width="60">所属用户</th>
+            <th width="60">开始处理时间</th>
+            <th width="60">当前处理人</th>
+            <th width="60">当前状态</th>
+            <th width="60">当前结果</th>
+            <th width="60">过期时间</th>
+            <th width="500">工单描述</th>
+		</tr>
+	</thead>
+	<tbody>
+        @{
+            UserDomainModel user = null;
+            UserDomainModel processUser = null;
+            UserDomainModel firstprocessUser = null;
+            WorkOrderTypeDomainModel workOrderType = null;
+            UserGroupPremissionDomainModel userGroupInfo = null;
+            foreach(string workOrderId in Customer.WorkorderList)
+            {
+                WorkOrderDomainModel item = WorkorderInfoService.Instance.GetWorkorderDomainModelById(workOrderId, false);
+                user = UserInfoService.Instance.GetUserDomainModelById(item.BasicInfo.CreatedBy, false);
+                processUser = (item.BasicInfo.NowProcessUserid == null) ? null : UserInfoService.Instance.GetUserDomainModelById(item.BasicInfo.NowProcessUserid, false);
+                firstprocessUser = (item.BasicInfo.FirstProcessUserid == null) ? null : UserInfoService.Instance.GetUserDomainModelById(item.BasicInfo.FirstProcessUserid, false);
+                workOrderType = WorkorderTypeInfoService.Instance.GetTypeDomainModelById(item.BasicInfo.WorkorderType, false);
+                userGroupInfo = UserGroupInfoService.Instance.GetUserGroupDomainByGroupId(item.BasicInfo.RelUsergroupId, false);
+                <tr>
+                    <td><a href="/WorkOrderCenter/WorkOrderDetail?oid=@item.BasicInfo.WorkOrderId" target="navTab" rel="@item.BasicInfo.WorkOrderId" title="【@Customer.BasicInfo.CustomerName】工单信息" fresh="false">@item.BasicInfo.WorkorderCode</a></td>
+                    <td>@item.BasicInfo.CreatedOn</td>
+                    <td>@workOrderType.TypeInfo.TypeName</td>
+                    <td>@WorkOrderProimary.GetCustomDataValueByValueId(item.BasicInfo.Level)</td>
+                    <td>@((userGroupInfo == null) ? "" : userGroupInfo.UserGroupInfo.GroupName)</td>
+                    <td>@((firstprocessUser == null) ? "" : "【" + firstprocessUser.WorkId + "】" + firstprocessUser.BasicInfo.CnName)</td>
+                    <td>@item.BasicInfo.FirstProcessTime</td>
+                    <td>@((processUser == null) ? "" : "【" + processUser.WorkId + "】" + processUser.BasicInfo.CnName)</td>
+                    <td>@((workOrderType.StatusList.ContainsKey(item.BasicInfo.NowStatusId)) ? workOrderType.StatusList[item.BasicInfo.NowStatusId].StatusName : "")</td>
+                    <td>@((workOrderType.ResultList.ContainsKey(item.BasicInfo.NowResultId)) ? workOrderType.ResultList[item.BasicInfo.NowResultId].ResultName : "")</td>
+                    <td>@item.BasicInfo.ExpiredTime</td>
+                    <td title="@item.BasicInfo.Description">@item.BasicInfo.Description</td>
+		        </tr>
+            }
+        }
+        </tbody>
+</table>
+</div>
+
+

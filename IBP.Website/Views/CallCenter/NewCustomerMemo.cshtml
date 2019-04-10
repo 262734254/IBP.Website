@@ -1,0 +1,41 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@using Framework.Utilities;
+@{
+    Layout = "";
+    string customerId = Request.QueryString["cid"];
+    CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+}
+<div class="pageContent">
+    <form method="post" action="/CallCenter/DoNewCustomerMemoInfo" class="pageForm required-validate"  onsubmit="return validateCallback(this, dialogAjaxDone)">
+    <input type="hidden" name="customerId" value="@Customer.BasicInfo.CustomerId" />
+    <div class="pageFormContent" layouth="58">
+        <div class="information02">
+            <h2>新建目标客户【@Customer.BasicInfo.CustomerName】备注信息</h2>
+            <div class="New_box02">
+                <dl>
+                    <dd>
+                        客户名称：</dd>
+                    <dt>@Customer.BasicInfo.CustomerName</dt>
+                    <dd>
+                        创建人：</dd>
+                    <dt>@SessionUtil.Current.CnName</dt>
+                </dl>
+                <dl style="height: 120px;">
+                    <dd>
+                        描述：</dd>
+                    <dt>
+                        <textarea name="memoDesc" cols="50" rows="6"></textarea></dt>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="formBar">
+        <ul>
+            <li><div class="buttonActive"><div class="buttonContent"><button type="submit">创建客户备注</button></div></div></li>
+            <li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+        </ul>
+    </div>
+    </form>
+</div>

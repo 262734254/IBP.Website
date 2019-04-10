@@ -1,0 +1,160 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@using IBP.Common;
+@{
+    Layout = "";
+    string salesOrderId = Request.QueryString["sid"];
+    string pagename = Request.QueryString["page"];
+    
+   SalesOrderDomainModel   SalesorModel = SalesOrderInfoService.Instance.GetSalesorderDomainModelById(salesOrderId, false);
+   CustomerDomainModel Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(SalesorModel.BasicInfo.CustomerId, false);
+   CustomDataDomainModel paycity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡城市", false); 
+   CustomDataDomainModel Paycardbank = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+   string BankCardType = Paycardbank.GetCustomDataValueByValueId(SalesorModel.BasicInfo.PayCardBankId);
+   string PaycityType = paycity.GetCustomDataValueByValueId(SalesorModel.BasicInfo.PayCityId);
+   CustomDataDomainModel Chargeexception = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("扣款异常类型", false);
+   Dictionary<string, PayPosMachineInfoModel> PosList = PayPosMachineInfoService.Instance.GetPosMachineList(false);
+   CustomDataDomainModel IdTypeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("证件类型", false);
+   CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+
+    }
+<div class="pageContent">
+	
+	<form method="post" action="/OrderCenter/DoSalesOrderCharge" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<input type="hidden" name="orderId" value="@salesOrderId" />
+        <input type="hidden" name="page" value="@pagename" />
+        <div class="pageFormContent" layoutH="58">
+           <div class="information02">
+             <h2>销售订单【@SalesorModel.SalesorderCode】扣款操作</h2>
+             <div class="New_box02">
+               <dl>
+                  <span>
+                    <dd>客户姓名：</dd>
+                    <dt><input  type="text" name="CustomerName"readonly="readonly" class="customPhone" value="@Customer.BasicInfo.CustomerName"   /></dt>
+                  </span>
+                  <span>
+                    <dd>扣款金额：</dd>
+                    <dt> <input  type="text" name=" pay_price"readonly="readonly" class="customPhone" value="@SalesorModel.BasicInfo.PayPrice"   /></dt>
+                  </span>
+                  <span>
+                    <dd>开户行：</dd>
+                    <dt> <input type="text" name="pay_card_bank_id"readonly="readonly"  class="customPhone"  value="@BankCardType "   /></dt>
+                  </span>
+                  <span style="width:240px">
+                    <dd>付款方式：</dd>
+                    <dt style="width:130px"><input style="width:130px" type="text" name=" pay_card_number"readonly="readonly" class="customPhone" value=" @(SalesorModel.OrderPaytypeName)"  /></dt>
+                  </span>
+                     
+                </dl>
+                <dl>
+                  <span>
+                    <dd>有效期：</dd>
+                    <dt> <div class="New_box02_color" style="width:100px;">@SalesorModel.BasicInfo.PayCardPeriod</div></dt>
+                  </span> 
+                  <span>
+                    <dd>安全码：</dd>
+                    <dt><div class="New_box02_color" style="width:100px;">@SalesorModel.BasicInfo.PayCardSecuritycode</div></dt>
+                 </span>  
+                 <span style="width:450px;">
+                    <dd>支付卡卡号：</dd>
+                    <dt style="width:345px;"><div class="New_box02_color"> @CommonUtil.CreditCardCardNumber(SalesorModel.BasicInfo.PayCardNumber)</div></dt>
+                 </span> 
+                </dl>
+                <dl>
+                <span>
+                    <dd>开卡地区：</dd>
+                    <dt>@{
+                        if (SalesorModel.CommuniationPackageList != null)
+                        {
+                            string OpeningCity="";
+                            foreach (SalesorderCommuniationpackageInfoModel communiationPackageInfo in SalesorModel.CommuniationPackageList.Values)
+                            {
+                                OpeningCity = SaleCity.GetCustomDataValueByValueId(communiationPackageInfo.OpeningCityId);
+                            }
+                            <input type="text" name="OpeningCity"readonly="readonly" class="customPhone" value="@(OpeningCity)" />
+
+                        }
+                     
+                        }
+                        </dt>
+                  </span>
+                    <span>
+                    <dd>证件类型：</dd>
+                    <dt> <input type="text" name=" PayIdcardType"readonly="readonly" class="customPhone" value="@IdTypeList.GetCustomDataValueByValueId(SalesorModel.BasicInfo.PayIdcardTypeId)"   /></dt>
+                 </span>
+                <span style="width:450px;">
+                    <dd>证件号：</dd>
+                    <dt style="width:345px;"><div class="New_box02_color">@CommonUtil.CreditCard(SalesorModel.BasicInfo.PayIdcardNumber)</div></dt>
+                </span>  
+                </dl>
+                <dl style="height: 75px;">
+                    <dd>产品列表：</dd>
+                    <dt><textarea readonly="readonly"  cols="50" rows="3"style="width:760px;">@SalesOrderInfoService.Instance.GetSalesorderProductNameList(SalesorModel)</textarea> </dt>
+                </dl>
+                <dl>
+                    <dd>扣款操作：</dd> 
+                    <p>
+                        <input type="radio" value="0" checked name="chargeType"  custjs="exceptionMgr"  />成功
+                        <input type="radio" value="1" name="chargeType"  custjs="exceptionMgr"  />异常
+                    </p>
+                </dl>
+                <div  id="dlChargeSuccessed" class="showClass">
+                <dl>
+                    <span>
+                        <dd>扣款POS机：</dd>
+                        <dt>
+                            <select name="ddlPosMachine">
+                                <option value="">请选择</option>
+                                @{
+                                    if(PosList != null && PosList.Values.Count > 0)
+                                    {
+                                        foreach(PayPosMachineInfoModel pos in PosList.Values)
+                                        {
+                                            <option value="@pos.PosMachineId">@pos.PayMachineName</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </dt>
+                    </span>
+                    <span>
+                        <dd>检索参考号：</dd>
+                        <dt><input type="text" name="chargeBillCode" class="text"  value="" /></dt>
+                    </span>
+                 
+                </dl>
+                </div>
+                <div id="dlChargeException" class="hideClass">
+                <dl>
+                  <dd>异常原因：</dd>
+                  <dt style="padding-top:6px;">
+                   <select name="exceptionType" >
+                    <option value="">请选择</option>
+                         @{
+                            if (Chargeexception != null && Chargeexception.ValueList.Count > 0)
+                            {
+                                foreach (CustomDataValueDomainModel item in Chargeexception.ValueList.Values)
+                                {
+                                    @:<option value="@item.ValueId">@item.DataValue</option>
+                                }
+                            }
+                         }
+                    </select>
+                  </dt>
+                        <dd>备注说明：</dd>
+                        <dt style="width:300px;"><input type="text" style="width:295px;" name="opExceptionDesc"  value=""/></dt>
+                </dl>
+                </div>
+             </div>
+          </div>
+
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

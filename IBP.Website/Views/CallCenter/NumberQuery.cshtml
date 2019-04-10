@@ -1,0 +1,164 @@
+﻿@{
+    Layout = "";
+}
+
+<form id="pagerForm" method="post" action="demo_page1.html">
+	<input type="hidden" name="status" value="${param.status}">
+	<input type="hidden" name="keywords" value="${param.keywords}" />
+	<input type="hidden" name="pageNum" value="1" />
+	<input type="hidden" name="numPerPage" value="${model.numPerPage}" />
+	<input type="hidden" name="orderField" value="${param.orderField}" />
+</form>
+
+
+<div class="pageHeader">
+	<form onsubmit="return navTabSearch(this);" action="/UserMgr/UserList" method="post">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>
+                <td style="width:290px;">
+                <select class="combox" name="keytype">
+						<option value="全部">全部号码状态</option>
+						<option value="开放">开放</option>
+                        <option value="已分配">已分配</option>
+                        <option value="已锁定">已锁定</option>
+                        <option value="已销售">已销售</option>
+					</select>
+                <select class="combox" name="keytype">
+						<option value="全部">全部运营商</option>
+						<option value="移动">移动</option>
+                        <option value="联通">联通</option>
+                        <option value="电信">电信</option>
+					</select>
+                <select class="combox" name="keytype">
+						<option value="全部">所有归属地</option>
+						<option value="深圳">深圳</option>
+                        <option value="广州">广州</option>
+                        <option value="佛山">佛山</option>
+                        <option value="韶关">韶关</option>
+					</select>
+                </td>
+                <td>
+                    归属工号：<input type="text" alt="" class="textInput" maxlength="20" size="20" name="name" />
+                </td>                
+				<td>
+					手机号码：<input type="text" alt="" class="phone textInput" size="20" name="phone" id="phone_379" />
+				</td>	
+			</tr>
+		</table>
+    	<div class="subBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">号码查询</button></div></div></li>
+			</ul>
+		</div>
+	</div>
+	</form>
+</div>
+
+<div style="border:1px #B8D0D6 solid" class="pageContent j-resizeGrid">
+	<table class="table" layouth="110">
+		<thead>
+			<tr>
+				<th width="120" orderField="userStatus">号码归属地</th>
+				<th width="120" orderField="workId">手机号码</th>
+				<th width="100" orderField="teamName">运营商</th>
+				<th width="80" orderField="teamName">状态</th>
+				<th width="100" orderField="teamName">号码级别</th>
+				<th width="200" orderField="teamName">所属销售计划</th>
+				<th width="120" orderField="enName">归属工号</th>
+				<th width="100" orderField="cnName">归属姓名</th>
+				<th width="120" orderField="teamName">数据导入人</th>
+				<th width="250" orderField="departmentName">离解锁时间</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr target="sid_user" rel="1">
+                <td>深圳</td>
+				<td>13926515895</td>
+				<td>移动</td>
+                <td>开放</td>
+                <td>普通</td>
+				<td>亮剑（广）A</td>
+				<td>1101</td>
+				<td>周强</td>
+				<td>管理员</td>
+                <td>23时 34分 50秒</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+                <td>深圳</td>
+				<td>13926515895</td>
+				<td>移动</td>
+                <td>开放</td>
+                <td>普通</td>
+				<td>亮剑（广）A</td>
+				<td>1101</td>
+				<td>周强</td>
+				<td>管理员</td>
+                <td>23时 34分 50秒</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+                <td>深圳</td>
+				<td>13926515895</td>
+				<td>移动</td>
+                <td>开放</td>
+                <td>普通</td>
+				<td>亮剑（广）A</td>
+				<td>1101</td>
+				<td>周强</td>
+				<td>管理员</td>
+                <td>23时 34分 50秒</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+                <td>深圳</td>
+				<td>13926515895</td>
+				<td>移动</td>
+                <td>开放</td>
+                <td>普通</td>
+				<td>亮剑（广）A</td>
+				<td>1101</td>
+				<td>周强</td>
+				<td>管理员</td>
+                <td>23时 34分 50秒</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+                <td>深圳</td>
+				<td>13926515895</td>
+				<td>移动</td>
+                <td>开放</td>
+                <td>普通</td>
+				<td>亮剑（广）A</td>
+				<td>1101</td>
+				<td>周强</td>
+				<td>管理员</td>
+                <td>23时 34分 50秒</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+                <td>深圳</td>
+				<td>13926515895</td>
+				<td>移动</td>
+                <td>开放</td>
+                <td>普通</td>
+				<td>亮剑（广）A</td>
+				<td>1101</td>
+				<td>周强</td>
+				<td>管理员</td>
+                <td>23时 34分 50秒</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20">20</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+			</select>
+			<span>条，共 @ViewBag.NumbertotalCount 条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="200" numPerPage="20" pageNumShown="10" currentPage="1"></div>
+
+	</div>
+</div>

@@ -1,0 +1,31 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    WorkOrderTypeTreeDomainModel workorderTypeTree = WorkorderTypeInfoService.Instance.GetWorkOrderTypeTree(false);
+}
+
+
+@{
+    if (workorderTypeTree.ChildTypeList != null)
+    {
+        string multClass = "boxfieldset";
+        foreach (WorkOrderTypeTreeDomainModel item in workorderTypeTree.ChildTypeList.Values)
+        {
+            multClass = (item.ChildTypeList != null && item.ChildTypeList.Count > 8) ? "boxfieldset02" : "boxfieldset";
+            @:<fieldset class="@multClass"  custjs="workordermgr" name="fldSetWorkorderTypeSelector">
+                @:<legend>@item.BasicInfo.TypeName</legend>
+                if (item.ChildTypeList != null)
+                {
+                    foreach (WorkOrderTypeTreeDomainModel item2 in item.ChildTypeList.Values)
+                    {
+                        @:<a href="#" custjs="workordermgr" name="btnWorkOrderTypeSelector" typeid="@item2.BasicInfo.WorkorderTypeId">@item2.BasicInfo.TypeName</a>
+                    }
+                }
+            @:</fieldset>             
+        }
+    }
+}
+

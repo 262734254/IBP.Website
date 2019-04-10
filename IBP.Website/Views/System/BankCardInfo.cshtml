@@ -1,0 +1,108 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+
+    CustomDataDomainModel openCardBankList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("开卡行", false);
+    CustomDataDomainModel cardFunctionList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("银行卡功能鉴别", false);
+
+    List<BankcardTypeInfoModel> cardList = ViewBag.BankCardList as List<BankcardTypeInfoModel>;
+}
+
+<form id="pagerForm" method="post" action="/System/BankCardInfo">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+
+
+<div id="bankCardTypeBox" class="pageHeader">
+	<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/System/BankCardInfo" method="post">
+	<div class="searchBar">
+		 <div class="searbg">
+            <dl style="width:180px;"><dd>开卡银行：</dd><dt>
+            <select name="openBankId">
+                    <option value="">所有开卡银行</option>
+                    @{
+                        if(openCardBankList != null)
+                        {
+                            foreach (CustomDataValueDomainModel customValue in openCardBankList.ValueList.Values)
+                            {
+                                <option value="@customValue.ValueId" @CommonUtil.SetComboxSelected(ViewBag.OpenBankId,customValue.ValueId) >@customValue.DataValue</option>
+                            }
+                        }
+                    }
+					</select>
+                    </dt></dl>
+                <dl><dd>卡BIN号：</dd><dt><input type="text" name="cardBinNum" value="@ViewBag.BinCode" /></dt></dl> 
+          <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></div>
+
+        </div>
+    	</div>
+	</form>
+</div>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+			<li><a class="add" href="/System/AddBankCardInfo" target="dialog" maxable="false"  rel="bankCardTypeBox" title="新建银行卡类型信息" mask="true" width="520" height="360"><span>新建</span></a></li>
+			<li><a class="edit" href="/System/EditBankCardInfo?cid={card_id}" target="dialog" maxable="false"  rel="bankCardTypeBox" title="编辑银行卡类型信息" mask="true" width="520" height="360"><span>编辑</span></a></li>
+			<li><a title="确实要删除这些记录吗?" target="selectedTodo" rel="ids" href="/System/DoBatchDeleteBankCardInfo" class="delete"><span>删除</span></a></li>
+			<li class="line">line</li>
+			<li><a class="icon" href="/System/ExportBankCardInfo" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+		</ul>
+	</div>
+	<table class="table" layoutH="115">
+		<thead>
+			<tr>
+				<th width="22"><input type="checkbox" group="ids" class="checkboxCtrl"></th>
+				<th width="80" @CommonUtil.SetSortOrder("card_bin_code", ViewBag.OrderField, ViewBag.OrderDirection) >BIN号</th>
+				<th width="120" @CommonUtil.SetSortOrder("card_type", ViewBag.OrderField, ViewBag.OrderDirection) >卡类</th>
+				<th width="80" @CommonUtil.SetSortOrder("card_nature", ViewBag.OrderField, ViewBag.OrderDirection) >卡片性质</th>
+				<th width="90" @CommonUtil.SetSortOrder("card_brand", ViewBag.OrderField, ViewBag.OrderDirection) >品牌</th>
+				<th width="90" @CommonUtil.SetSortOrder("currency_type", ViewBag.OrderField, ViewBag.OrderDirection) >币种</th>
+				<th width="90" @CommonUtil.SetSortOrder("bankcard_enum_value", ViewBag.OrderField, ViewBag.OrderDirection)  >卡片功能鉴别</th>
+				<th width="70" @CommonUtil.SetSortOrder("card_level", ViewBag.OrderField, ViewBag.OrderDirection)  >卡片级别</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if(cardList != null)
+                {
+                    foreach(BankcardTypeInfoModel item in cardList)
+                    {
+			            <tr target="card_id" rel="@item.BankcardTypeId">
+                            <td><input name="ids" value="@item.BankcardTypeId" type="checkbox"></td>
+				            <td>@item.CardBinCode</td>
+				            <td>@item.CardType</td>
+				            <td>@item.CardNature</td>
+				            <td>@item.CardBrand</td>
+				            <td>@item.CurrencyType</td>
+				            <td>@cardFunctionList.ValueList[item.BankcardEnumValue].DataValue</td>
+				            <td>@item.CardLevel</td>
+
+			            </tr>                        
+                    }
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				<option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				<option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.BankCardTotal 条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.BankCardTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+
+	</div>
+</div>

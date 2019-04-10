@@ -1,0 +1,146 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomDataDomainModel CustomerComeFrom = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("客户来源", false);
+    List<string> CustomerIdList = ViewBag.CustomerIdList as List<string>;
+    ViewBag.QueryPlane = Guid.NewGuid().ToString();
+    CustomerDomainModel Customer = null;
+    UserDomainModel User = null;
+
+    Dictionary<string, QueryItemDomainModel> QueryCollection = ViewBag.QueryCollection as Dictionary<string, QueryItemDomainModel>;
+    Session["BathWorkOrder"]= QueryCollection;
+}
+
+<form id="pagerForm" method="post" action="/CallCenter/CustomerMgr">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+  
+</form>
+	
+    
+<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/CallCenter/CustomerMgr" method="post">
+    <div name="queryPanel" locname="@ViewBag.QueryPlane" class="location">
+        @Html.Partial("_CustmoerQueryInfo")
+    </div>
+<div id="customerMgrBox" class="pageHeader">
+	<div class="searchBar">
+        <div class="searbg">
+        <dl>
+        <dd style="width:95px;">查询CallBack：</dd>
+            <dt><select name="callBack" style="width:50px;">
+                    <option value="1" @CommonUtil.SetComboxSelected("1", (QueryCollection.ContainsKey("call_status")) ? QueryCollection["call_status"].SearchValue : ""))>否</option>
+                    <option value="0" @CommonUtil.SetComboxSelected("0", (QueryCollection.ContainsKey("call_status")) ? QueryCollection["call_status"].SearchValue : ""))>是</option>
+                </select>
+              </dt>
+            </dl>
+            <dl style="width:175px;">
+            <dd>客户来源：</dd>
+            <dt><select name="salesFrom">
+                    <option value="All">所有来源</option>
+                    @{
+                        if (CustomerComeFrom != null && CustomerComeFrom.ValueList != null)
+                        {
+                            foreach (CustomDataValueDomainModel item in CustomerComeFrom.ValueList.Values)
+                            {
+                                if(item.Status == 1)
+                                {
+                                    continue;
+                                }
+                                @:<option value="@item.ValueId" @CommonUtil.SetComboxSelected(item.ValueId, (QueryCollection.ContainsKey("sales_from")) ? QueryCollection["sales_from"].SearchValue : "")) >@item.DataValue</option>
+                            }
+                        }
+                    }
+               </select>
+               </dt>
+               </dl>
+                <dl style="width:175px;"><dd style="width:80px;">创建人工号：</dd><dt><input type="text" name="createdUserName"value="@(QueryCollection.ContainsKey(" create_userinfo.work_id") ? QueryCollection[" create_userinfo.work_id"].SearchValue.Replace("WORKID_", "") : "")" /></dt></dl>            
+
+                <dl><dd>客户姓名：</dd><dt><input type="text" id="customer_name_out" name="customer_name_out" value="@(QueryCollection.ContainsKey("customer_name") ? QueryCollection["customer_name"].SearchValue : "")" /></dt></dl>            
+                <dl><dd>联系号码：</dd><dt><input type="text"  name="phone_number" value="@(QueryCollection.ContainsKey("customer_basic_info.phone_number") ? QueryCollection["customer_basic_info.phone_number"].SearchValue : "")" /></dt></dl>
+         <div class="time"><span>创建时间：</span><p><input type="text"  class="date" readonly="true" name="createdBeginTime" value="@ViewBag.createdBeginTime"/>-<input type="text"  class="date" readonly="true" name="createdEndTime" value="@ViewBag.createdEndTime" /></p>
+            </div>
+          
+        </div>
+        <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button locname="@ViewBag.QueryPlane" custjs="flowcontrol" id="btnCustomerQueryPanel" type="button">更多查询条件</button></div></div></div>
+          <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button name="querysubmit" type="submit">查询</button></div></div></div>
+	</div>	
+</div>
+</form>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+			<li><a class="add" href="/CallCenter/AddCustomerInfo?page=customermgr" target="dialog" maxable="false" rel="CallCenter_CustomerMgr" title="新建客户信息" mask="true" width="680" height="480"><span>新建</span></a></li>
+			<li class="line">line</li>
+   
+			<li><a class="add" href="/CallCenter/BatchAddCustomer" target="dialog" maxable="false" rel="CallCenter_CustomerMgr" title="批量创建客户" mask="true" width="800" height="480"><span>批量创建客户</span></a></li>
+			<li><a class="add" href="/WorkOrderCenter/BatchAddWorkOrder?ids=@ViewBag.BathWorkOrder" target="dialog" maxable="false" rel="CallCenter_CustomerMgr" title="批量创建工单" mask="true" width="800" height="520"><span>批量创建工单</span></a></li>
+            <li><a class="add" href="/CallCenter/ExcelImportCustomerInfo" target="dialog" maxable="false"rel="CallCenter_CustomerMgr" title="EXCE导入客户信息" mask="true" width="440" height="300"><span>EXCE导入客户信息</span></a></li>
+			<li class="line">line</li>
+			<li><a class="icon" href="/System/ExportBankCardInfo" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+          
+		</ul>
+	</div>
+	<table class="table" layoutH="140">
+		<thead>
+			<tr>
+				<th width="22"><input type="checkbox" group="ids" class="checkboxCtrl"></th>
+				<th width="100" @CommonUtil.SetSortOrder("customer_code", ViewBag.OrderField, ViewBag.OrderDirection)>客户编号</th>
+				<th width="80" @CommonUtil.SetSortOrder("customer_name", ViewBag.OrderField, ViewBag.OrderDirection)>客户姓名</th>
+                <th width="80" @CommonUtil.SetSortOrder("customer_name", ViewBag.OrderField, ViewBag.OrderDirection)>城市</th>
+				<th width="50" @CommonUtil.SetSortOrder("sex", ViewBag.OrderField, ViewBag.OrderDirection)>性别</th>
+				<th width="90" @CommonUtil.SetSortOrder("sales_from", ViewBag.OrderField, ViewBag.OrderDirection)>来源</th>
+				<th width="100" @CommonUtil.SetSortOrder("mobile_phone", ViewBag.OrderField, ViewBag.OrderDirection)>手机号码</th>
+				<th width="120" @CommonUtil.SetSortOrder("home_phone", ViewBag.OrderField, ViewBag.OrderDirection)>固定电话</th>
+				<th width="120" @CommonUtil.SetSortOrder("other_phone", ViewBag.OrderField, ViewBag.OrderDirection)>其他号码</th>
+                <th width="120" @CommonUtil.SetSortOrder("created_by", ViewBag.OrderField, ViewBag.OrderDirection)>创建人</th>
+				<th width="220" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection) class="desc">建档时间</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (CustomerIdList != null)
+                {
+                    foreach (string customerId in CustomerIdList)
+                    {
+                        Customer = CustomerInfoService.Instance.GetCustomerDomainModelById(customerId, false);
+                        User = (Customer.BasicInfo.CreatedBy == null) ? null : UserInfoService.Instance.GetUserDomainModelById(Customer.BasicInfo.CreatedBy, false);
+                        <tr target="sid_user" rel="@customerId">
+                            <td><input name="ids" value="@customerId" type="checkbox"></td>
+                            <td><a href="/CallCenter/CustomerInfo?cid=@customerId" target="navTab" rel="@customerId" title="【@Customer.BasicInfo.CustomerName】客户信息" fresh="false">@Customer.BasicInfo.CustomerCode</a></td>
+                            <td>@Customer.BasicInfo.CustomerName</td>
+                            <td>@Customer.BasicInfo.ComeFrom</td>
+                            <td>@((Customer.BasicInfo.Sex == 0) ? "男" : ((Customer.BasicInfo.Sex == 1) ? "女" : "未知"))</td>
+                            <td>@CustomerComeFrom.GetCustomDataValueByValueId(Customer.BasicInfo.SalesFrom)</td>
+                            <td>@Customer.BasicInfo.MobilePhone</td>
+                            <td>@Customer.BasicInfo.HomePhone</td>
+                            <td>@Customer.BasicInfo.OtherPhone</td>
+                            <td>@((User == null) ? " " : User.NameAndWorkId)</td>
+                            <td>@Customer.BasicInfo.CreatedOn</td>
+                        </tr>
+                    }
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				<option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				<option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.CustomerTotal 条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.CustomerTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+
+	</div>
+</div>

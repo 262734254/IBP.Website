@@ -1,0 +1,105 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    List<ProductCategoryInfoModel> ProductCategoryList = ViewBag.ProductCategoryList as List<ProductCategoryInfoModel>;
+    CustomDataDomainModel SaleCity = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("销售城市", false);
+    Dictionary<string, ProductCategoryAttributesModel> catAttList = ProductCategoryAttributesService.Instance.GetProductCategoryAttributeList(ViewBag.ProductCategoryId, false);
+    List<string> proIdList = ViewBag.ProductItemList as List<string>;
+}
+
+<div class="tabsPage">
+<div class="navTab-panel tabsPageContent layoutBox"style="height:470px; padding-top:49px;">
+<div class="page unitBox">
+    <form id="pagerForm" method="post" action="/OrderCenter/PhoneSaleOrderProductSelector">
+	    <input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	    <input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	    <input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+        <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+	    <input type="hidden" name="itemPrice" value="@ViewBag.ItemPrice" />
+        <input type="hidden" name="saleCityId" value="@ViewBag.SaleCity" />
+        <input type="hidden" name="productCategoryId" value="@ViewBag.ProductCategoryId" />
+    </form>
+
+    <div class="pageHeader"  style="background-color:#fff">
+	    <form rel="pagerForm" onsubmit="return divSearch(this,'divProductSelector');" action="/OrderCenter/PhoneSaleOrderProductSelector" method="post">
+	    <input type="hidden" name="itemPrice" value="@ViewBag.ItemPrice" />
+        <input type="hidden" name="saleCityId" value="@ViewBag.SaleCity" />
+        <input type="hidden" name="productCategoryId" value="@ViewBag.ProductCategoryId" />
+ 
+            <div  class="searbg">
+             <dl><dd style="width:100px;">产品名称：</dd><dt style="width:90px; padding-top:3px;"><input type="text" name="categoryName" value="@ViewBag.CategoryName" /></dt><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></dl>
+             
+           </div>     	
+	 
+	    </form>
+    </div>
+
+    <div class="pageContent">
+        <input type="hidden" name="selectedProductCategoryId" id="selectedProductCategoryId" producttype="ProductItem" />
+	    <table class="table" targetType="dialog" rel="divProductSelector" layoutH="300">
+		    <thead>
+			    <tr>
+                @{
+                    foreach(ProductCategoryAttributesModel item in catAttList.Values)
+                    {
+                        if (item.AttributeName == "销售状态")
+                        {
+                            continue;
+                        }
+                        @:<th width="100" @CommonUtil.SetSortOrder(item.AttributeName, ViewBag.OrderField, ViewBag.OrderDirection)>@item.AttributeName</th>
+                    }
+                }
+			    </tr>
+		    </thead>
+		    <tbody>
+                @{
+               ProductInfoDomainModel proInfo = null;
+               foreach(string productId in proIdList)
+               {
+                   proInfo = ProductInfoService.Instance.GetProductDomainInfoByProductId(productId, false);
+                   if(proInfo != null)
+                   {
+                       @:<tr ptid="productitem" rel="@proInfo.BasicInfo.ProductId"  name="btnLoadProductGuide" pcid="@proInfo.BasicInfo.ProductId" custjs="phoneordermgr"> 
+                        foreach (ProductCategoryAttributesModel item in catAttList.Values)
+                        {
+                            if(!proInfo.AttributeList.ContainsKey(item.AttributeName))
+                            {
+                                @:<td></td>
+                            }
+                            else
+                            {
+                                if (item.AttributeName != "销售状态")
+                                {   
+                                    @:<td>@proInfo.AttributeList[item.AttributeName]</td>
+                                }
+                            }
+                        }
+                       @:</tr>
+                   }
+               }
+               }
+		    </tbody>
+	    </table>
+	    <div class="panelBar">
+		    <div class="pages">
+			    <span>显示</span>
+			    <select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				    <option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				    <option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				    <option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				    <option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			    </select>
+			    <span>条，共 @ViewBag.ProductCategoryTotal 条</span>
+		    </div>		
+		    <div class="pagination" targetType="dialog" rel="divProductSelector" totalCount="@ViewBag.ProductCategoryTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+	    </div>
+    </div>
+    <div id="divProductSalesGuide">
+        @Html.Partial("_ProductSalesGuideInfo")
+    </div>
+</div>
+</div>
+</div>

@@ -1,0 +1,644 @@
+﻿@using Framework.Common;
+@using Framework.Utilities;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    string citUserId = SessionUtil.Current.ExtAttributes["CtiUserId"].ToString();
+    string ctiUserPwd = SessionUtil.Current.ExtAttributes["CtiUserPwd"].ToString();
+}
+
+<script type="text/javascript">
+    var bAgentIDSpeaked;
+</script>
+
+<script type="text/javascript" for="aOCX" event="CallArrive(sAni,sDnis,sData)">
+	bAgentIDSpeaked = false;
+	ProcIncomeCall(sAni, sDnis, aOCX);
+</script>
+
+<script type="text/javascript" for="aOCX" event="EVTButtonStatus(sName,sTitle,bEnable)">
+	switch(sTitle)
+	{
+        case "OnHook":
+            sTitle = "挂机";
+			break;
+        case "OffHook":
+            sTitle = "摘机";
+			break;
+        case "HOOKOFFCONSULT":
+            sTitle = "接受";
+			break;
+        case "Hold":
+            sTitle = "保持";
+			break;
+        case "HoldCancel":
+            sTitle = "取消";
+			break;
+        case "Transfer":
+            sTitle = "转接";
+			break;
+        case "CancelTransfer":
+            sTitle = "取消";
+			break;
+        case "DialOut":
+            sTitle = "外拨";
+			break;
+        case "CancelDialOut":
+            sTitle = "取消";
+			break;
+        case "Consultation":
+            sTitle = "磋商";
+			break;
+        case "CancelConsultation":
+            sTitle = "取消";
+			break;
+        case "StopConsultation":
+            sTitle = "磋商结束";
+			break;
+        case "ConsultTransfer":
+            sTitle = "磋商转接";
+			break;
+        case "Auto":
+            sTitle = "磋商转接";
+			break;
+        case "OutPhone":
+            sTitle = "自动";
+			break;
+        case "CancelOutPhone":
+            sTitle = "取消";
+			break;
+        case "Play":
+            sTitle = "放音";
+			break;
+        case "PlayCancel":
+            sTitle = "结束";
+			break;
+        case "Fax":
+            sTitle = "传真";
+			break;
+        case "FaxStop":
+            sTitle = "结束";
+			break;
+        case "Pause":
+            sTitle = "暂停";
+			break;
+        case "Continue":
+            sTitle = "恢复";
+			break;
+        case "ContinueDialTask":
+            sTitle = "放弃回访";
+			break;
+        case "Listen":
+            sTitle = "监听";
+			break;
+        case "CancelListen":
+            sTitle = "结束";
+			break;
+        case "Disconnect":
+            sTitle = "强插";
+			break;
+        case "Conference":
+            sTitle = "会议";
+			break;
+        case "CancelConference":
+            sTitle = "取消";
+			break;
+        case "RopCall":
+            sTitle = "拦截";
+			break;
+        case "LOGINSUCC":
+            sTitle = "登录成功";
+			break;
+        case "LOGINFAIL":
+            sTitle = "登录失败";
+			break;
+        case "TRANSFERFAIL":
+            sTitle = "转接失败";
+			break;
+	}
+    
+    var bDisable;
+
+    if (bEnable == 0)
+		bDisable = true;
+    else
+		bDisable = false;
+    
+    //txtStatus.value = txtStatus.value  + "," + sName;
+    
+    switch(sName)
+	{
+        case "Hook":
+            btnHook.value = sTitle;
+            btnHook.disabled = bDisable;
+			break;
+        case "Hold":
+			btnHold.value = sTitle;
+			btnHold.disabled = bDisable;
+			break;
+        case "Transfer":
+			btnTransfer.value = sTitle;
+			btnTransfer.disabled = bDisable;
+			break;
+        case "DialOut":
+			btnDial.value = sTitle;
+			btnDial.disabled = bDisable;
+			break;
+        case "Consultation":
+			btnConsult.value = sTitle;
+			btnConsult.disabled = bDisable;
+			break;
+        case "Auto":
+			btnAuto.value = sTitle;
+			btnAuto.disabled = bDisable;
+			break;
+        case "OutPhone":
+			btnOutPhone.value = sTitle;
+			btnOutPhone.disabled = bDisable;
+			break;
+        case "Fax":
+			btnFax.value = sTitle;
+			btnFax.disabled = bDisable;
+			break;
+        case "Pause":
+			btnPause.value = sTitle;
+			btnPause.disabled = bDisable;
+			break;
+        case "Conference":
+			btnConference.value = sTitle;
+			btnConference.disabled = bDisable;
+			break;
+        case "Play":
+			break;
+        case "Listen":
+			btnListen.value = sTitle;
+			btnListen.disabled = bDisable;
+			break;
+        case "Disconnect":
+            btnDisconnect.value = sTitle;
+            btnDisconnect.disabled = bDisable;
+			break;
+        case "RopCall":
+            btnRopCall.value = sTitle;
+            btnRopCall.disabled = bDisable;
+			break;
+        case "Init":
+            SetButtonInit();
+			break;
+	}
+	
+</script>
+
+<script type="text/javascript" for="aOCX" event="EVTLoginSuc">
+    alertMsg.info("CTI登录成功");
+</script>
+
+<script type="text/javascript" for="aOCX" event="EVTLoginFailed(reason)">
+    alertMsg.error("CTI登录失败，" + reason + "请与管理员联系");
+</script>
+
+<script type="text/javascript" for="aOCX" event="EVTReturnStatusCH(status)">
+	txtStatus.value = status;
+	
+    if(status == "服务状态"){
+        var customerId = aOCX.DoGetAssociatedData("SensitiveCustomerId");
+
+        if (customerId == null || customerId == '' || customerId === undefined) {
+             
+        }else{
+            var $GetCreditCardButton = $(document).find("input[name='btnGetCreditCardNumber']");
+            var $CreditCardTextBox = $(document).find("input[txtcustomerid='CreditCard_" + customerId + "']");
+
+            var $GetSecurityCodeButton = $(document).find("input[name='btnGetSecurityCode']");
+            var $SecurityCodeTextBox = $(document).find("input[txtcustomerid='SecurityCode_" + customerId + "']");
+
+            var $GetPeriodCodeButton = $(document).find("input[name='btnGetPeriodCode']");
+            var $PeriodCodeTextBox = $(document).find("input[txtcustomerid='PeriodCode_" + customerId + "']");
+
+            var $GetIdCardButton = $(document).find("input[name='btnGetIdCardNumber']");
+            var $IdCardTextBox = $(document).find("input[txtcustomerid='IdCard_" + customerId + "']");
+
+            $GetCreditCardButton.removeAttr("disabled");
+            $GetSecurityCodeButton.removeAttr("disabled");
+            $GetPeriodCodeButton.removeAttr("disabled");
+            $GetIdCardButton.removeAttr("disabled");
+
+            $.ajax({
+                type: 'POST',
+                url: "/CallCenter/GetCustomerSecurityInfoJson?cid=" + customerId,
+                dataType: "json",
+                cache: false,
+                success: function (json) {
+                    if (json) {
+                        $CreditCardTextBox.attr("value", json.CreditCardNumber);
+                        $SecurityCodeTextBox.attr("value",json.SecurityCode);
+                        $PeriodCodeTextBox.attr("value", json.PeriodCode);
+                        $IdCardTextBox.attr("value",json.IdCardNumber);
+                    }
+                },
+                error: DWZ.ajaxError
+            });
+        }
+    }
+</script>
+
+<script type="text/javascript" for="aOCX" event="EVTAnswerSucc">
+	if (bAgentIDSpeaked == false)
+	{
+		aOCX.CmdPlayAgentIDWelcome();
+		bAgentIDSpeaked = true;
+	}
+</script>
+
+<script type="text/javascript" for="aOCX" event="EVTDialOut">
+	aOCX.ShowDialOut();
+</script>
+
+<script type="text/javascript" for="aOCX" event="EVTConsult(AgentList)">
+	aOCX.ShowConsultDlg();
+</script>
+
+<script type="text/javascript" for="aOCX" event="EVTConsultSucc(sAgentID)">
+	DAgentID = sAgentID;
+</script>
+<script type="text/javascript" for="aOCX" event="EVTListen">
+	aOCX.ShowListenDlg();
+</script>
+<script type="text/javascript" for="aOCX" event="EVTTransfer(AgentList)">
+	aOCX.ShowTransferDlg();
+</script>
+<script type="text/javascript" for="aOCX" event="EVTWrapUp">
+	if(chkAutoFree.checked == true)
+	{
+		aOCX.WrapEnd();
+	}
+</script>
+
+<script type="text/javascript" for="aOCX" event="EVTIntrude">
+    aOCX.ShowIntrudeDlg();
+</script>
+
+<script type="text/javascript">
+    function GetIdCardNumber(obj, customerId) {
+        aOCX.DoSetAssociatedData("SensitiveCustomerId", "" + customerId + "");
+
+        var $GetCreditCardButton = $(document).find("input[name='btnGetCreditCardNumber']");
+        var $GetSecurityCodeButton = $(document).find("input[name='btnGetSecurityCode']");
+        var $GetPeriodCodeButton = $(document).find("input[name='btnGetPeriodCode']");
+
+        if (customerId == null || customerId == '' || customerId === undefined) {
+            alert('没有用户ID不可操作！');
+        }
+        else {
+            $(obj).attr("disabled", true);
+            $GetSecurityCodeButton.attr("disabled", true);
+            $GetPeriodCodeButton.attr("disabled", true);
+            $GetCreditCardButton.attr("disabled", true);
+
+            aOCX.DoSetAssociatedData("CallSensitiveService", "" + customerId + "|2");
+            aOCX.cmdAuto2("ToAuto", "CONF");
+        }
+        return false;
+    }
+
+    function GetPeriodCode(obj, customerId) {
+        aOCX.DoSetAssociatedData("SensitiveCustomerId", "" + customerId + "");
+
+        var $GetCreditCardButton = $(document).find("input[name='btnGetCreditCardNumber']");
+        var $GetSecurityCodeButton = $(document).find("input[name='btnGetSecurityCode']");
+        var $GetIdCardButton = $(document).find("input[name='btnGetIdCardNumber']")
+
+        if (customerId == null || customerId == '' || customerId === undefined) {
+            alert('没有用户ID不可操作！');
+        }
+        else {
+            $(obj).attr("disabled", true);
+            $GetSecurityCodeButton.attr("disabled", true);
+            $GetCreditCardButton.attr("disabled", true);
+            $GetIdCardButton.attr("disabled", true);
+
+            aOCX.DoSetAssociatedData("CallSensitiveService", "" + customerId + "|3");
+            aOCX.cmdAuto2("ToAuto", "CONF");
+        }
+        return false;
+    }
+
+    function GetSecurityCode(obj, customerId) {
+        aOCX.DoSetAssociatedData("SensitiveCustomerId", "" + customerId + "");
+
+        var $GetCreditCardButton = $(document).find("input[name='btnGetCreditCardNumber']");
+        var $GetPeriodCodeButton = $(document).find("input[name='btnGetPeriodCode']");
+        var $GetIdCardButton = $(document).find("input[name='btnGetIdCardNumber']")
+
+
+        if (customerId == null || customerId == '' || customerId === undefined) {
+            alert('没有用户ID不可操作！');
+        }
+        else {
+            $(obj).attr("disabled", true);
+            $GetCreditCardButton.attr("disabled", true);
+            $GetPeriodCodeButton.attr("disabled", true);
+            $GetIdCardButton.attr("disabled", true);
+
+            aOCX.DoSetAssociatedData("CallSensitiveService", "" + customerId + "|4");
+            aOCX.cmdAuto2("ToAuto", "CONF");
+        }
+        return false;
+    }
+
+    function GetCreditCardNumber(obj, customerId) {
+        aOCX.DoSetAssociatedData("SensitiveCustomerId", "" + customerId + "");
+
+        var $GetSecurityCodeButton = $(document).find("input[name='btnGetSecurityCode']");
+        var $GetPeriodCodeButton = $(document).find("input[name='btnGetPeriodCode']");
+        var $GetIdCardButton = $(document).find("input[name='btnGetIdCardNumber']")
+
+        if (customerId == null || customerId == '' || customerId === undefined) {
+            alert('没有用户ID不可操作！');
+        }
+        else {
+            $(obj).attr("disabled", true);
+            $GetSecurityCodeButton.attr("disabled", true);
+            $GetPeriodCodeButton.attr("disabled", true);
+            $GetIdCardButton.attr("disabled", true);
+
+            aOCX.DoSetAssociatedData("CallSensitiveService", "" + customerId + "|1");
+            aOCX.cmdAuto2("ToAuto", "CONF");
+        }
+        return false;
+    }
+
+    function SendToIntsunSystem(obj, customerId) {
+        aOCX.DoSetAssociatedData("SensitiveCustomerId", "" + customerId + "");
+
+        var $usingSafeChannel = $(document).find("input[name='usSafeChannel']")
+
+        if (customerId == null || customerId == '' || customerId === undefined) {
+            alert('没有用户ID不可操作！');
+        }
+        else {
+            var url = "http://172.16.23.2/logincustomer";
+            if ($usingSafeChannel.attr("checked") == "checked" || $usingSafeChannel.attr("checked") == true) {
+                url = "http://121.15.166.101/logincustomer";
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: "/CallCenter/GetCustomerSecurityInfoJson?cid=" + customerId,
+                dataType: "json",
+                cache: false,
+                success: function (json) {
+                    if (json) {
+                        if (json.CreditCardNumber_Base64 == "" || json.IdCardNumber_Base64 == "") {
+                            alert("客户信用卡信息或身份证信息未获取，请检查输入");
+                            return false;
+                        }
+
+                        url = url + "?cardsize=" + json.CreditCardNumber_Base64;
+                        url = url + "&docnumber=" + json.IdCardNumber_Base64;
+                        url = url + "&telnumber=" + json.IncomeCallNumber_Base64;
+                        window.open(url, "发送至盈实业务系统");
+                        return false;
+                    }
+                },
+                error: DWZ.ajaxError
+            });
+        }
+    }
+
+    function SendToNoCardSystem(obj, customerId) {
+        aOCX.DoSetAssociatedData("SensitiveCustomerId", "" + customerId + "");
+
+        var $usingSafeChannel = $(document).find("input[name='usSafeChannel']")
+
+        if (customerId == null || customerId == '' || customerId === undefined) {
+            alert('没有用户ID不可操作！');
+        }
+        else {
+            var url = "http://172.16.21.22:6001/Bank/AddCardTwo.aspx";
+            if ($usingSafeChannel.attr("checked") == "checked" || $usingSafeChannel.attr("checked") == true) {
+                url = "http://121.15.166.100:6001/Bank/AddCardTwo.aspx";
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: "/CallCenter/GetCustomerSecurityInfoJson?cid=" + customerId,
+                dataType: "json",
+                cache: false,
+                success: function (json) {
+                    if (json) {
+                        if (json.CreditCardNumber_Base64 == "" || json.IdCardNumber_Base64 == "" || json.PeriodCode_Base64 == "" || json.SecurityCode_Base64 == "") {
+                            alert("客户信用卡信息或身份证信息不完整，请检查输入");
+                            return false;
+                        }
+                        //?IDcard={0}&carid={1}&Validity={2}&WriteMan={3}&CVN2={4}
+                        url = url + "?IDcard=" + json.IdCardNumber_Base64;
+                        url = url + "&carid=" + json.CreditCardNumber_Base64;
+                        url = url + "&Validity=" + json.PeriodCode_Base64;
+                        url = url + "&WriteMan=" + json.OperatorCode_Base64;
+                        url = url + "&CVN2=" + json.SecurityCode_Base64;
+
+                        window.open(url, "发送至无卡支付系统");
+                        return false;
+                    }
+                },
+                error: DWZ.ajaxError
+            });
+        }
+    }
+
+    function SendToFuoShan(obj, customerId) {
+        aOCX.DoSetAssociatedData("SensitiveCustomerId", "" + customerId + "");
+
+        var $usingSafeChannel = $(document).find("input[name='usSafeChannel']")
+
+        if (customerId == null || customerId == '' || customerId === undefined) {
+            alert('没有用户ID不可操作！');
+        }
+        else {
+            var url = "http://tuan.intsun.com/tgdd/serviceRegs.aspx";
+            if ($usingSafeChannel.attr("checked") == "checked" || $usingSafeChannel.attr("checked") == true) {
+                url = "http://tuan.intsun.com/tgdd/serviceRegs.aspx";
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: "/CallCenter/GetCustomerSecurityInfoJson?cid=" + customerId,
+                dataType: "json",
+                cache: false,
+                success: function (json) {
+                    if (json) {
+                        if (json.CreditCardNumber_Base64 == "" || json.IdCardNumber_Base64 == "") {
+                            alert("客户信用卡信息或身份证信息不完整，请检查输入");
+                            return false;
+                        }
+                        var productId = $('#ddlFuoshanProduct_' + customerId).val();
+                        var idCardType = $('#ddlIdCardType_' + customerId).find("option:selected").text();
+                        idCardType = encode64(strUnicode2Ansi(idCardType));
+
+                        url = url + "?IDcard=" + json.IdCardNumber_Base64;
+                        url = url + "&num=" + json.CreditCardNumber_Base64;
+                        url = url + "&Cardtype=" + idCardType;
+                        url = url + "&pro_id=" + productId;
+
+                        //alert(url);
+                        $("input[name='postCode']").attr("value", url);
+                        window.open(url, "发送至佛山礼遇活动页面");
+                        return false;
+                    }
+                },
+                error: DWZ.ajaxError
+            });
+        }
+    }
+
+    function AgentLogout() {
+        aOCX.LogOUT();
+        SetButtonInit();
+        btnLogin.disabled = false;
+        return false;
+    }
+    function AgentConfig() {
+        aOCX.ShowConfig();
+        return false;
+    }
+    function AgentHook() {
+        switch (btnHook.value) {
+            case "摘机":
+                aOCX.CmdAnswer();
+                break;
+            case "接受":
+                aOCX.CmdConsultAnswer();
+                break;
+            default:
+                aOCX.CmdOnHook();
+                break;
+        }
+        return false;
+    }
+    function AgentHold() {
+        if (btnHold.value == "保持")
+            aOCX.CmdHold();
+        else
+            aOCX.CmdHoldStop();
+        return false;
+    }
+    function AgentTransfer() {
+        if (btnTransfer.value == "转接")
+            aOCX.CmdTransfer();
+        else
+            aOCX.CmdTransferStop();
+        return false;
+    }
+    function AgentDial() {
+        if (btnDial.value == "外拨")
+            aOCX.ShowDialOut();
+        else
+            aOCX.CmdMakeCallStop();
+        return false;
+    }
+    function AgentConsult() {
+        switch (btnConsult.value) {
+            case "磋商结束":
+                aOCX.CmdConsultStop();
+                break;
+            case "磋商":
+                aOCX.CmdConsult();
+                break;
+            default:
+                aOCX.CmdConsultStop();
+        }
+        return false;
+    }
+    function AgentAuto() {
+        aOCX.CmdConsultTransfer(DAgentID, "", "", "");
+        return false;
+    }
+    function AgentFax() {
+        aOCX.CmdFax();
+        return false;
+    }
+    function AgentPause() {
+        if (btnPause.value == "暂停")
+            aOCX.CmdPause();
+        else
+            aOCX.CmdContinue();
+        return false;
+    }
+    function AgentConf() {
+        if (btnConference.value == "会议")
+            aOCX.CmdConference();
+        else
+            aOCX.CmdMakeCallStop();
+        return false;
+    }
+    function AgentListen() {
+        if (btnListen.value == "监听")
+            aOCX.CmdListen();
+        else
+            aOCX.CmdListenStop();
+        return false;
+    }
+    function AgentDisconnect() {
+        aOCX.CmdIntrude();
+        return false;
+    }
+
+    function AgentRopCall() {
+        aOCX.CmdRopCall();
+        return false;
+    }
+
+    function SetButtonInit() {
+        $('#btnHook').attr('disabled', 'true');
+        $('#btnConference').attr('disabled', 'true');
+
+        $('#btnConsult').attr('disabled', 'true');
+        $('#btnAuto').attr('disabled', 'true');
+        $('#btnDial').attr('disabled', 'true');
+        $('#btnDisconnect').attr('disabled', 'true');
+        $('#btnFax').attr('disabled', 'true');
+        $('#btnHold').attr('disabled', 'true');
+        $('#btnListen').attr('disabled', 'true');
+        $('#btnOutPhone').attr('disabled', 'true');
+        $('#btnPause').attr('disabled', 'true');
+        $('#btnRopCall').attr('disabled', 'true');
+        $('#btnTransfer').attr('disabled', 'true');
+    }
+</script>
+
+<div id="softctiBox" class="navMenub">
+    <ul>
+        <li><input type="button"  id="btnHook" onclick="return AgentHook();" value="摘机" /></li>
+        <li><input type="button"  id="btnHold" onclick="return AgentHold();" value="保持" /></li>
+        <li><input type="button"  id="btnTransfer" onclick="return AgentTransfer();" value="转接" /></li>
+        <li><input type="button"  id="btnDial" onclick="return AgentDial();" value="外拨" /></li>
+        <li><input type="button"  id="btnConsult" onclick="return AgentConsult();" value="磋商" /></li>
+        <li><input type="button"  id="btnAuto" onclick="return AgentAuto();" value="磋商转接" /></li>
+        <li><input type="button"  id="btnOutPhone"  value="外线" /></li>
+        <li><input type="button"  id="btnFax" onclick="return AgentFax();" value="传真" /></li>
+        <li><input type="button"  id="btnPause" onclick="return AgentPause();" value="暂停" /></li>
+        <li><input type="button"  id="btnConference" onclick="return AgentConf();" value="会议" /></li>
+        <li><input type="button"  id="btnListen" onclick="return AgentListen();" value="监听" /></li>
+        <li><input type="button"  id="btnDisconnect" onclick="return AgentDisconnect();" value="强拆" /></li>
+        <li><input type="button"  id="btnRopCall" onclick="return AgentRopCall();" value="拦截" /></li>
+        <li></li>
+@*        <li><input id="btnLogin" type="button" value="登录" onclick="return AgentLogin();"/></li>
+        <li><input id="btnLogOut" type="button" value="登出" onclick="return AgentLogout();"></li>
+        <li><input id="btnConfigure" type="button" value="配置" onclick="return AgentConfig();"></li>*@
+        <li><input type="text" id="txtStatus" size="20" /></li>
+		<li><input type="checkbox" id="chkAutoFree" checked="checked" />自动空闲</li>
+    </ul>
+</div>
+
+<object id="aOCX" classid="clsid:A58D9E9E-B3E7-4D8B-8A67-C5B2B91DCFF9" data="data:application/x-oleobject"></object>
+
+<script type="text/javascript">
+    window.onload = function () {
+        SetButtonInit();
+        aOCX.AgentID = '@citUserId';
+        aOCX.Password = '@citUserId';
+        aOCX.LogIn();
+        }
+</script>

@@ -1,0 +1,60 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string saleCityId = (!string.IsNullOrEmpty(ViewBag.SalesCityId)) ? ViewBag.SalesCityId : ((Request.QueryString["city"] != null) ? Request.QueryString["city"] : "");
+    Dictionary<string, ProductCategoryInfoModel> CatList = ProductCategoryInfoService.Instance.GetProductCategoryList(false);
+    
+    Dictionary<string, ProductCategoryGroupInfoModel> categoryGroupList = ProductCategoryGroupInfoService.Instance.GetProductCategoryGroupList(false);
+
+    SalePackageDomainModel domainModel = SalesPackageInfoService.Instance.GetSalePackageDomainModelById(Request.QueryString["spid"], false);
+    
+}
+
+<fieldset>
+	<legend>营销项目产品组成</legend>
+    @{
+        if (categoryGroupList != null)
+        {
+            foreach (ProductCategoryGroupInfoModel groupInfo in categoryGroupList.Values)
+            {
+                @:<fieldset  style="margin-left:20px;margin-bottom:15px">
+                    @:<legend>@groupInfo.GroupName</legend>
+                    if(CatList != null)
+                    {
+                        foreach(ProductCategoryInfoModel item in CatList.Values)
+                        {
+                            if (string.IsNullOrEmpty(item.SaleCity) != true && item.SaleCity != saleCityId)
+                            {
+                                continue;
+                            }
+
+                            if (item.GroupName == groupInfo.ProductCategoryGroupId)
+                            {
+                                if(domainModel == null)
+                                {
+                                    @:<label style="width:180px;"><input type="checkbox" name="chkProCat" value="@item.ProductCategoryId" />@item.CategoryName</label>
+                                }
+                                else
+                                {
+                                    if(domainModel.ProductCategoryList != null)
+                                    {   
+                                        if (domainModel.ProductCategoryList.ContainsKey(item.ProductCategoryId))
+                                        {
+                                            @:<label style="width:180px;"><input type="checkbox" checked="checked" name="chkProCat" value="@item.ProductCategoryId" />@item.CategoryName</label>
+                                        }
+                                        else
+                                        {
+                                            @:<label style="width:180px;"><input type="checkbox" name="chkProCat" value="@item.ProductCategoryId" />@item.CategoryName</label>
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                @:</fieldset>
+            }
+        }
+    }
+</fieldset>

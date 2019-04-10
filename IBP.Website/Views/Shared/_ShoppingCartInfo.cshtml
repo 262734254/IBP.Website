@@ -1,0 +1,48 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    ProductShoppingCartDomainModel ShoppingCartInfo = ViewBag.ShoppingCartInfo as ProductShoppingCartDomainModel;
+}
+
+<div id="divShoppingCart">
+    <input type="hidden" name="cartProductList" id="cartProductList" value="@((ShoppingCartInfo == null) ? "" : ShoppingCartInfo.GetProductListString())" />
+    	<table class="table" layouth="275">
+		    <thead>
+			    <tr>
+                    <th width="50">序号</th>
+                    <th width="260">选购产品名称</th>
+                    <th width="100">产品单价</th> 
+                    <th width="100">订购数量</th>  
+				    <th width="160">业务金额</th> 
+                    <th width="100">操作</th>
+			    </tr>
+		    </thead>
+		    <tbody>
+            @{
+                if (ShoppingCartInfo != null && ShoppingCartInfo.ProductList != null && ShoppingCartInfo.ProductList.Count > 0)
+                {
+                    int index = 1;
+                    foreach (ShoppingCartItemInfo item in ShoppingCartInfo.ProductList.Values)
+                    {
+                        <tr>
+                            <td>@index</td>
+                            <td>@((item.ItemType.ToLower() == "productcategory") ? item.ProductCategory.CategoryName : ((item.ItemType.ToLower() == "productitem") ? item.ProductInfo.BasicInfo.ProductName : item.SalesPackageInfo.BasicInfo.PackageName))</td>
+				            <td>@((item.ItemType.ToLower() == "productcategory") ? item.ProductCategory.ItemPrice.ToString() : ((item.ItemType.ToLower() == "productitem") ? item.ProductInfo.BasicInfo.ItemPrice.ToString() : item.SalesPackageInfo.BasicInfo.PriceTotal.ToString()))</td>
+                            <td>@item.Total</td>
+                            <td>@((item.ItemType.ToLower() == "productcategory") ? (item.ProductCategory.ItemPrice * item.Total).ToString() : ((item.ItemType.ToLower() == "productitem") ? (item.ProductInfo.BasicInfo.ItemPrice * item.Total).ToString() : (item.SalesPackageInfo.BasicInfo.PriceTotal * item.Total).ToString()))</td>
+                            <td><a class="button" href="#" itemid="@item.ItemId" custjs="phoneordermgr" name="btnRemoveFromShoppingCart"><span>移除</span></a></td>
+			            </tr>
+                        index++;
+                    }
+                }
+                }
+		    </tbody>
+	    </table>
+        <div class="porzs">
+        <div>产品总数：@((ShoppingCartInfo != null) ? ShoppingCartInfo.ProductTotal : 0)</div>
+        <span>业务总额：@((ShoppingCartInfo != null) ? ShoppingCartInfo.PriceTotal : 0)</span>
+        </div>
+</div>

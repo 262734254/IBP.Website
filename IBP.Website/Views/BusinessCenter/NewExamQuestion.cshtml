@@ -1,0 +1,71 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+}
+<div class="pageContent">
+    <form method="post" action="/ProductCenter/DoAddProductInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+    <div class="pageFormContent" style="overflow-x:hidden; overflow-y:hidden;" layouth="370">
+        <dl style="width:190px;">
+			<dd style="width:60px;">产品类型：</dd>
+			<dt>
+                <select id="ddlExamType" name="examQuestionType">
+                    <option value="1" >单选题</option>
+                    <option value="2" >多选题</option>
+                    <option value="3" >问答题</option>
+                </select>
+            </dt>
+		</dl>
+		<dl>
+			<dd style="width:60px;">是否共享：</dd>
+			<dt><input type="checkbox" value="0" name="isShared" />所有人可见</dt>
+		</dl>
+		<dl style="width:700px;height:100px;">
+            <dd  style="width:60px;">问题内容：</dd>
+            <p><textarea name="inCallDesc" cols="100" rows="5" style="width:640px;"></textarea></p>
+        </dl>
+    </div>
+   <div id="divExtAttributeBox" class="pageFormContent" layouth="220">
+         <dl style="width:700px;">
+            <dd style="width:60px;">答题选项：</dd>
+            <dt style="width:550px;">
+                <table style="width:650px;" cellpadding="2">
+                    <tr>
+                        <td style=" vertical-align:top;">（1）</td>
+                        <td style="padding-bottom:8px;"><textarea cols="80" rows="2" style="width:540px;height:40px;"></textarea></td>
+                        <td style="width:60px; text-align:center; vertical-align:top;"><div class="button"><div class="buttonContent"><button type="button" class="close">删除</button></div></div></td>
+                    </tr>
+                    <tr>
+                        <td style=" vertical-align:top;">（2）</td>
+                        <td style="padding-bottom:8px;"><textarea cols="80" rows="2" style="width:540px;height:40px;"></textarea></td>
+                        <td><div class="button"><div class="buttonContent"><button type="button" class="close">删除</button></div></div></td>
+                    </tr>
+                    <tr>
+                        <td style=" vertical-align:top;">（3）</td>
+                        <td style="padding-bottom:8px;"><textarea cols="80" rows="2" style="width:540px;height:40px;"></textarea></td>
+                        <td><div class="button"><div class="buttonContent"><button type="button" class="close">删除</button></div></div></td>
+                    </tr>
+                    <tr>
+                        <td style=" vertical-align:top;">（4）</td>
+                        <td style="padding-bottom:8px;"><textarea cols="80" rows="2" style="width:540px;height:40px;"></textarea></td>
+                        <td><div class="button"><div class="buttonContent"><button type="button" class="close">删除</button></div></div></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td style="padding-bottom:8px;"></td>
+                        <td><div class="button"><div class="buttonContent"><button type="button" class="close">添加</button></div></div></td>
+                    </tr>
+                </table>
+            </dt>
+        </dl>
+    </div>
+    <div class="formBar">
+        <ul>
+            <li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+            <li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+        </ul>
+    </div>
+    </form>
+</div>

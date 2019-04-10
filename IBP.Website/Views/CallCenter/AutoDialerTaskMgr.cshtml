@@ -1,0 +1,126 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    List<AutoDialerTaskInfoModel> taskList = ViewBag.TaskList as List<AutoDialerTaskInfoModel>;
+}
+
+<form id="pagerForm" method="post" action="/CallCenter/AutoDialerTaskMgr">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@ViewBag.OrderField" />
+    <input type="hidden" name="orderDirection" value="@ViewBag.OrderDirection" />
+</form>
+
+
+<div id="autoDialerTaskBox" class="pageHeader">
+	<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/CallCenter/AutoDialerTaskMgr" method="post">
+	<div class="searchBar">
+        <div class="searbg">
+                <dl><dd>任务状态：</dd>
+                <dt><select name="approvalStatus">
+                <option value="">所有状态</option>
+                    <option value="0">未开始</option>
+                    <option value="1">进行中</option>
+                    <option value="2">已完成</option>                   
+               </select>
+               </dt></dl>
+               <dl><dd>任务编号：</dd><dt><input type="text" name="taskcode" value="@ViewBag.TaskCode" /></dt></dl> 
+          <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></div>
+        </div>
+	</div>
+	</form>
+</div>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+			<li><a class="add" href="/CallCenter/NewAutoDialerTask" target="dialog" maxable="false" rel="autoDialerTaskBox" title="新建自动外呼任务" mask="true" width="600" height="420"><span>新建</span></a></li>
+			<li><a class="edit" href="/CallCenter/EditAutoDialerTask?aid={task_id}" target="dialog" maxable="false" rel="autoDialerTaskBox" title="编辑自动外呼任务" mask="true" width="805" height="530"><span>编辑</span></a></li>
+			<li><a title="确实要删除选中自动外呼任务吗?" target="ajaxTodo" href="/CallCenter/DoDeleteAutoDialerTask?aid={task_id}" class="delete"><span>删除</span></a></li>
+			<li class="line">line</li>
+			<li><a class="icon" href="#" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+		</ul>
+	</div>
+	<table class="table" layoutH="115">
+		<thead>
+			<tr>
+				<th width="130">操作</th>
+				<th width="80" @CommonUtil.SetSortOrder("auto_dialer_task_code", ViewBag.OrderField, ViewBag.OrderDirection) >任务编号</th>
+				<th width="120" @CommonUtil.SetSortOrder("auto_dialer_task_name", ViewBag.OrderField, ViewBag.OrderDirection) >任务名称</th>
+                <th width="80" @CommonUtil.SetSortOrder("dialer_number_total", ViewBag.OrderField, ViewBag.OrderDirection) >号码总数</th>
+				<th width="120" @CommonUtil.SetSortOrder("begin_time", ViewBag.OrderField, ViewBag.OrderDirection) >外呼开始日期</th>
+				<th width="120" @CommonUtil.SetSortOrder("end_time", ViewBag.OrderField, ViewBag.OrderDirection) >外呼结束日期</th>
+                <th width="140" >外呼时段1</th>
+                <th width="140" >外呼时段2</th>
+                <th width="140" >外呼时段3</th>
+                <th width="140" >外呼时段4</th>
+				<th width="80" @CommonUtil.SetSortOrder("interval", ViewBag.OrderField, ViewBag.OrderDirection) >外呼间隔时间</th>
+				<th width="80" @CommonUtil.SetSortOrder("retry_count", ViewBag.OrderField, ViewBag.OrderDirection) >失败尝试次数</th>
+				<th width="60" @CommonUtil.SetSortOrder("priority", ViewBag.OrderField, ViewBag.OrderDirection)  >优先级</th>
+				<th width="130" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection)  >创建时间</th>
+				<th width="100">任务描述</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (taskList != null)
+                {
+                    foreach (AutoDialerTaskInfoModel item in taskList)
+                    {
+			            @:<tr target="task_id" rel="@item.AutoDialerTaskId">
+				            @:<td>
+                              if (item.Status == 0)
+                              { 
+				                    @:<a class="button" href="/CallCenter/DoUpdateAutoDialerTaskStatus?status=1&aid=@item.AutoDialerTaskId" target="ajaxTodo"  rel="autoDialerTaskBox" title="确定执行该任务吗?"><span>执行</span></a> 
+                              }
+                              else if (item.Status == 1)
+                              {
+				                    @:<a class="button" href="/CallCenter/DoUpdateAutoDialerTaskStatus?status=2&aid=@item.AutoDialerTaskId" target="ajaxTodo"  rel="autoDialerTaskBox" title="确定暂停该任务吗?" style="margin-right:5px;"><span>暂停</span></a>
+				                    @:<a class="button" href="/CallCenter/DoUpdateAutoDialerTaskStatus?status=0&aid=@item.AutoDialerTaskId" target="ajaxTodo"  rel="autoDialerTaskBox" title="确定暂停该任务吗?"><span>停止</span></a> 
+                              }
+                              else if (item.Status == 2)
+                              {
+				                    @:<a class="button" href="/CallCenter/DoUpdateAutoDialerTaskStatus?status=1&aid=@item.AutoDialerTaskId" target="ajaxTodo"  rel="autoDialerTaskBox" title="确定执行该任务吗?" style="margin-right:5px;"><span>执行</span></a>
+				                    @:<a class="button" href="/CallCenter/DoUpdateAutoDialerTaskStatus?status=0&aid=@item.AutoDialerTaskId" target="ajaxTodo"  rel="autoDialerTaskBox" title="确定中止该任务吗?"><span>中止</span></a> 
+                              }
+				            @:</td>
+				            <td>@item.AutoDialerTaskCode</td>
+				            <td>@item.AutoDialerTaskName</td>
+                            <td>@item.DialerNumberTotal</td>
+				            <td>@Convert.ToDateTime(item.BeginTime).ToString("yyyy-MM-dd")</td>
+                            <td>@Convert.ToDateTime(item.EndTime).ToString("yyyy-MM-dd")</td>
+                            <td>@((item.StartTime1 != "NONE" && item.StopTime1 != "NONE") ? item.StartTime1 + "至" + @item.StopTime1 : "")</td>
+                            <td>@((item.StartTime2 != "NONE" && item.StopTime2 != "NONE") ? item.StartTime2 + "至" + @item.StopTime2 : "")</td>
+                            <td>@((item.StartTime3 != "NONE" && item.StopTime3 != "NONE") ? item.StartTime3 + "至" + @item.StopTime3 : "")</td>
+                            <td>@((item.StartTime4 != "NONE" && item.StopTime4 != "NONE") ? item.StartTime4 + "至" + @item.StopTime4 : "")</td>
+				            <td>@item.Interval</td>
+				            <td>@item.RetryCount</td>
+				            <td>@item.Priority</td>
+				            <td>@item.CreatedOn</td>
+                            <td>@item.Description</td>
+			            @:</tr>                        
+                    }
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20" @CommonUtil.SetComboxSelected(20, ViewBag.PageSize) >20</option>
+				<option value="50" @CommonUtil.SetComboxSelected(50, ViewBag.PageSize) >50</option>
+				<option value="100" @CommonUtil.SetComboxSelected(100, ViewBag.PageSize) >100</option>
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.TaskTotal 条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.TaskTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+
+	</div>
+</div>
+

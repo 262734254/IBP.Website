@@ -1,0 +1,219 @@
+﻿@{
+    Layout = "";
+}
+
+<form id="pagerForm" method="post" action="demo_page1.html">
+	<input type="hidden" name="status" value="${param.status}">
+	<input type="hidden" name="keywords" value="${param.keywords}" />
+	<input type="hidden" name="pageNum" value="1" />
+	<input type="hidden" name="numPerPage" value="${model.numPerPage}" />
+	<input type="hidden" name="orderField" value="${param.orderField}" />
+</form>
+
+
+<div class="pageHeader">
+	<form onsubmit="return navTabSearch(this);" action="/UserMgr/UserList" method="post">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>	          
+                <td>
+                    客户姓名：<input type="text" alt="" class="textInput" maxlength="10" size="10" name="name"/>
+                </td> 
+                <td>
+                    电话号码：<input type="text" alt="" class="textInput" maxlength="10" size="10" name="name"/>
+                </td>
+                <td>
+                    工单编号：<input type="text" alt="" class="textInput" maxlength="10" size="10" name="name"/>
+                </td>
+                <td>
+                    工单类型：<input type="text" alt="" class="textInput" maxlength="10" size="10" name="name"/>
+                </td>
+                <td>
+                    <select class="combox" name="keytype">
+						<option value="全部">全部</option>
+						<option value="低">低</option>
+                        <option value="中">中</option>
+                        <option value="高">高</option>
+                        <option value="紧急">紧急</option>
+					</select>
+                </td>
+                <td>
+                    关联订单：<input type="text" alt="" class="textInput" maxlength="10" size="10" name="name"/>
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    项目名称：<input type="text" alt="" class="textInput" maxlength="10" size="10" name="name"/>
+                </td>
+                <td>
+                    关联工号：<input type="text" alt="" class="textInput" maxlength="10" size="10" name="name"/>
+                </td>
+                <td class="dateRange">
+					订单日期:
+					<input type="text" value="" readonly="readonly" class="date" name="dateStart">
+					<span class="limit">-</span>
+					<input type="text" value="" readonly="readonly" class="date" name="dateEnd">
+				</td>
+                <td>
+                    提交人：<input type="text" alt="" class="textInput" maxlength="10" size="10" name="name"/>
+                </td>
+                <td>
+                    关闭人：<input type="text" alt="" class="textInput" maxlength="10" size="10" name="name"/>
+                </td>	 
+			</tr>
+		</table>
+    	<div class="subBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></li>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">导出</button></div></div></li>
+			</ul>
+		</div>
+	</div>
+	</form>
+</div>
+
+<div style="border:1px #B8D0D6 solid" class="pageContent j-resizeGrid">
+<div class="pageContent">
+	<table class="table" width="1100" layoutH="138">
+		<thead>
+			<tr>
+				<th width="150" orderField="workId">序号</th>
+                <th width="150" orderField="workId">工单编号</th>
+				<th width="100" orderField="enName">工单状态</th>
+				<th width="100" orderField="teamName">工单类型</th>
+				<th width="120" orderField="userStatus">工单程度</th>
+				<th width="120" orderField="entryDate">客户姓名</th>
+				<th width="160" orderField="postName">关联订单</th>
+				<th width="180" orderField="cnName">项目名称</th>
+				<th width="220" orderField="departmentName">关联工号</th>
+				<th width="220" orderField="positiveDate">工单日期</th>
+                <th width="120" orderField="entryDate">订单日期</th>
+				<th width="160" orderField="postName">提交人</th>
+				<th width="180" orderField="cnName">关闭人</th>
+                <th></th>
+			</tr>
+		</thead>
+		<tbody>               
+			<tr target="sid_user" rel="1">
+				<td>1</td>                
+				<td>W11112400002</td>
+                <td>处理中</td>
+				<td>查询-配送</td>
+				<td></td>
+				<td>廖斌</td>
+				<td>S11111900002</td> 
+                <td>（广）三星i809-89（上）</td>
+                <td>1067</td>
+				<td>2011-11-24 13:38</td>
+                <td>2011-11-19</td>
+                <td>1135</td>
+                <td></td>
+                <td>客户投诉快递公司服务不好，送货前最好提前通知，以免客户白等</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>1</td>                
+				<td>W11112400002</td>
+                <td>处理中</td>
+				<td>查询-配送</td>
+				<td></td>
+				<td>廖斌</td>
+				<td>S11111900002</td> 
+                <td>（广）三星i809-89（上）</td>
+                <td>1067</td>
+				<td>2011-11-24 13:38</td>
+                <td>2011-11-19</td>
+                <td>1135</td>
+                <td></td>
+                <td>客户投诉快递公司服务不好，送货前最好提前通知，以免客户白等</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>1</td>                
+				<td>W11112400002</td>
+                <td>处理中</td>
+				<td>查询-配送</td>
+				<td></td>
+				<td>廖斌</td>
+				<td>S11111900002</td> 
+                <td>（广）三星i809-89（上）</td>
+                <td>1067</td>
+				<td>2011-11-24 13:38</td>
+                <td>2011-11-19</td>
+                <td>1135</td>
+                <td></td>
+                <td>客户投诉快递公司服务不好，送货前最好提前通知，以免客户白等</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>1</td>                
+				<td>W11112400002</td>
+                <td>处理中</td>
+				<td>查询-配送</td>
+				<td></td>
+				<td>廖斌</td>
+				<td>S11111900002</td> 
+                <td>（广）三星i809-89（上）</td>
+                <td>1067</td>
+				<td>2011-11-24 13:38</td>
+                <td>2011-11-19</td>
+                <td>1135</td>
+                <td></td>
+                <td>客户投诉快递公司服务不好，送货前最好提前通知，以免客户白等</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>1</td>                
+				<td>W11112400002</td>
+                <td>处理中</td>
+				<td>查询-配送</td>
+				<td></td>
+				<td>廖斌</td>
+				<td>S11111900002</td> 
+                <td>（广）三星i809-89（上）</td>
+                <td>1067</td>
+				<td>2011-11-24 13:38</td>
+                <td>2011-11-19</td>
+                <td>1135</td>
+                <td></td>
+                <td>客户投诉快递公司服务不好，送货前最好提前通知，以免客户白等</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>1</td>                
+				<td>W11112400002</td>
+                <td>处理中</td>
+				<td>查询-配送</td>
+				<td></td>
+				<td>廖斌</td>
+				<td>S11111900002</td> 
+                <td>（广）三星i809-89（上）</td>
+                <td>1067</td>
+				<td>2011-11-24 13:38</td>
+                <td>2011-11-19</td>
+                <td>1135</td>
+                <td></td>
+                <td>客户投诉快递公司服务不好，送货前最好提前通知，以免客户白等</td>
+			</tr>
+         </tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20">20</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+			</select>
+			<span>条，共${totalCount}条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="200" numPerPage="20" pageNumShown="10" currentPage="1"></div>
+
+	</div>
+</div>
+
+
+</div>
+
+
+
+
+
+

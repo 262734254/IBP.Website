@@ -1,0 +1,172 @@
+﻿@{
+    Layout = "";
+}
+
+<div class="panelBar" style=" border-top:none;">
+		<ul class="toolBar" style=" float:right;">
+			<li><a class="add" href="/UserMgr/AddUser" target="navTab"><span>Callback</span></a></li>
+            <li class="line">line</li>
+			<li><a class="icon" href="/UserMgr/ExportUser" target="dwzExport" targetType="navTab" title="确定要保存资料吗？"><span>保存</span></a></li>
+			<li><a class="edit" href="/UserMgr/EditUser?uid={sid_user}" target="navTab" warn="请选择一个用户"><span>修改</span></a></li>
+		</ul>
+</div>
+<div class="information">
+   <dl>
+     <dd>客户姓名：</dd>
+     <dt>
+       <input name="keyword31" type="text" size="10" />
+     </dt>
+     <dd>性别：</dd>
+     <dt>
+       <select class="combox" name="keytype2">
+         <option selected="selected" value="0">男</option>
+         <option value="1">女</option>
+         <option value="2">不详</option>
+       </select>
+     </dt>
+     <dd>客户来源：</dd>
+     <dt>
+       <select class="combox" name="keytype3">
+         <option value="C00017">1111广折</option>
+         <option value="C00018">1111广短</option>
+         <option value="C00023">1111韶折</option>
+         <option value="C00022">1111韶短</option>
+         <option value="C00020">1111深短</option>
+         <option value="C00024">1111惠折</option>
+         <option value="C00025">1111珠短</option>
+         <option value="C00007">1110广折</option>
+         <option value="C00008">1110广短</option>
+         <option value="C00009">1110深折</option>
+         <option value="C00006">客户推荐</option>
+         <option selected="selected" value="C00005">其他</option>
+         <option value="C00013">拨测</option>
+         <option value="C00016">外部数据</option>
+         <option value="C00001">1109广折</option>
+         <option value="C00002">1109广短</option>
+         <option value="C00003">1109深折</option>
+         <option value="C00004">1109深短</option>
+       </select>
+     </dt>
+     <dd>客户等级：</dd>
+     <dt>
+       <select class="combox" name="keytype4">
+         <option selected="selected" value="C00001">普通</option>
+         <option value="C00003">免打扰</option>
+         <option value="C00004">红名单</option>
+         <option value="C00005">黑名单</option>
+       </select>
+     </dt>
+     <dd>客户归属：</dd>
+     <dt>
+       <input name="keyword32" type="text" size="10" />
+     </dt>
+     </dl>
+     <dl>
+     <dd>手机：</dd>
+     <dt><a class="button" href="#" title="" target="navTab" rel="callcenter_newcustomer"><span>呼叫</span></a><input name="keyword" type="text" size="10" /></dt>
+     <dd>固定电话：</dd>
+     <dt><a class="button" href="#" title="" target="navTab" rel="callcenter_newcustomer"><span>呼叫</span></a><input name="keyword" type="text" size="10" /></dt>
+     <dd>办公电话：</dd>
+     <dt><a class="button" href="#" title="" target="navTab" rel="callcenter_newcustomer"><span>呼叫</span></a><input name="keyword" type="text" size="10" /></dt>
+     <dd>其他号码：</dd>
+     <dt><a class="button" href="#" title="" target="navTab" rel="callcenter_newcustomer"><span>呼叫</span></a><input name="keyword" type="text" size="10" /></dt>
+     <dd>建档日期：</dd>
+     <dt>
+       <input type="text" class="date" readonly="readonly"  size="10"/>
+     </dt>
+     </dl>
+     <dl>
+     <dd>归属地：</dd>
+     <dt>
+       <input type="text" name="keyword33" size="10"/>
+     </dt>
+     <dd>运营商：</dd>
+     <dt>
+       <select class="combox" name="keytype5">
+         <option value="C00001">移动</option>
+         <option value="C00002">联通</option>
+         <option value="C00003">电信</option>
+       </select>
+     </dt>
+     <dd>在用品牌：</dd>
+     <dt>
+       <select class="combox" name="keytype6">
+         <option value="C00001">诺基亚</option>
+         <option value="C00002">摩托罗拉</option>
+         <option value="C00003">苹果</option>
+         <option value="C00004">三星</option>
+         <option value="C00005">华为</option>
+         <option value="C00006">索尼爱立信</option>
+         <option value="C00007">联想</option>
+         <option value="C00008">中兴</option>
+         <option value="C00009">LG</option>
+         <option value="C00010">黑莓</option>
+         <option value="C00011">天语</option>
+         <option value="C00012">酷派</option>
+         <option value="C00013">其它</option>
+       </select>
+     </dt>
+     <dd>在用型号：</dd>
+     <dt>
+       <input type="text" name="keyword34" size="10"/>
+     </dt>
+     <dd>通讯消费：</dd>
+     <dt>
+       <select class="combox" name="keytype7">
+         <option value="C00001">小于50元</option>
+         <option value="C00002">50元-100元</option>
+         <option value="C00003">100元-150元</option>
+         <option value="C00004">150元-200元</option>
+         <option value="C00005">200元-250元</option>
+         <option value="C00006">250元-300元</option>
+         <option value="C00007">300元以上</option>
+       </select>
+     </dt>
+     <dd>优选品牌：</dd>
+     <dt>
+       <select class="combox" name="keytype8">
+         <option value="C00001">诺基亚</option>
+         <option value="C00002">摩托罗拉</option>
+         <option value="C00003">苹果</option>
+         <option value="C00004">三星</option>
+         <option value="C00005">华为</option>
+         <option value="C00006">索尼爱立信</option>
+         <option value="C00007">联想</option>
+         <option value="C00008">中兴</option>
+         <option value="C00009">LG</option>
+         <option value="C00010">黑莓</option>
+         <option value="C00011">天语</option>
+         <option value="C00012">酷派</option>
+         <option value="C00013">其它</option>
+       </select>
+     </dt>
+     <dd>是否智能机：</dd>
+     <dt>
+       <select class="combox" name="keytype9">
+         <option value="1">是</option>
+         <option value="2">否</option>
+         <option value="3">不祥</option>
+       </select>
+     </dt>
+     <dd>手机价位：</dd>
+<dt>
+       <select class="combox" name="keytype10">
+         <option value="C00001">1000元以下</option>
+         <option value="C00002">1000元-1500元</option>
+         <option value="C00003">1500元-2000元</option>
+         <option value="C00004">2000元-2500元</option>
+         <option value="C00005">2500元-3000元</option>
+         <option value="C00006">3000元-3500元</option>
+         <option value="C00007">3500元-4000元</option>
+         <option value="C00008">4000元-4500元</option>
+         <option value="C00009">4500元-5000元</option>
+         <option value="C00010">5000元-5500元</option>
+         <option value="C00011">5500元-6000元</option>
+         <option value="C00012">6000元-6500元</option>
+         <option value="C00013">6500元-7000元</option>
+         <option value="C00014">7000元以上</option>
+       </select>
+     </dt>
+    </dl>
+  </div>
+

@@ -1,0 +1,48 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string departmentId = (Request.QueryString["did"] == null) ? "" : Request.QueryString["did"].ToString();
+    DepartmentDomainModel departmentInfo = DepartmentInfoService.Instance.GetDepartmentDomainInfoById(departmentId);
+
+}
+
+<div class="pageContent">
+	
+	<form method="post" action="/UserMgr/DoNewDepartment" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+			<div class="unit">
+				<label>部门名称：</label>
+				<input type="text" name="depName" size="30" minlength="3" maxlength="10" class="required" />
+			</div>
+			<div class="unit">
+				<label>描述：</label>
+				<textarea name="depDesc" cols="50" rows="5"></textarea>
+			</div>
+                @{
+                    if(departmentInfo != null)
+                    {
+			            @:<div class="unit">
+				            @:<label>层级：</label>
+                            @:<div>创建【@departmentInfo.DepartmentName】的：</div>
+		                    @:<input type="radio" value="1" checked name="depLevel" />同级部门
+		                    @:<input type="radio" value="2" name="depLevel" />下级部门
+                        @:</div>
+                        @:<input type="hidden" name="srcDepId" value="@departmentInfo.DepartmentId" />
+                    }
+                    else
+                    {
+                        @:<input type="hidden" value="1" name="depLevel" />
+                        @:<input type="hidden" name="srcDepId" value="" />
+                    }
+                }
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

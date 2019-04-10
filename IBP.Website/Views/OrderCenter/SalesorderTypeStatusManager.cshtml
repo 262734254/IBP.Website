@@ -1,0 +1,71 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    string salesorder_id = (Request.QueryString["id"] == null) ? "NULL" : Request.QueryString["id"].ToString();
+
+    SalesorderTypeInfoModel SalesorderTypeInfo = SalesorderTypeInfoService.Instance.GetSalesorderTypeInfoModel(salesorder_id);
+    List<SalesorderTypeStatusInfoModel> SalesorderTypeStatusList = SalesorderTypeStatusInfoService.Instance.GetSalesorderTypeStatusInfoList(salesorder_id);
+}
+<div class="pageHeader" style="border-left:1px #B8D0D6 solid;">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>
+				<td>
+                    @{
+                        if (SalesorderTypeInfo == null)
+                        {
+                            <input type="hidden" id="hidSelectedSalesOrderId" value="" />
+                            @:请从左侧列表中选择一个状态信息
+                        }
+                        else
+                        {
+                            <input type="hidden" id="hidSelectedSalesOrderId" value="@SalesorderTypeInfo.SalesorderTypeId" />
+                            @:【@SalesorderTypeInfo.SalesorderTypeName】 详细信息
+                        }
+                    }
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div class="pageContent" style="border-left:1px #B8D0D6 solid;">
+<div class="panelBar">
+		<ul class="toolBar">
+			<li><a class="add" href="/OrderCenter/AddSalesOrderTypeStatusInfo?id=@salesorder_id" rel="roleUserBox" title="添加角色成员" target="dialog" maxable="false" mask="true" width="650" height="400"><span>添加</span></a></li>
+           <li><a  class="edit"  width="700" height="300" target="dialog" maxable="false" href="/OrderCenter/EditSalesOrderTypeStatusInfo?id={sid_obj}&&typeid=@salesorder_id" mask="true"><span>编辑</span></a></li>
+            <li><a class="delete" href="/OrderCenter/DeleteSalesOrderTypeStatusInfo?id={sid_obj}&&typeid=@salesorder_id" target="ajaxTodo" title="确定要删除吗?"><span>删除</span></a></li>
+			<li class="line">line</li>
+		</ul>
+	</div>
+	<table class="table" width="99%" layoutH="110">
+		<thead>
+			<tr>
+
+				<th>状态名称</th>
+                <th>状态</th>
+                 <th>支付方式</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (SalesorderTypeStatusList != null && SalesorderTypeStatusList.Count > 0)
+                {
+                    foreach (SalesorderTypeStatusInfoModel salesOrderType in SalesorderTypeStatusList)
+                    {
+                        @:<tr target="sid_obj" rel="@salesOrderType.SalsorderStatusId">
+                            @:<td>@salesOrderType.SalesorderStatusName</td>
+                            @:<td>@((salesOrderType.Status == 0) ? "启用" : "禁用")</td>
+                            @:<td>@((salesOrderType.PaymentType == 0) ? "分期" : (salesOrderType.PaymentType == 1) ? "全额" : (salesOrderType.PaymentType == 2) ? "到付" :(salesOrderType.PaymentType==3)?"在线支付":"")</td>
+                        @:</tr>
+                    }                   
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+
+	</div>
+</div>

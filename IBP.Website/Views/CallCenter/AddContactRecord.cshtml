@@ -1,0 +1,73 @@
+﻿@{
+    Layout = "";
+}
+
+<div class="more">
+	<form action="" method="get">
+		<div class="pageFormContent tabsContent_top" layoutH="45" style=" border-top:none;">
+        <table class="list" width="100%" >
+		<thead>
+			<tr>
+				<th orderField="cnName">联系方向</th>
+				<th orderField="workId">日期</th>
+				<th orderField="userStatus">时间</th>
+				<th orderField="entryDate">工号</th>
+				<th orderField="enName">客户电话</th>
+				<th orderField="teamName">联系目的</th>
+				<th orderField="departmentName">联系结果</th>
+				<th orderField="postName">联系记录</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>呼出</td>
+				<td>2011-12-8 </td>
+				<td>12:44:43 </td>
+                <td>admin</td>
+				<td>13424293158</td>
+				<td>
+                <select class="combox" name="keytype9">
+         <option value="0">咨询订购</option>
+		<option value="1">工单处理</option>
+		<option value="2">我的营销</option>
+		<option value="3">外呼营销</option>
+		<option value="4">WelcomeCall</option>
+       </select>
+                </td>
+                <td>
+                <select class="combox" name="keytype9">
+         <option value="0">销售成功</option>
+		<option value="1">销售跟进</option>
+		<option value="2">销售结束</option>
+		<option value="3">回访成功</option>
+		<option value="4">回访中断</option>
+		<option value="5">回访预约</option>
+		<option value="6">回访拒绝</option>
+		<option value="7">关机</option>
+		<option value="8">无应答</option>
+		<option value="9">停机</option>
+		<option value="10">呼叫转移</option>
+		<option value="11">忙音占线</option>
+		<option value="12">不在服务区</option>
+		<option value="13">挂机</option>
+		<option value="14">余额不足</option>
+		<option value="15">空号过期失效</option>
+		<option value="16">无效数据</option>
+		<option value="17">语言不通</option>
+		<option value="18">非本人</option>
+		<option value="19">其他</option>
+       </select>
+                </td>
+				<td><textarea name="textarea1" cols="30" rows="2"></textarea> </td>
+			</tr>
+		</tbody>
+	</table>
+		</div>
+		<div class="formBar">
+			<ul>
+				<!--<li><a class="buttonActive" href="javascript:;"><span>保存</span></a></li>-->
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">添加记录</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+</div>

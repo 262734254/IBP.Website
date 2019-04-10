@@ -1,0 +1,220 @@
+﻿@{
+    Layout = "";
+}
+
+<form id="pagerForm" method="post" action="demo_page1.html">
+	<input type="hidden" name="status" value="${param.status}">
+	<input type="hidden" name="keywords" value="${param.keywords}" />
+	<input type="hidden" name="pageNum" value="1" />
+	<input type="hidden" name="numPerPage" value="${model.numPerPage}" />
+	<input type="hidden" name="orderField" value="${param.orderField}" />
+</form>
+
+
+<div class="pageHeader">
+	<form onsubmit="return navTabSearch(this);" action="/UserMgr/UserList" method="post">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>
+                <td>
+                   <select class="combox" name="keytype">
+						<option value="全部">全部</option>
+						<option value="开放">开放</option>
+                        <option value="已分配">已分配</option>
+                        <option value="已锁定">已锁定</option>
+                        <option value="已销售">已销售</option>
+					</select>
+                    <select class="combox" name="keytype">
+						<option value="全部">全部</option>
+						<option value="移动">移动</option>
+                        <option value="联通">联通</option>
+                        <option value="电信">电信</option>
+					</select>
+                </td> 
+                <td>
+                    归属工号：<input type="text" alt="" class="textInput" maxlength="20" size="10" name="name"/>
+                </td>                
+				<td>
+					号码：<input type="text" alt="" class="phone textInput" size="10" name="phone"/>
+				</td>
+                <td>
+					格式：138%或138%668或%668 输入数字或%
+				</td> 
+            </tr>
+		</table>
+    	<div class="subBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></li>
+                <li><div class="buttonActive"><div class="buttonContent"><button type="submit">导入</button></div></div></li>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">导出</button></div></div></li>
+                <li><div class="buttonActive"><div class="buttonContent"><button type="submit">解锁</button></div></div></li>
+			</ul>
+		</div>
+	</div>
+	</form>
+</div>
+
+<div style="border:1px #B8D0D6 solid" class="pageContent j-resizeGrid">
+<div class="pageContent">
+	<table class="table" layoutH="138">
+		<thead>
+			<tr>
+                <th width="200">操作</th>
+				<th width="150" orderField="workId">号码</th>
+				<th width="100" orderField="enName">运营商</th>
+				<th width="100" orderField="teamName">状态</th>
+				<th width="120" orderField="userStatus">号码级别</th>
+				<th width="120" orderField="entryDate">项目名称</th>
+				<th width="160" orderField="postName">归属工号</th>
+				<th width="180" orderField="cnName">归属姓名</th>
+				<th width="220" orderField="departmentName">导入日期</th>
+				<th width="220" orderField="positiveDate">导入工号</th>
+                <th width="120" orderField="entryDate">导入姓名</th>
+				<th width="160" orderField="postName">数据状态</th>
+				<th width="180" orderField="cnName">离解锁时间</th>
+				<th width="220" orderField="departmentName">号码归属地</th>
+				<th width="220" orderField="positiveDate">号码备注</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>删除</span></a>
+				</td>                
+				<td>18002563106</td>
+				<td>电信</td>
+				<td>已销售</td>
+				<td>普通</td>
+				<td></td> 
+                <td></td>
+                <td></td>
+				<td></td>
+                <td></td>
+                <td></td> 
+                <td>未锁定</td>
+                <td></td>
+				<td></td>
+                <td></td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>删除</span></a>
+				</td>                
+				<td>18002563106</td>
+				<td>电信</td>
+				<td>已销售</td>
+				<td>普通</td>
+				<td></td> 
+                <td></td>
+                <td></td>
+				<td></td>
+                <td></td>
+                <td></td> 
+                <td>未锁定</td>
+                <td></td>
+				<td></td>
+                <td></td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>删除</span></a>
+				</td>                
+				<td>18002563106</td>
+				<td>电信</td>
+				<td>已销售</td>
+				<td>普通</td>
+				<td></td> 
+                <td></td>
+                <td></td>
+				<td></td>
+                <td></td>
+                <td></td> 
+                <td>未锁定</td>
+                <td></td>
+				<td></td>
+                <td></td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>删除</span></a>
+				</td>                
+				<td>18002563106</td>
+				<td>电信</td>
+				<td>已销售</td>
+				<td>普通</td>
+				<td></td> 
+                <td></td>
+                <td></td>
+				<td></td>
+                <td></td>
+                <td></td> 
+                <td>未锁定</td>
+                <td></td>
+				<td></td>
+                <td></td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>删除</span></a>
+				</td>                
+				<td>18002563106</td>
+				<td>电信</td>
+				<td>已销售</td>
+				<td>普通</td>
+				<td></td> 
+                <td></td>
+                <td></td>
+				<td></td>
+                <td></td>
+                <td></td> 
+                <td>未锁定</td>
+                <td></td>
+				<td></td>
+                <td></td>
+			</tr>
+			<tr target="sid_user" rel="1">
+				<td>
+					<a style="margin-right:10px;" class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>编辑</span></a>
+					<a class="button" href="/CallCenter/NewCustomer" title="" target="navTab" rel="callcenter_newcustomer"><span>删除</span></a>
+				</td>                
+				<td>18002563106</td>
+				<td>电信</td>
+				<td>已销售</td>
+				<td>普通</td>
+				<td></td> 
+                <td></td>
+                <td></td>
+				<td></td>
+                <td></td>
+                <td></td> 
+                <td>未锁定</td>
+                <td></td>
+				<td></td>
+                <td></td>
+			</tr>
+         </tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20">20</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+			</select>
+			<span>条，共${totalCount}条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="200" numPerPage="20" pageNumShown="10" currentPage="1"></div>
+
+	</div>
+</div>
+
+
+</div>

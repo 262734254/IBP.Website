@@ -1,0 +1,173 @@
+﻿@{
+    Layout = "";
+}
+
+<form id="pagerForm" method="post" action="demo_page1.html">
+	<input type="hidden" name="status" value="${param.status}">
+	<input type="hidden" name="keywords" value="${param.keywords}" />
+	<input type="hidden" name="pageNum" value="1" />
+	<input type="hidden" name="numPerPage" value="${model.numPerPage}" />
+	<input type="hidden" name="orderField" value="${param.orderField}" />
+</form>
+
+
+<div class="pageHeader">
+	<form onsubmit="return navTabSearch(this);" action="/UserMgr/UserList" method="post">
+	<div class="searchBar">
+		<table class="searchContent">
+			<tr>
+                <td>
+                    订单编号：<input type="text" alt="" class="textInput" maxlength="20" size="10" name="ordernu"/>
+                </td> 
+                <td>
+                    客户姓名：<input type="text" alt="" class="textInput" maxlength="20" size="10" name="name"/>
+                </td>               
+                <td>
+					来电号码：<input type="text" alt="" class="phone textInput" size="10" name="phone2"/>
+				</td>
+                <td>
+                    主合约号码：<input type="text" alt="" class="textInput" maxlength="10" size="10" name="name"/>
+                </td> 
+                <td>
+					 项目名称：<input type="text" alt="" class="phone textInput" size="10" name="phone"/>
+				</td>
+                </tr>
+               <tr>	
+                <td>
+					选择套餐：<input type="text" alt="" class="phone textInput" size="10" name="phone2"/>
+				</td>
+                <td>
+			      <select class="combox" name="keytype">
+						<option value="全部">全部</option>
+						<option value="工商银行">工商银行</option>
+                        <option value="农业银行">农业银行</option>
+                        <option value="建设银行">建设银行</option>
+                        <option value="交通银行">交通银行</option>
+                        <option value="招商银行">招商银行</option>
+                        <option value="邮政储蓄">邮政储蓄</option>
+                        <option value="华夏银行">华夏银行</option>
+                        <option value="中国银行">中国银行</option>
+                        <option value="不托收">不托收</option>
+				</select>
+				</td>
+                <td>
+                    扣款时间：
+                    <input type="text" value="" readonly="readonly" class="date" name="dateStart">
+					<span class="limit">-</span>
+					<input type="text" value="" readonly="readonly" class="date" name="dateEnd">
+                </td> 	          
+			</tr>
+		</table>
+    	<div class="subBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></li>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">导出</button></div></div></li>
+			</ul>
+		</div>
+	</div>
+	</form>
+</div>
+
+<div style="border:1px #B8D0D6 solid" class="pageContent j-resizeGrid">
+<div class="pageContent">
+	<table class="table" width="1000" layoutH="138">
+		<thead>
+			<tr>           
+				<th width="180" orderField="cnName">序号</th>
+				<th width="150" orderField="workId">订单编号</th>
+				<th width="120" orderField="userStatus">客户姓名</th>
+				<th width="120" orderField="entryDate">选择号码</th>
+				<th width="100" orderField="enName">选择套餐</th>
+				<th width="100" orderField="teamName">业务总额</th>
+				<th width="220" orderField="departmentName">预存话费</th>
+				<th width="160" orderField="postName">购机额</th>
+				<th width="220" orderField="positiveDate">证件号码</th>
+                <th width="220" orderField="positiveDate">托收银行</th>
+                <th width="220" orderField="positiveDate">托收银行账号</th>
+                <th width="220" orderField="positiveDate">办理日期</th>
+                <th width="220" orderField="positiveDate">订单备注</th>
+			</tr>
+		</thead>
+		<tbody>                            
+			<tr target="sid_user" rel="1">
+                <td>1</td>
+				<td>S11112800050</td>
+				<td>汤禹</td> 
+                <td>18922101600</td>
+				<td>89元乐享套餐（上网版）</td>
+				<td>1188</td>
+				<td>1188</td>
+                <td>0</td>
+                <td>430403198001040512</td>
+                <td>工商银行</td>
+                <td>4518105874631827</td>
+                <td>2011-11-23 18:26 </td>
+                <td>2011-11-25 16:06</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+                <td>1</td>
+				<td>S11112800050</td>
+				<td>汤禹</td> 
+                <td>18922101600</td>
+				<td>89元乐享套餐（上网版）</td>
+				<td>1188</td>
+				<td>1188</td>
+                <td>0</td>
+                <td>430403198001040512</td>
+                <td>工商银行</td>
+                <td>4518105874631827</td>
+                <td>2011-11-23 18:26 </td>
+                <td>2011-11-25 16:06</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+                <td>1</td>
+				<td>S11112800050</td>
+				<td>汤禹</td> 
+                <td>18922101600</td>
+				<td>89元乐享套餐（上网版）</td>
+				<td>1188</td>
+				<td>1188</td>
+                <td>0</td>
+                <td>430403198001040512</td>
+                <td>工商银行</td>
+                <td>4518105874631827</td>
+                <td>2011-11-23 18:26 </td>
+                <td>2011-11-25 16:06</td>
+			</tr>
+			<tr target="sid_user" rel="1">
+                <td>1</td>
+				<td>S11112800050</td>
+				<td>汤禹</td> 
+                <td>18922101600</td>
+				<td>89元乐享套餐（上网版）</td>
+				<td>1188</td>
+				<td>1188</td>
+                <td>0</td>
+                <td>430403198001040512</td>
+                <td>工商银行</td>
+                <td>4518105874631827</td>
+                <td>2011-11-23 18:26 </td>
+                <td>2011-11-25 16:06</td>
+			</tr>
+         </tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="20">20</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+			</select>
+			<span>条，共${totalCount}条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="200" numPerPage="20" pageNumShown="10" currentPage="1"></div>
+
+	</div>
+</div>
+
+
+</div>
+

@@ -1,0 +1,43 @@
+﻿@using IBP.Models;
+@using IBP.Services;
+@using IBP.Common;
+@{
+    Layout = "";
+    string id = Request.QueryString["id"];
+    string typeid = Request.QueryString["typeid"];
+    if (string.IsNullOrEmpty(id))
+    {
+        throw new Exception("编辑订单类型异常，未获取到订单类型ID");
+    }
+    SalesOrderTypeStatusDomainModel typestatusmodel = SalesorderTypeStatusInfoService.Instance.GetSalesOrderTypeStatusModelById(id, true);
+}
+
+<div class="pageContent">
+	
+	<form method="post" action="/OrderCenter/DoEditSalesOrderTypeStatusInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone)">
+		<div class="pageFormContent" layoutH="58">
+            <input type="hidden" name="salsorder_status_id" value="@id" />
+              <input type="hidden" name="salsorder_type_id" value="@typeid" />
+			<div class="unit">
+				<label>状态名称：</label>
+				<input type="text" name="salesorder_status_name" size="30" minlength="3" maxlength="10" value="@typestatusmodel.BasicInfo.SalesorderStatusName" class="required" />
+			</div>
+            <div class="unit">
+				<label>状态：</label>
+				<input type="radio" value="0"  name="status"  @((typestatusmodel.BasicInfo.Status == 0) ? "checked" : "")/>启用
+		        <input type="radio" value="1" name="status"  @((typestatusmodel.BasicInfo.Status == 1) ? "checked" : "")/>禁用
+			</div>
+			<div class="unit">
+				<label>描述：</label>
+				<textarea name="statusDesc" cols="50" rows="5">@typestatusmodel.BasicInfo.Description</textarea>
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+</div>

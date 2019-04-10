@@ -1,0 +1,45 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/ProductCenter/DoAddProductCategoryGroup" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">            
+            <div class="unit">
+				<label>分组名称：</label>
+				<input name="groupName" class="text" type="text" size="30" value=""/>
+			</div>
+            <div class="unit">
+				<label>是否独立价格：</label>
+				<input name="isItemPrice" class="text" type="radio" value="0"/>是
+                <input name="isItemPrice" class="text" type="radio" checked value="1"/>否
+			</div>
+            <div class="unit">
+				<label>排序索引：</label>
+				<input name="sortOrder" class="number" type="text" size="30" value=""/>
+			</div>
+			<div class="unit">
+				<label>描述信息：</label>
+				<textarea name="categoryGroupDesc" cols="40" rows="5" ></textarea>
+			</div>
+            <div class="unit">
+				<label>状态：</label>
+				<input type="radio" value="0" name="Status" checked />启用
+                <input type="radio" value="1" name="Status" />禁用
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">新建产品分组</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+

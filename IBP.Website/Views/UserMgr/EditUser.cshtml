@@ -1,0 +1,144 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+@{
+    Layout = "";
+    string userId = Request.QueryString["uid"];
+    if (userId == "")
+    {
+        throw new Exception("ID不存在");
+    }
+    UserDomainModel userInfo = UserInfoService.Instance.GetUserDomainModelById(userId, false);
+    CustomDataDomainModel CustomeList = CustomDataInfoService.Instance.GetCustomDataDomainModelByName("工作状态", false);
+    Dictionary<string,RoleDomainModel> roleDict = RoleInfoService.Instance.GetRoleDomainList(false);
+    DepartmentDomainModel departmentTree = DepartmentInfoService.Instance.GetDepartmentTree(false);
+}
+
+
+<div class="pageContent">
+	<form method="post" action="/UserMgr/DoUpdateUserInfo" class="pageForm required-validate" onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+          <input type="hidden" name="user_id" value="@userId" />
+			<p>
+			<label>工   号：</label>
+			<input name="work_id" class="alphanumeric" type="text" size="30" value="@userInfo.WorkId" alt="请输入工号"/>
+			</p>
+			<p>
+				<label>英 文 名：</label>
+				<input name="en_name" class="lettersonly" type="text" size="30" value="@userInfo.BasicInfo.EnName" alt="请输入英文名"/>
+			</p>
+			<p>
+				<label>中 文 名：</label>
+                <input name="cn_name" class="required" type="text" size="30" value="@userInfo.BasicInfo.CnName" alt="请输入中文名"/>
+			</p>
+            <p>
+				<label>登录账号：</label>
+				<input name="LoginName" class="alphanumeric" type="text" size="30" value="@userInfo.BasicInfo.LoginName.Replace("LOGINNAME_", "")" alt="请输入登录账号"/>
+			</p>
+			<p>
+				<label>登录密码：</label>
+				<input name="login_pwd"  type="password" class="required alphanumeric" size="30" value="@userInfo.BasicInfo.LoginPwd" alt="请输入登录密码"/>
+			</p>		
+            <p>
+				<label>CIT账号：</label>
+				<input name="cti_user_id"  class="required alphanumeric" type="text" size="30" value="@userInfo.BasicInfo.CtiUserId" alt="请输入CIT账号"/>
+			</p>
+            <p>
+				<label>CIT密码：</label>
+				<input name="cti_user_pwd" class="required"  type="password"  size="30" value="@userInfo.BasicInfo.CtiUserPwd" alt="请输入CIT密码"/>
+			</p>
+             <p>
+				<label>职   务：</label>
+				<input name="PostName"  type="text" size="30" value="@userInfo.BasicInfo.PostName" alt="请输入职务"/>
+			</p>
+               <p>
+				<label>账号状态：</label>
+			<input type="radio" value="0" name="Status" @((userInfo.BasicInfo.Status == 0) ? "checked" : "") />启用
+                <input type="radio" value="1" name="Status" @((userInfo.BasicInfo.Status ==1) ? "checked" : "")  />禁用
+			</p>
+             <p>
+				<label>用户邮箱：</label>
+				<input name="user_email" class=" email" type="text" size="30" value="@userInfo.BasicInfo.UserEmail" alt="请输入用户邮箱"/>
+			</p>
+             <p>
+				<label>入职日期：</label>
+				<input name="entry_date" class="required date" format="yyyy-MM-dd" value="@((userInfo.BasicInfo.EntryDate == null) ? "" : Convert.ToDateTime(userInfo.BasicInfo.EntryDate).ToString("yyy-MM-dd"))" />
+			</p>
+                                                                                                      
+             <p>
+				<label>团队名称：</label>
+
+                <input name="team_name"  type="text" size="30" value="@userInfo.BasicInfo.TeamName" alt="请输入团队名称"/>
+			</p>
+
+             <p>
+				<label>角     色：</label>
+				<select name="rolseid" class="required">
+                 <option value="">请选择</option>'
+                   @{
+                           if (roleDict != null )
+                        {
+                            foreach (RoleDomainModel item in roleDict.Values)
+                            {
+                                <option value="@item.RoleId" @CommonUtil.SetComboxSelected(item.RoleId, userInfo.BasicInfo.RoleId)>@item.RoleName</option>
+                            }
+                        }
+                   }
+				</select>
+			</p>
+             <p>
+				<label>状    态：</label>
+				<select name="work_status" >
+                     @{
+                         if (CustomeList != null && CustomeList.ValueList.Count > 0)
+                         {
+                             foreach (CustomDataValueDomainModel item in CustomeList.ValueList.Values)
+                             {
+                               <option value="@item.ValueId" @CommonUtil.SetComboxSelected(item.ValueId, userInfo.BasicInfo.WorkStatus)>@item.DataValue</option>
+                             }
+                         }
+                      }
+				</select>
+			</p>
+            <p>
+            <label>部     门：</label>
+				<select name="departmentid"  class="required"  >
+                
+					@{
+                        if (departmentTree.ChildDepartment != null)
+                        {
+                            foreach (DepartmentDomainModel item in departmentTree.ChildDepartment.Values)
+                            {
+                              <option value="@item.DepartmentId" @CommonUtil.SetComboxSelected(item.DepartmentId, userInfo.BasicInfo.DepartmentId)>@item.DepartmentName</option>
+                                if (item.ChildDepartment != null)
+                                {
+                                        foreach (DepartmentDomainModel item2 in item.ChildDepartment.Values)
+                                        {
+                                            <option value="@item2.DepartmentId" @CommonUtil.SetComboxSelected(item2.DepartmentId, userInfo.BasicInfo.DepartmentId)>@item2.DepartmentName</option>
+                                                if (item2.ChildDepartment != null)
+                                                {
+                                                    foreach (DepartmentDomainModel item3 in item2.ChildDepartment.Values)
+                                                    {
+                                                        <option value="@item3.DepartmentId" @CommonUtil.SetComboxSelected(item3.DepartmentId, userInfo.BasicInfo.DepartmentId)>@item3.DepartmentName</option>    
+                                                     }
+                                                }
+                                        }
+                                 }
+                        }
+                    }
+                 }
+				</select>
+                </p>
+			
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+

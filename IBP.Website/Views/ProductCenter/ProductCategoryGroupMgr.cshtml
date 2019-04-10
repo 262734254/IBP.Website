@@ -1,0 +1,81 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    List<ProductCategoryGroupInfoModel> ProductCategoryGroupList = ViewBag.ProductCategoryGroupList as List<ProductCategoryGroupInfoModel>;
+}
+
+<form id="pagerForm" method="post" action="/ProductCenter/ProductCategoryGroupMgr">
+	<input type="hidden" name="pageNum" value="@ViewBag.PageIndex" />
+	<input type="hidden" name="numPerPage" value="@ViewBag.PageSize" />
+	<input type="hidden" name="orderField" value="@(string.IsNullOrEmpty(ViewBag.OrderField) ? "sort_order" : ViewBag.OrderField)" />
+    <input type="hidden" name="orderDirection" value="@(string.IsNullOrEmpty(ViewBag.OrderDirection) ? "asc" : ViewBag.OrderDirection)" />
+</form>
+
+
+<div id="productCategoryBox" class="pageHeader">
+	<form rel="pagerForm" onsubmit="return navTabSearch(this);" action="/ProductCenter/ProductCategoryGroupMgr" method="post">
+	<div class="searchBar">
+		<div class="searbg">
+           <dl style="width:250px;"><dd style="width:110px;">产品品类分组名称：</dd><dt><input type="text" name="categoryGroupName" value="@ViewBag.CategoryGroupName" /></dt></dl>
+           <div class="searbgcha"><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></div>
+		</div>    	
+	</div>
+	</form>
+</div>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+			<li><a class="add" href="/ProductCenter/NewProductCategoryGroup" target="dialog" maxable="false"  rel="ProductCenter_ProductCategoryGroupMgr" title="新建产品类型分组信息" mask="true" width="520" height="350"><span>新建</span></a></li>
+			<li><a class="edit" href="/ProductCenter/EditProductCategoryGroup?gid={cat_id}" target="dialog" maxable="false"  rel="ProductCenter_ProductCategoryGroupMgr" title="编辑产品类型分组信息" mask="true" width="520" height="350"><span>编辑</span></a></li>
+			<li><a title="确实要删除这些记录吗?" target="ajaxTodo" href="/ProductCenter/DoDelProductCategory?catid={cat_id}" class="delete"><span>删除</span></a></li>
+			<li class="line">line</li>
+			<li><a class="icon" href="#" target="dwzExport" targetType="navTab" title="实要导出这些记录吗?"><span>导出EXCEL</span></a></li>
+		</ul>
+	</div>
+	<table class="table" layoutH="115">
+		<thead>
+			<tr>
+				<th width="60" @CommonUtil.SetSortOrder("sort_order", ViewBag.OrderField, ViewBag.OrderDirection) >序号</th>
+                <th width="160" @CommonUtil.SetSortOrder("group_name", ViewBag.OrderField, ViewBag.OrderDirection) >品类分组名称</th>
+				<th width="160" @CommonUtil.SetSortOrder("is_item_price", ViewBag.OrderField, ViewBag.OrderDirection) >是否独立价格</th>  
+				<th width="100" @CommonUtil.SetSortOrder("status", ViewBag.OrderField, ViewBag.OrderDirection) >状态</th>
+				<th width="140" @CommonUtil.SetSortOrder("created_on", ViewBag.OrderField, ViewBag.OrderDirection) >创建时间</th>              
+				<th width="260" @CommonUtil.SetSortOrder("description", ViewBag.OrderField, ViewBag.OrderDirection) >描述</th>
+			</tr>
+		</thead>
+		<tbody>
+            @{
+                if (ProductCategoryGroupList != null)
+                {
+                    foreach (ProductCategoryGroupInfoModel item in ProductCategoryGroupList)
+                    {
+			            <tr target="cat_id" rel="@item.ProductCategoryGroupId">                        
+				            <td>@item.SortOrder</td>
+                            <td>@item.GroupName</td>
+				            <td>@((item.IsItemPrice == 0) ? "是" : "否")</td>
+				            <td>@((item.Status == 0) ? "启用" : "禁用")</td>
+				            <td>@item.CreatedOn</td>
+				            <td>@item.Description</td>
+			            </tr>                        
+                    }
+                }
+            }
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示</span>
+			<select class="combox" name="numPerPage" onchange="navTabPageBreak({numPerPage:this.value})">
+				<option value="200" @CommonUtil.SetComboxSelected(200, ViewBag.PageSize) >200</option>
+			</select>
+			<span>条，共 @ViewBag.ProductCategoryGroupTotal 条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="@ViewBag.ProductCategoryGroupTotal" numPerPage="@ViewBag.PageSize" pageNumShown="10" currentPage="@ViewBag.PageIndex"></div>
+
+	</div>
+</div>

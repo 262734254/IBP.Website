@@ -1,0 +1,44 @@
+﻿@using IBP.Common;
+@using IBP.Models;
+@using IBP.Services;
+
+@{
+    Layout = "";
+    CustomerDomainModel Customer = ViewBag.Customer as CustomerDomainModel;
+    WorkOrderDomainModel WorkOrder = ViewBag.WorkOrder as WorkOrderDomainModel;
+    Dictionary<string, string> WorkOrderStatusDict = ViewBag.WorkOrderStatusDict as Dictionary<string, string>;
+    Dictionary<string, string> WorkOrderResultDict = ViewBag.WorkOrderResultDict as Dictionary<string, string>;
+    UserDomainModel User = null;
+
+}
+
+
+<table class="table" layoutH="295" width="100%">
+	<thead>
+		<tr>
+			<th width="120">处理时间</th>
+			<th width="90">处理人</th>
+            <th width="90">流转状态</th>
+            <th width="90">处理结果</th>
+			<th width="500">处理过程描述</th>
+		</tr>
+	</thead>
+	<tbody>
+        @{
+            if (WorkOrder != null && WorkOrder.ProcessList != null)
+            {
+                foreach (WorkorderProcessInfoModel item in WorkOrder.ProcessList.Values)
+                {
+                    User = UserInfoService.Instance.GetUserDomainModelById(item.CreatedBy, false);
+                    <tr>
+                        <td>@item.CreatedOn</td>
+			            <td>@((User == null) ? "" : "【" + User.WorkId + "】" + User.BasicInfo.CnName)</td>
+                        <td>@((item.AfterStatus == null) ? "" : WorkOrderStatusDict[item.AfterStatus])</td>
+                        <td>@((item.AfterResult == null) ? "" : WorkOrderResultDict[item.AfterResult])</td>
+			            <td title="@item.Description">@item.Description</td> 
+		            </tr>
+                }
+            }
+        }
+        </tbody>
+</table>
