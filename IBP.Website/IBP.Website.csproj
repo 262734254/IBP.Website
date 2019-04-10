@@ -21,6 +21,13 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>4.0</OldToolsVersion>
+    <UseIISExpress>false</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -82,6 +89,81 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="02-数据库脚本包\2012年4月PPT大赛数据初始化脚本\4月PPT大赛数据初始化脚本.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\20120511补充工单类型数据.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\20120522补充工单类型数据.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\ActionInfo.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\BankCard_Type_Info.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\chinainfo-js.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\DepartmentInfo.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\GetGUID.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\RoleInfo.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\UserInfo.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\产品属性表初始化数据生成脚本.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\号码归属信息表.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\数据库初始化及旧数据导入.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\更新手机归属地2.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\更新手机归属地ChinaID.sql" />
+    <Content Include="02-数据库脚本包\数据初始化脚本\自定义数据信息表.sql" />
+    <Content Include="02-数据库脚本包\数据提取脚本\所有成功订单中扣款36月将超出信用卡有效期的数据.sql" />
+    <Content Include="02-数据库脚本包\数据提取脚本\旧系统订单数据.sql" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\action_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\auto_dialer_task_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\auto_dialer_task_number_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\bankcard_type_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\customer_basic_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\customer_contact_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\customer_creditcard_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\customer_delivery_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\customer_ext_attributes.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\customer_info_approval.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\customer_memo_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\customer_phone_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\custome_group_info.sql" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\custom_data_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\custom_data_value.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\custom_enum_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\department_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\Dialer_Info_Campaign.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\Dialer_Info_Project.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\field_type_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\pay_pos_machine_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\phonesales_order_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\phone_location_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\product_attributes_value.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\product_category_attributes.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\product_category_group_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\product_category_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\product_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\product_sales_group_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\product_sales_status.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\rel_role_action.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\rel_usergroup_action.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\rel_usergroup_premission.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\rel_user_department.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\rel_user_group.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\rel_user_notice.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\rel_user_voteitem.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\role_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\salesorder_basic_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\salesorder_communiationpackage_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\salesorder_process_log.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\salesorder_product_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\salesorder_type_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\salesorder_type_status_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\sales_package_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\system_notice_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\user_group_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\user_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\vote_project_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\vote_project_item_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\workorder_checks_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\workorder_process_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\workorder_result_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\workorder_status_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\workorder_type_info.SQL" />
+    <Content Include="02-数据库脚本包\数据表创建脚本\work_order_info.SQL" />
+    <Content Include="02-数据库脚本包\旧数据库数据提取脚本\提取信息表记录.sql" />
     <Content Include="dwz.frag.xml" />
     <Content Include="Global.asax" />
     <Content Include="js\chinainfo.js" />
