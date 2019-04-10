@@ -161,7 +161,7 @@ namespace IBP.Common
         {
             get { return GetKeyValue("ibp_customdata_dict"); }
         }
-
+        
         /// <summary>
         /// 自定义枚举值字典。
         /// </summary>
