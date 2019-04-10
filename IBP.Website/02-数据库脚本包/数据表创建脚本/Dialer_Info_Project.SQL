@@ -5,7 +5,7 @@
 --  -------------------------------------------------- 
 
 IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id('Dialer_Info_Project') AND  OBJECTPROPERTY(id, 'IsUserTable') = 1)
-DROP TABLE Dialer_Info_Project
+DROP TABLE Dialer_Info_Project        
 ;
 
 CREATE TABLE Dialer_Info_Project ( 
